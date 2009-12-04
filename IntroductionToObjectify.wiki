@@ -30,7 +30,7 @@ public class Car
 
 Things to note:
 
-  * The class must be annotated with javax.persistence.Entity.
+  * The class must be annotated with {{{javax.persistence.Entity}}}.
 
   * Objectify persists fields and fields only.  It is not an arbitrary ORM-type mapping system.  If you want to change the way a field is stored... rename the field.
 
