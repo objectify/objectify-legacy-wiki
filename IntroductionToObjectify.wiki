@@ -25,6 +25,7 @@ public class Car
 		this.vin = vin;
 		this.color = color;
 	}
+}
 }}}
 
 Things to note:
