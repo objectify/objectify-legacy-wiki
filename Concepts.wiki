@@ -4,7 +4,7 @@ This is a combined introduction to Objectify and to the Appengine datastore.
 
 <wiki:toc max_depth="1" />
 
-So, you want to persist some data.  You've probably looked at the [http://code.google.com/appengine/docs/java/datastore/overview.html datastore documentation] and thought "crap, that's complicated!"  Entities, query languages, fetch groups, detaching, transactions... hell those things have bloody _lifecycles_!
+So, you want to persist some data.  You've probably looked at the [http://code.google.com/appengine/docs/java/datastore/overview.html datastore documentation] and thought "crap, that's complicated!"  Entities, query languages, fetch groups, detaching, transactions... hell those things have bloody _lifecycles_!  However, the complexity of JDO is hiding a lot of simplicity under the covers.  
 
 = Entities =
 
@@ -12,7 +12,7 @@ This document will talk a lot about entities.  An _entity_ is an object's worth 
 
 = Operations =
 
-The complexity of JDO is hiding a lot of simplicity under the covers.  There are only four basic operations in the datastore, and any persistence API must boil operations down to:
+There are only four basic operations in the datastore, and any persistence API must boil operations down to:
 
   * *get()* an entity whole from the datastore.  You can get many at a time.
   * *put()* an entity whole in the datastore.  You can store many at a time.
@@ -86,6 +86,14 @@ If you execute within a transaction:
 If you execute without a transaction:
   * All individual datastore operations are treated separately.
   * If there is contention, operations will be automatically retried until the operation succeeds or the system gives up.
+
+== Indexes ==
+
+There is a lot of documentation online describing multi-property indexes and how you configure them in your {{{datastore-indexes.xml}}}.  However, relatively little [http://gae-java-persistence.blogspot.com/2009/11/unindexed-properties.html has been written] about single-property indexes.
+
+The datastore has the option of storing each and every property as "indexed" or "unindexed" ({{{Entity.setProperty()}}} vs {{{Entity.setUnindexedProperty()}}}.  Indexes are necessary to perform a query on the relevant property.  If you don't index, say, the licensePlate of a Vehicle, you won't be able to query for it.
+
+To protect you from making a mistake that could be hard to fix (requiring that you re-put() your entire dataset), both JDO and Objectify default to setting all properties as indexed.  This will entail a certain amount of extra overhead maintaining the index on the server.  If you know you will never query by a property, you will want to flag fields as unindexed.
 
 -----
 
