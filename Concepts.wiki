@@ -87,6 +87,6 @@ If you execute without a transaction:
   * All individual datastore operations are treated separately.
   * If there is contention, operations will be automatically retried until the operation succeeds or the system gives up.
 
-= Next =
+-----
 
 Now that you are familiar with the underlying concepts of the datastore, read the IntroductionToObjectify.
