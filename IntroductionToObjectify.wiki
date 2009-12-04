@@ -54,7 +54,7 @@ static {
 }
 }}}
 
-Objectify does not scan your classpath for @Entity classes.  It would be trivial to add this feature, but it would require additional jar dependencies (for scannotation or reflectivity) and a registered startup servlet context listener.  Unless you have a very large number of entities, it's easier to just register the classes by hand.
+Objectify does not scan your classpath for {{{@Entity}}} classes.  It would be trivial to add this feature, but it would require additional jar dependencies (for scannotation or reflectivity) and a registered startup servlet context listener.  Unless you have a very large number of entities, it's easier to just register the classes by hand.
 
 If you want autoregistration anyways, file an enhancement request - if there is enough demand, it will be implemented.
 
@@ -85,7 +85,67 @@ ofy.delete(porche);
 
 The interface supports batch operations:
 
+{{{
+Objectify ofy = ObjectifyFactory.begin();
+
+// Create
+Car porche = new Car("2FAST", "red");
+Car unimog = new Car("2SLOW", "green");
+Car tesla = new Car("2NEW", "blue");
+ofy.put(porche, unimog, tesla);	// varargs; Car[] and Iterable<Car> also work
+
+// Get the data back
+Map<Key, Car> fetched1 = ofy.get(
+	ObjectifyFactory.createKey(Car.class, porche.id),
+	ObjectifyFactory.createKey(Car.class, unimog.id),
+	ObjectifyFactory.createKey(Car.class, tesla.id));
+
+// More convenient shorthand
+Map<Key, Car> fetched2 = ofy.get(Car.class, new Long[] { porche.id, unimog.id, tesla.id });
+
+// This works too
+Map<Key, Car> fetched3 = ofy.get(Car.class, Arrays.asList(porche.id, unimog.id, tesla.id));
+
+// Batch operations need not be homogenous:
+Map<Key, Vehicle> fetched4 = ofy.get(
+	ObjectifyFactory.createKey(Car.class, porche.id),
+	ObjectifyFactory.createKey(Motorcycle.class, ktm.id));
+
+// Delete the data
+ofy.delete(fetched1.values());
+
+// You can delete by key without loading the objects
+ofy.delete(
+	ObjectifyFactory.createKey(Car.class, porche.id),
+	ObjectifyFactory.createKey(Car.class, unimog.id),
+	ObjectifyFactory.createKey(Car.class, tesla.id));
+}}}
+
 = Querying =
+
+Here are some examples of using queries.  Note that the Query class is the same class surfaced in the Datastore API.
+
+{{{
+Objectify ofy = ObjectifyFactory.begin();
+
+Query q = ObjectifyFactory.createQuery(Car.class);
+q.addfilter("vin", Query.FilterOperator.EQUAL, "123456789");
+Car car = ofy.prepare(q).asSingle();
+
+Query q2 = ObjectifyFactory.createQuery(Car.class);
+q2.addfilter("vin", Query.FilterOperator.GREATER_THAN, "123456789");
+for (Car car: ofy.prepare(q2).asIterable()) {
+	System.out.println(car.toString());
+}
+
+// You can query for just keys, which will return {{{Key}}} objects much more efficiently than fetching whole objects
+Query q3 = ObjectifyFactory.createQuery(Car.class);
+q3.setKeysOnly();
+Iterable<Key> allKeys = ofy.prepare(q3).asIterable();
+
+// Useful for deleting items
+ofy.delete(allKeys);
+}}}
 
 = Relationships =
 
