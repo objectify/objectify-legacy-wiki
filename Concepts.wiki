@@ -87,7 +87,7 @@ If you execute without a transaction:
   * All individual datastore operations are treated separately.
   * If there is contention, operations will be automatically retried until the operation succeeds or the system gives up.
 
-== Indexes ==
+= Indexes =
 
 There is a lot of documentation online describing multi-property indexes and how you configure them in your {{{datastore-indexes.xml}}}.  However, relatively little [http://gae-java-persistence.blogspot.com/2009/11/unindexed-properties.html has been written] about single-property indexes.
 
