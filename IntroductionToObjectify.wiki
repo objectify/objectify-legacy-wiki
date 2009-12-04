@@ -138,7 +138,7 @@ for (Car car: ofy.prepare(q2).asIterable()) {
 	System.out.println(car.toString());
 }
 
-// You can query for just keys, which will return {{{Key}}} objects much more efficiently than fetching whole objects
+// You can query for just keys, which will return Key objects much more efficiently than fetching whole objects
 Query q3 = ObjectifyFactory.createQuery(Car.class);
 q3.setKeysOnly();
 Iterable<Key> allKeys = ofy.prepare(q3).asIterable();
@@ -148,6 +148,33 @@ ofy.delete(allKeys);
 }}}
 
 = Relationships =
+
+A relationship is simply a {{{Key}}} stored as a field in an entity.  There are fundamentally three different kinds of relationships in Objectify:
+
+== Parent Relationship ==
+
+An entity can have a single {{{Key}}} field annotated with {{{@Parent}}}:
+
+{{{
+@Entity
+public class Car
+{
+	@Id Long id;
+	@Parent Key owner;
+	String color;
+}
+}}}
+
+Each Car entity is part of the parent owner's entity group and both can be accessed within a single transaction.  When loading the child entity, the parent {{{Key}}} must be used to generate the child's key:
+
+{{{
+Objectify ofy = ObjectifyFactory.begin();
+Car porche = ofy.get(ObjectifyFactory.createKey(meSomeday, Car.class, someCarId));
+}}}
+
+== Single-Value Relationship ==
+
+== Multi-Value Relationship ==
 
 = Transactions =
 
