@@ -93,7 +93,7 @@ There is a lot of documentation online describing multi-property indexes and how
 
 The datastore has the option of storing each and every property as "indexed" or "unindexed" ({{{Entity.setProperty()}}} vs {{{Entity.setUnindexedProperty()}}}.  Indexes are necessary to perform a query on the relevant property.  If you don't index, say, the licensePlate of a Vehicle, you won't be able to query for it.
 
-To protect you from making a mistake that could be hard to fix (requiring that you re-put() your entire dataset), both JDO and Objectify default to setting all properties as indexed.  This will entail a certain amount of extra overhead maintaining the index on the server.  If you know you will never query by a property, you will want to flag fields as unindexed.
+To protect you from making a mistake that could be hard to fix (requiring that you re-put() your entire dataset), both JDO and Objectify default to setting all properties as indexed.  This will entail a certain amount of extra overhead maintaining the index on the server.  If you know you will never query by a property, you will want to flag fields as unindexed. Don't worry, be happy, Objectify provides a way to easily flag fields by using annotations.
 
 -----
 
