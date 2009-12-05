@@ -40,7 +40,7 @@ Things to note:
 
  * You can persist any of the [http://code.google.com/appengine/docs/java/datastore/dataclasses.html#Core_Value_Types core value types], or collections of the core value types.
 
-  * There must be a no-arg constructor.
+  * There must be a no-arg *public* constructor.
 
   * For fields that will never be queried against, use @Unindexed to reduce server overhead.
 
