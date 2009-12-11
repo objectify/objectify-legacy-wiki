@@ -1,4 +1,5 @@
 #summary Beginner's guide to Objectify-Appengine
+#labels Featured
 
 If you haven't read the [Concepts] yet, please do so first.
 
