@@ -2,7 +2,7 @@
 
 If you haven't read the [Concepts] yet, please do so first.
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
 This will explain how to use Objectify to get, put, delete, and query data.  You may find it helpful to open the [needtoaddurl Objectify javadocs] while reading.
 
@@ -43,6 +43,14 @@ Things to note:
   * There must be a no-arg *public* constructor.
 
   * For fields that will never be queried against, use @Unindexed to reduce server overhead.
+
+== Annotations ==
+|| Annotation || Level || Properties || Description || 
+|| {{{@Entity}}} || Class || Name == kind name in datastore || This is an entity which will be stored as a certain *kind*. ||
+|| {{{@Id}}} || Field || -- || Can only be used once per {{{Class}}}; Must be applied to a field of type {{{String}}} or {{{Long}}}/{{{long}}}. This will represent the id or name of the [Concepts Key], respectively. Only the *{{{Long}}}* type allows *auto-generation* || 
+|| {{{@Unindexed}}} || Field || -- || Do not index this property during insertion into the datastore || 
+|| {{{@OldName}}} || Field || Name == property to read || The field will be filled in if a value doesn't exist for the property. {{{ @OldName("hair") String hairColor}}}; hairColor = values["hairColor"]; if (hairColor==null) hairColor = values["hair"]  || 
+|| {{{@Parent}}} || Field || -- || The (transient) field which represents the Parents {{{Key}}} for an owned object (non-root) once it has been persisted || 
 
 = Registering Your Classes =
 
