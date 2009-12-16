@@ -18,6 +18,7 @@ public class Car
 	@Id Long id;
 	String vin;
 	@Unindexed String color;
+	@Transient String doNotPersist;
 
 	public Car() {}
 	
