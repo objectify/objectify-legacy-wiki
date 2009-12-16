@@ -166,12 +166,20 @@ A relationship is simply a {{{Key}}} stored as a field in an entity.  There are 
 An entity can have a single {{{Key}}} field annotated with {{{@Parent}}}:
 
 {{{
+public class Person {
+
+	@Id Long id;
+	String name;
+        public Person(){}
+}
+
 @Entity
 public class Car
 {
 	@Id Long id;
 	@Parent Key owner;
 	String color;
+        public Car(){}
 }
 }}}
 
@@ -179,7 +187,17 @@ Each Car entity is part of the parent owner's entity group and both can be acces
 
 {{{
 Objectify ofy = ObjectifyFactory.begin();
-Car porche = ofy.get(ObjectifyFactory.createKey(meSomeday, Car.class, someCarId));
+Person meSomeday = new Person();
+meSomeday.name = "super cool-guy";
+Key meSomedayKey = ofy.put(meSomeday);
+
+Car newShinyCar = new Car();
+newShinyCar.owner = meSomedayKey;
+newShinyCar.color = "Shiny RED";
+Key nscKey = ofy.put(newShinyCar);
+Long someCarId = newShinyCar.id //== nscKey.getId()
+
+Car porche = ofy.get(ObjectifyFactory.createKey(meSomedayKey, Car.class, someCarId));
 }}}
 
 == Single-Value Relationship ==
