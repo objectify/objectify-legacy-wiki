@@ -5,7 +5,7 @@ If you haven't read the [Concepts] yet, please do so first.
 
 <wiki:toc max_depth="2" />
 
-This will explain how to use Objectify to get, put, delete, and query data.  You may find it helpful to open the [needtoaddurl Objectify javadocs] while reading.
+This will explain how to use Objectify to get, put, delete, and query data.  You may find it helpful to open the [needtoaddurl Objectify javadocs] while reading. We also take advantage of [http://projectlombok.org Project Lombok] in some of our examples to remove the typical Java boilerplate.
 
 = Create Your Entity Classes =
 
@@ -56,15 +56,20 @@ Things to note:
 
 = Registering Your Classes =
 
-Before you perform any datastore operations, you must (probably in a static initializer) register all your entity classes with the {{{ObjectifyFactory}}}.
+Before you perform any datastore operations, you must register all your entity classes with the {{{ObjectifyFactory}}}. It is ok to do this as a static initializer at the top of your entity.
 
 {{{
-static {
-	ObjectifyFactory.register(Car.class);
+@Entity
+public class Car implements Serializable {
+	static {
+		ObjectifyFactory.register(Car.class);
+	}
+
+	public Car() {}
 }
 }}}
 
-Objectify does not scan your classpath for {{{@Entity}}} classes.  It would be trivial to add this feature, but it would require additional jar dependencies (for scannotation or reflectivity) and a registered startup servlet context listener.  Unless you have a very large number of entities, it's easier to just register the classes by hand.
+Objectify does not scan your classpath for {{{@Entity}}} classes.  It would be trivial to add this feature, but it would require additional jar dependencies (for scannotation or reflectivity) and a registered startup servlet context listener.  It's easier to just register the classes by hand.
 
 If you want autoregistration anyways, file an enhancement request - if there is enough demand, it will be implemented.
 
@@ -204,6 +209,80 @@ Car porche = ofy.get(ObjectifyFactory.createKey(meSomedayKey, Car.class, someCar
 
 == Multi-Value Relationship ==
 
+Say you have a Player who can have multiple Scores that record each play of a game. Below is an example one way to accomplish that. In this case, we know that a Player will never have more than 1000 Scores (a limit on Datastore queries) so we do not bother with pagination.
+
+If a new Score is created, then you will want to clear the internal cache of Scores within the Player object. This can be done by either getting the Player object from the database again or calling player.setScores(null).
+
+@Entity
+@Data
+public class Player implements Serializable
+{
+	private static final long serialVersionUID = 1L;
+
+	private static Objectify ofy = null;
+
+	static {
+		ObjectifyFactory.register(Player.class);
+		ofy = ObjectifyFactory.begin();
+	}
+
+	@Id private long id;
+
+	@Transient private List<Score> scoresCache;
+
+	/** */
+	public Player() {}
+
+	/** */
+	public Player(long id)
+	{
+		this.id = id;
+	}
+
+	/** */
+	public List<Score> getScores()
+	{
+		if (this.scoresCache == null)
+		{
+			Key ancestor = ObjectifyFactory.createKey(this);
+			Query q = ObjectifyFactory.createQuery(Score.class).setAncestor(ancestor);
+			ObjPreparedQuery<Score> pq = ofy.prepare(q);
+			this.scoresCache = pq.asList(withLimit(1000).chunkSize(1000));
+		}
+		return this.scoresCache;
+	}
+}
+
+@Entity
+@Data
+public class Score implements Serializable
+{
+	private static final long serialVersionUID = 1L;
+
+	static {
+		ObjectifyFactory.register(Score.class);
+	}
+
+	@Id private Long id;
+	@Parent private Key playerKey;
+	private int answer;
+	private Date createdDate;
+
+	/** */
+	public Score() {}
+
+	/** */
+	public Score(Player player, int answer)
+	{
+		this.playerKey = ObjectifyFactory.createKey(player);
+		this.answer = answer;
+
+		this.createdDate = new Date();
+	}
+}
+
 = Transactions =
+
+= Multi-Property Indexes =
 
 = Migrating Schemas =
