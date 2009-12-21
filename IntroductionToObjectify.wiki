@@ -213,6 +213,7 @@ Say you have a Player who can have multiple Scores that record each play of a ga
 
 If a new Score is created, then you will want to clear the internal cache of Scores within the Player object. This can be done by either getting the Player object from the database again or calling player.setScores(null).
 
+{{{
 @Entity
 @Data
 public class Player implements Serializable
@@ -280,7 +281,7 @@ public class Score implements Serializable
 		this.createdDate = new Date();
 	}
 }
-
+}}}
 = Transactions =
 
 = Multi-Property Indexes =
