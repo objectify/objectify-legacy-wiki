@@ -1,5 +1,4 @@
 #summary The annotations used by Objectify
-#labels Featured
 
 = Annotations =
 
