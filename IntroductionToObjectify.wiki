@@ -200,7 +200,7 @@ The simplest type of single-value relationship is one-to-one.
 {{{
 public class Person
 {
-	@Id 	String name;
+	@Id String name;
 	Key significantOther;
 }
 
@@ -218,7 +218,7 @@ A {{{Key}}} field can represent a many-to-one relationship.
 {{{
 public class Employee
 {
-	@Id 	String name;
+	@Id String name;
 	Key manager;
 }
 
