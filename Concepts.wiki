@@ -31,7 +31,6 @@ Instead of passing three parameters around all the time, the datastore wraps the
 {{{
 Key rootKey = ObjectifyFactory.createKey(Car.class, 959);
 Key keyWithParent = ObjectifyFactory.createKey(parent, Car.class, 959);
-// Car(959)
 }}}
 
 With a {{{Key}}} you can use the most fundamental method on the {{{Objectify}}} interface, nearly identical to the {{{DatastoreService}}} equivalent:
