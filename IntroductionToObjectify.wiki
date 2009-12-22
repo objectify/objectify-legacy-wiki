@@ -223,7 +223,7 @@ public class Employee
 }
 
 Objectify ofy = ObjectifyFactory.begin();
-Employee bob = ofy.get(Employee, "bob");
+Employee bob = ofy.get(Employee.class, "bob");
 Employee fred = ofy.get(bob.manager);
 }}}
 
@@ -244,11 +244,12 @@ If that seems a lot to type, you can wrap it in a convenience method:
 {{{
 public class Employee
 {
-	@Id 	String name;
+	@Id String name;
 	Key manager;
 
 	public Iterable<Employee> getSubordinates()
 	{
+		Objectify ofy = ObjectifyFactory.begin();
 		Query q = ObjectifyFactory.createQuery(Employee.class);
 		q.addFilter("manager", FilterOperator.EQUAL, ObjectifyFactory.createKey(this));
 		ObjPreparedQuery<Employee> pq = ofy.prepare(q);
@@ -264,7 +265,7 @@ The datastore can persist simple object types (Long, String, etc) and collection
 {{{
 public class Employee
 {
-	@Id 	String name;
+	@Id String name;
 	Key[] subordinates;
 }
 }}}
@@ -290,6 +291,57 @@ The decision to use a Multi-Value Relationship will depend heavily upon the shap
 
 = Transactions =
 
+Working with transactions is almost the same as working with Objectify normally.
+
+{{{
+Objectify ofy = ObjectifyFactory.beginTransaction();  // instead of begin()
+try
+{
+	ClubMembers cm = ofy.get(ClubMembers.class, "k123");
+	cm.incrementByOne();
+	ofy.put(cm);
+
+	ofy.getTxn().commit();
+}
+finally
+{
+	if (ofy.getTxn().isActive())
+		ofy.getTxn().rollback();
+}
+}}}
+
+All data manipulation methods are the same as you would normally used.
+
+Since entities in Objectify really are Plain Old Java Objects and transactions are tied to the Objectify object, it's easy to work with data inside and outside of transactions (or multiple transactions running in parallel!):
+
+{{{
+Objectify ofyNoTxn = ObjectifyFactory.begin();
+Objectify ofyTxn = ObjectifyFactory.beginTransaction();
+try
+{
+	Foo f = ofyTxn.get(Foo.class, "k123");
+	Bar b = ofyNoTxn.get(f.barKey);
+
+	if (b.wantsUp())
+		f.increment();
+	else
+		f.decrement();
+
+	ofyTxn.put(f);
+
+	ofyTxn.getTxn().commit();
+}
+finally
+{
+	if (ofy.getTxn().isActive())
+		ofy.getTxn().rollback();
+}
+}}}
+
+This example is fairly contrived, but if you needed to load
+
 = Multi-Property Indexes =
+
+Multi-property indexes are configured normally in {{{appengine-datastore.xml}}}.  See the regular appengine documentation.
 
 = Migrating Schemas =
