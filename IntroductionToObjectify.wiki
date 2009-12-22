@@ -359,7 +359,7 @@ public class Person
 }
 }}}
 
-Now let's say you want to add a "nickname" field and you don't like the ambiguity.  You'd like to rename the field "name" to "fullName".  You can!
+Now let's say you're doing some refactoring and you want to rename the field "name" to "fullName".  You can!
 
 {{{
 @Entity
@@ -373,6 +373,8 @@ public class Person
 When a Person is get()ed, the {{{fullName}}} field will be loaded either the value of _fullName_ or _name_.  If both fields exist, an IllegalStateException will be thrown.  When put(), only _fullName_ will be written.
 
 You can let your application run, slowly replacing all the Person instances, and set up a batch job to replace all legacy instances at your leisure.
+
+Caveat:  Queries do not know about the rename; if you filter by "fullName", you will only get entities that have been converted.
 
 Now that you've migrated all of your data to the new Person format, let's say you now want to store separate first and last names instead of a single fullName field.  Objectify can help:
 
