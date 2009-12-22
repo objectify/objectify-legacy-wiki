@@ -266,6 +266,7 @@ public class Employee
 {
 	@Id 	String name;
 	Key[] subordinates;
+}
 }}}
 
 This is sometimes useful, but should be used with caution for two reasons:
