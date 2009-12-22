@@ -5,7 +5,7 @@ If you haven't read the [Concepts] yet, please do so first.
 
 <wiki:toc max_depth="2" />
 
-This will explain how to use Objectify to get, put, delete, and query data.  You may find it helpful to open the [needtoaddurl Objectify javadocs] while reading.  These examples omit getter and setter methods for clarity.
+This will explain how to use Objectify to get, put, delete, and query data.  You may find it helpful to open the [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/index.html Objectify javadocs] while reading.  These examples omit getter and setter methods for clarity.
 
 = Create Your Entity Classes =
 
@@ -63,7 +63,7 @@ If you want autoregistration anyways, file an enhancement request - if there is 
 
 = Basic Operations: Get, Put, Delete =
 
-You can obtain an [addurltojavadocs Objectify] interface from the {{{ObjectifyFactory}}}:
+You can obtain an {{{Objectify}}} interface from the {{{ObjectifyFactory}}}:
 
 {{{
 Objectify ofy = ObjectifyFactory.begin();
