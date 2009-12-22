@@ -259,6 +259,34 @@ public class Employee
 
 == Multi-Value Relationship ==
 
+The datastore can persist simple object types (Long, String, etc) and collections of simple object types.  It can also persist collections (and arrays) of Keys.  This creates an alternative approach for defining one-to-many (and many-to-many) relationships.
+
+{{{
+public class Employee
+{
+	@Id 	String name;
+	Key[] subordinates;
+}}}
+
+This is sometimes useful, but should be used with caution for two reasons:
+
+  # Every time you {{{get()}}} and {{{put()}}} an object, it will fetch and store the entire list of subordinate Keys.  If you have large numbers of subordinates, this could become a performance problem.
+  # Because appengine creates an index entry for every value in the collection, you can suffer from [http://code.google.com/appengine/docs/python/datastore/queriesandindexes.html#Big_Entities_and_Exploding_Indexes Exploding Indexes].
+
+Because appengine stores an index entry for each value in the collection, it is possible to issue queries like this:
+
+{{{
+Objectify ofy = ObjectifyFactory.begin();
+
+Key bobKey = ObjectifyFactory.createKey(Employee.class, "bob");
+Query q = ObjectifyFactory.createQuery(Employee.class);
+q.addFilter("subordinates", FilterOperator.EQUAL, bobKey);
+ObjPreparedQuery<Employee> pq = ofy.prepare(q);
+Iterable<Employee> managers = pq.asIterable();  // should contain Fred
+}}}
+
+The decision to use a Multi-Value Relationship will depend heavily upon the shape of your data and the queries you intend to perform.
+
 = Transactions =
 
 = Multi-Property Indexes =
