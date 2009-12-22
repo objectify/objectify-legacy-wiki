@@ -347,3 +347,53 @@ Yes, this means you can get() objects from a transactional Objectify and put() t
 Multi-property indexes are configured normally in {{{appengine-datastore.xml}}}.  See the regular appengine documentation.
 
 = Migrating Schemas =
+
+Objectify has a very simple facility to help you with basic schema changes.  Let's say you start with a simple entity like this:
+
+{{{
+@Entity
+public class Person
+{
+	@Id Long id;
+	String name;
+}
+}}}
+
+Now let's say you want to add a "nickname" field and you don't like the ambiguity.  You'd like to rename the field "name" to "fullName".  You can!
+
+{{{
+@Entity
+public class Person
+{
+	@Id Long id;
+	@OldName("name") String fullName;
+}
+}}}
+
+When a Person is get()ed, the {{{fullName}}} field will be loaded either the value of _fullName_ or _name_.  If both fields exist, an IllegalStateException will be thrown.  When put(), only _fullName_ will be written.
+
+You can let your application run, slowly replacing all the Person instances, and set up a batch job to replace all legacy instances at your leisure.
+
+Now that you've migrated all of your data to the new Person format, let's say you now want to store separate first and last names instead of a single fullName field.  Objectify can help:
+
+{{{
+@Entity
+public class Person
+{
+	@Id Long id;
+	String firstName;
+	String lastName;
+
+	@OldName("fullName")
+	void importCruft(String full)
+	{
+		String[] names = full.split(" ");
+		this.firstName = names[0];
+		this.lastName = names[1];
+	}
+}
+}}}
+
+You can specify {{{@OldName}}} on a method that takes a single parameter.  The parameter must be a type appropriate for what is in the datastore; you can pass Object and use reflection if you aren't sure.  Process the data in whatever way you see fit.  When the entity is put() again, it will only have _firstName_ and _lastName_.
+
+Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
