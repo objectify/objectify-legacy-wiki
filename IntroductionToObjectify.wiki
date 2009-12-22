@@ -310,7 +310,7 @@ finally
 }
 }}}
 
-All data manipulation methods are the same as you would normally used.
+All data manipulation methods are the same as you would normally use.
 
 Since entities in Objectify really are Plain Old Java Objects and transactions are tied to the Objectify object, it's easy to work with data inside and outside of transactions (or multiple transactions running in parallel!):
 
@@ -338,7 +338,9 @@ finally
 }
 }}}
 
-This example is fairly contrived, but if you needed to load
+You can interleave multiple transactions or nontrasactional actions as long as you obey the the cardinal rule:  Within a single transaction (defined by an Objectify object created with beginTransaction()), you may only read or write from a single entity group.
+
+Yes, this means you can get() objects from a transactional Objectify and put() to a nontrasactional Objectify. 
 
 = Multi-Property Indexes =
 
