@@ -91,11 +91,11 @@ If you execute without a transaction:
 
 = Indexes =
 
-There is a lot of documentation online describing multi-property indexes and how you configure them in your {{{datastore-indexes.xml}}}. Take a look at the [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] and then later into [http://code.google.com/appengine/articles/index_building.html Index Building] if you feel the need.
+Indexes are used to query for data.  In the datastore, queries can only follow a single index and can only return results in the order specified for that index.  This means that you must have an index for every query you intend to run!
 
-The datastore has the option of storing each and every (single) property as "indexed" or "unindexed" ({{{Entity.setProperty()}}} vs {{{Entity.setUnindexedProperty()}}}.  Indexes are necessary to perform a query on the relevant property. If you don't index, say, the licensePlate of a Vehicle, you won't be able to query for it. Queries are limited to only one index. This means that if you want to query more than one property in your filters you will need to create an explicit multi-property index including those properties.
+To make this easier, the datastore has an innate ability to store each and every (single) property as "indexed" or "unindexed" ({{{Entity.setProperty()}}} vs {{{Entity.setUnindexedProperty()}}}.  This allows you to easily issue a queries based on single properties.  By default, Objectify defaults to setting all properties as indexed unless you flag the field with an {{{@Unindexed}}} annotation.
 
-To protect you from making a mistake that could be hard to fix (requiring that you re-put() your entire dataset), both JDO and Objectify default to setting all properties as indexed (see [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] for more detail).  This will entail a certain amount of extra overhead maintaining the index on the server.  If you know you will never query by a property, you will want to flag fields as unindexed. Don't worry, be happy, Objectify provides a way to easily flag fields by using annotations.
+To run queries by filtering against multiple properties, you must create a multi-value index in your {{{datastore-indexes.xml}}}.  There is a great deal written on this subject; we recommend [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] and [http://code.google.com/appengine/articles/index_building.html Index Building].
 
 -----
 
