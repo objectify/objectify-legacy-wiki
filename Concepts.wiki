@@ -68,23 +68,20 @@ The datastore has a lot of odd concepts designed to facilitate building a JTA in
 
 When you put() your entity, it gets stored somewhere in a gigantic farm of thousands of machines.  In order to perform an atomic transaction, the datastore (currently) requires that all the data that is a part of that transaction live on the same server.  To give you some control over where your data is stored, the datastore has the concept of an *entity group*.
 
-Remember the _parent_ that is part of a {{{Key}}}?  If an entity has a parent, it belongs to the same entity group as its parent.  If an entity does not have a parent, it is the "root" of an entity group. All non-root entities are called "owned entities". Sometimes people will talk about "owned objects" and this what they are referring to: objects in an entity group which are not the root object.
+Remember the _parent_ that is part of a {{{Key}}}?  If an entity has a parent, it belongs to the same entity group as its parent.  If an entity does not have a parent, it is the "root" of an entity group, and may be physically located anywhere in the cluster.
 
-Within a transaction, you can only access data from a single entity group.  If you try to access data from multiple entity groups, you will get an Exception.  This means you must pick your entity groups carefully, usually to correspond to the data associated with a single user.  Yes, this is as limiting as it sounds.
+Within a transaction, you can only access data from a single entity group.  If you try to access data from multiple entity groups, you will get an Exception.  This means you must pick your entity groups carefully, usually to correspond to the data associated with a single user.  Yes, this severely limits the utility of transactions.
 
 Why not store all your data with a common parent, putting it all in a single entity group?  You can, but it's a bad idea.  Google limits the number of requests per second that can be served by a particular entity group.
 
-=== No Cascade (Deletes/Creates) ===
-There is no "cascading delete" in the datastore; if you delete the parent entity it will NOT delete the child entities.  You can create child entites with a parent {{{Key}}} (or any other key as a member field) that points to a non-existant entity.
-
-=== When to Parent ===
-It should be worth mentioning that the term _parent_ is somewhat misleading. Parent is only important in that it defines entity groups; if you do not need transactions across several entities, you may wish to use a normal Key relationship - even if the entities have a conceptual parent-child relationship. However, queries can be done using the ancestor (parent) and a filter criteria allowing you to ask for all the children who are some property (using the  default indexes). This may be a compelling reason to parent kinds of entities.
+It should be worth mentioning that the term _parent_ is somewhat misleading.  There is no "cascading delete" in the datastore; if you delete the parent entity it will NOT delete the child entities.  For that matter, you can create child entites with a parent {{{Key}}} (or any other key as a member field) that points to a nonexistant entity!  Parent is only important in that it defines entity groups; if you do not need transactions across several entities, you may wish to use a normal Key relationship - even if the entities have a conceptual parent-child relationship.
 
 == Executing Transactions ==
 
 When you execute a {{{get()}}}, {{{put()}}}, {{{delete()}}}, or {{{prepare(Query)}}}, you will either be in a [http://code.google.com/appengine/docs/java/datastore/transactions.html transaction] or you will not.
 
 If you execute within a transaction:
+  * You must only get/put/delete/query objects within a single entity group.
   * All operations will either succeed completely or fail completely.
   * If another process modifies the your data before you commit, your datastore operations will fail with a {{{ConcurrentModificationException}}}
 
