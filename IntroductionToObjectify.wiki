@@ -239,7 +239,7 @@ ObPreparedQuery<Employee> pq = ofy.prepare(q);
 Iterable<Employee> subordinates = pq.asIterable();   // or asList()
 }}}
 
-If that seems a lot to type, you can wrap it in a convenience method.  We are investigating other ways to wrap this boilerplate code.
+If that seems a lot to type, you can wrap it in a convenience method.  We are investigating other ways to abstract this boilerplate code.
 
 {{{
 public class Employee
