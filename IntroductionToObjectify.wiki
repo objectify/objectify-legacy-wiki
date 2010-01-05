@@ -126,24 +126,24 @@ ofy.delete(
 
 = Querying =
 
-Here are some examples of using queries.  Note that the {{{Query}}} class is the exact same class found in the Datastore API.
+Here are some examples of using queries.
 
 {{{
 Objectify ofy = ObjectifyFactory.begin();
 
-Query q = ObjectifyFactory.createQuery(Car.class);
-q.addfilter("vin", Query.FilterOperator.EQUAL, "123456789");
+ObQuery q = ObjectifyFactory.createQuery(Car.class);
+q.filter("vin", "123456789");
 Car car = ofy.prepare(q).asSingle();
 
-Query q2 = ObjectifyFactory.createQuery(Car.class);
-q2.addfilter("vin", Query.FilterOperator.GREATER_THAN, "123456789");
+ObQuery q2 = ObjectifyFactory.createQuery(Car.class);
+q2.filter("vin >", "123456789");
 for (Car car: ofy.prepare(q2).asIterable()) {
 	System.out.println(car.toString());
 }
 
 // You can query for just keys, which will return Key objects much more efficiently than fetching whole objects
-Query q3 = ObjectifyFactory.createQuery(Car.class);
-q3.setKeysOnly();
+ObQuery q3 = ObjectifyFactory.createQuery(Car.class);
+q3.keysOnly();
 Iterable<Key> allKeys = ofy.prepare(q3).asIterable();
 
 // Useful for deleting items
@@ -233,13 +233,13 @@ It looks identical to the one-to-one relationship because it is.  The only diffe
 Objectify ofy = ObjectifyFactory.begin();
 
 Key fredKey = ObjectifyFactory.createKey(Employee.class, "fred");
-Query q = ObjectifyFactory.createQuery(Employee.class);
-q.addFilter("manager", FilterOperator.EQUAL, fredKey);
-ObjPreparedQuery<Employee> pq = ofy.prepare(q);
+ObQuery q = ObjectifyFactory.createQuery(Employee.class);
+q.filter("manager", fredKey);
+ObPreparedQuery<Employee> pq = ofy.prepare(q);
 Iterable<Employee> subordinates = pq.asIterable();   // or asList()
 }}}
 
-If that seems a lot to type, you can wrap it in a convenience method:
+If that seems a lot to type, you can wrap it in a convenience method.  We are investigating other ways to wrap this boilerplate code.
 
 {{{
 public class Employee
@@ -250,9 +250,9 @@ public class Employee
 	public Iterable<Employee> getSubordinates()
 	{
 		Objectify ofy = ObjectifyFactory.begin();
-		Query q = ObjectifyFactory.createQuery(Employee.class);
-		q.addFilter("manager", FilterOperator.EQUAL, ObjectifyFactory.createKey(this));
-		ObjPreparedQuery<Employee> pq = ofy.prepare(q);
+		ObQuery q = ObjectifyFactory.createQuery(Employee.class);
+		q.filter("manager", ObjectifyFactory.createKey(this));
+		ObPreparedQuery<Employee> pq = ofy.prepare(q);
 		return = pq.asIterable();
 	}
 }
@@ -281,9 +281,9 @@ Because appengine stores an index entry for each value in the collection, it is 
 Objectify ofy = ObjectifyFactory.begin();
 
 Key bobKey = ObjectifyFactory.createKey(Employee.class, "bob");
-Query q = ObjectifyFactory.createQuery(Employee.class);
-q.addFilter("subordinates", FilterOperator.EQUAL, bobKey);
-ObjPreparedQuery<Employee> pq = ofy.prepare(q);
+ObQuery q = ObjectifyFactory.createQuery(Employee.class);
+q.filter("subordinates", bobKey);
+ObPreparedQuery<Employee> pq = ofy.prepare(q);
 Iterable<Employee> managers = pq.asIterable();  // should contain Fred
 }}}
 
