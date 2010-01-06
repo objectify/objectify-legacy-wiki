@@ -26,39 +26,41 @@ All entities have either a Long *id* or a String *name*, but those values are no
 
 By the way, I lied.  There is actually a third value which is necessary to uniquely identify an entity, called *parent*.  Parent defines a special kind of relationship, placing the child in the same [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html entity group] as the parent.  Entity groups will be discussed next in the section on Transactions, but for now what you need to know is that this parent (which is often simply null) is also required to uniquely identify an entity.  So, to get Car #959 from the datastore, you actually need to call something equivalent to {{{get_from_datastore("Car", 959, null)}}} or {{{get_from_datastore("Car", 959, myPrivateCollection)}}}.  Yeech.
 
-Instead of passing three parameters around all the time, the datastore wraps these values into a single object - a _Key_.  That's all a {{{Key}}} is, a holder for the three parts that uniquely identify an entity.  You can create them like this:
+Instead of passing three parameters around all the time, the datastore wraps these values into a single object - a _Key_.  That's all a {{{Key}}} is, a holder for the three parts that uniquely identify an entity.
+
+The native Datastore {{{Key}}} class is simple and untyped, like the native {{{Entity}}} objects.  Objectify uses a generified class called {{{OKey}}} instead.  It works nearly identically to native keys, but carries type information:
 
 {{{
-Key rootKey = ObjectifyFactory.createKey(Car.class, 959);
-Key keyWithParent = ObjectifyFactory.createKey(parent, Car.class, 959);
+OKey<Car> rootKey = ObjectifyFactory.createKey(Car.class, 959);
+OKey<Car> keyWithParent = ObjectifyFactory.createKey(parent, Car.class, 959);
 }}}
 
-With a {{{Key}}} you can use the most fundamental method on the {{{Objectify}}} interface, nearly identical to the {{{DatastoreService}}} equivalent:
+With an {{{OKey}}} you can use the most fundamental method on the {{{Objectify}}} interface, nearly identical to the {{{DatastoreService}}} equivalent.  If the generics are confusing, hold on - there will be examples later.
 
 {{{
-<T> T get(Key key) throws EntityNotFoundException;
+<T> T get(OKey<? extends T> key) throws EntityNotFoundException;
 }}}
 
-In Objectify, you define your object as a Java class with a mandatory identifier (Long, long, or String) and an optional parent.  However, when you lookup or reference your object, you do so by _Key_.  In fact, you can (and should) batch together a variety of requests into a single call, even if it will fetch many different kinds of objects:
+In Objectify, you define your object as a Java class with a mandatory identifier (Long, long, or String) and an optional parent.  However, when you lookup or reference your object, you do so by _OKey_.  In fact, you can (and should) batch together a variety of requests into a single call, even if it will fetch many different kinds of objects:
 
 {{{
-Map<Key, Object> lotsOfThings = objectify.get(carKey, airplaneKey, chairKey, personKey, yourMamaKey);
+Map<OKey<Object>, Object> lotsOfThings = objectify.get(carKey, airplaneKey, chairKey, personKey, yourMamaKey);
 }}}
 
-Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating a {{{Key}}} and calling get()!
+Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating a {{{OKey}}} and calling get()!
 
 {{{
 Car c = objectify.get(Car.class, 959);
-Map<Key, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
+Map<OKey<Car>, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
 }}}
 
-By the way, {{{Key}}} is used for relationship references as well.  Remember that value that defines a parent entity?  The type of this parent is {{{Key}}}:
+By the way, {{{OKey}}} is used for relationship references as well.  Remember that value that defines a parent entity?  The type of this parent is {{{OKey}}}:
 
 {{{
-public static Key ObjectifyFactory.createKey(Key parent, Class<?> kind, long id)
+public static <T> OKey<T> ObjectifyFactory.createKey(OKey<?> parent, Class<T> kind, long id)
 }}}
 
-When you create relationships to other entities in your system, the type of the entity relationship should be {{{Key}}}.
+When you create relationships to other entities in your system, the type of the entity relationship should be {{{OKey}}}.
 
 = Transactions =
 
@@ -68,7 +70,7 @@ The datastore has a lot of odd concepts designed to facilitate building a JTA in
 
 When you put() your entity, it gets stored somewhere in a gigantic farm of thousands of machines.  In order to perform an atomic transaction, the datastore (currently) requires that all the data that is a part of that transaction live on the same server.  To give you some control over where your data is stored, the datastore has the concept of an *entity group*.
 
-Remember the _parent_ that is part of a {{{Key}}}?  If an entity has a parent, it belongs to the same entity group as its parent.  If an entity does not have a parent, it is the "root" of an entity group, and may be physically located anywhere in the cluster.
+Remember the _parent_ that is part of a {{{OKey}}}?  If an entity has a parent, it belongs to the same entity group as its parent.  If an entity does not have a parent, it is the "root" of an entity group, and may be physically located anywhere in the cluster.
 
 Within a transaction, you can only access data from a single entity group.  If you try to access data from multiple entity groups, you will get an Exception.  This means you must pick your entity groups carefully, usually to correspond to the data associated with a single user.  Yes, this severely limits the utility of transactions.
 
