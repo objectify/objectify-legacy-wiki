@@ -76,7 +76,7 @@ Within a transaction, you can only access data from a single entity group.  If y
 
 Why not store all your data with a common parent, putting it all in a single entity group?  You can, but it's a bad idea.  Google limits the number of requests per second that can be served by a particular entity group.
 
-It should be worth mentioning that the term _parent_ is somewhat misleading.  There is no "cascading delete" in the datastore; if you delete the parent entity it will NOT delete the child entities.  For that matter, you can create child entites with a parent {{{Key}}} (or any other key as a member field) that points to a nonexistant entity!  Parent is only important in that it defines entity groups; if you do not need transactions across several entities, you may wish to use a normal Key relationship - even if the entities have a conceptual parent-child relationship.
+It should be worth mentioning that the term _parent_ is somewhat misleading.  There is no "cascading delete" in the datastore; if you delete the parent entity it will NOT delete the child entities.  For that matter, you can create child entites with a parent {{{Key}}} (or any other key as a member field) that points to a nonexistant entity!  Parent is only important in that it defines entity groups; if you do not need transactions across several entities, you may wish to use a normal nonparent key relationship - even if the entities have a conceptual parent-child relationship.
 
 == Executing Transactions ==
 
@@ -85,10 +85,12 @@ When you execute a {{{get()}}}, {{{put()}}}, {{{delete()}}}, or {{{prepare(Query
 If you execute within a transaction:
   * You must only get/put/delete/query objects within a single entity group.
   * All operations will either succeed completely or fail completely.
+  * get() and query operations will see the database as if it were frozen in time at the start of the transaction.  They will not even reflect put()s and delete()s you perform within the transaction.
   * If another process modifies the your data before you commit, your datastore operations will fail with a {{{ConcurrentModificationException}}}
 
 If you execute without a transaction:
   * All individual datastore operations are treated separately.
+  * Any changes to the datastore made anywhere will have immediate effect - successive get() operations may return different values.
   * If there is contention, operations will be automatically retried until the operation succeeds or the system gives up.
 
 = Indexes =
