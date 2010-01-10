@@ -126,7 +126,7 @@ ofy.delete(
 
 = Querying =
 
-Here are some examples of using queries.  Objectify's ObQuery mimics the human-friendly Query class from GAE/Python rather than the clunky GAE/Java version.
+Here are some examples of using queries.  Objectify's ObQuery mimics the human-friendly [http://code.google.com/appengine/docs/python/datastore/queryclass.html Query class from GAE/Python] rather than the clunky GAE/Java version.
 
 {{{
 Objectify ofy = ObjectifyFactory.begin();
