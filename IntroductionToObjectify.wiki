@@ -394,3 +394,7 @@ public class Person
 You can specify {{{@OldName}}} on any method that takes a single parameter.  The parameter must be type-appropriate for what is in the datastore; you can pass Object and use reflection if you aren't sure.  Process the data in whatever way you see fit.  When the entity is put() again, it will only have _firstName_ and _lastName_.
 
 Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
+
+-----
+
+Now, read the BestPractices.
