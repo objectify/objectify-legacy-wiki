@@ -1,4 +1,5 @@
 #summary Patterns and best practices for using Objectify
+#labels Featured
 
 = Registering Your Entities =
 
