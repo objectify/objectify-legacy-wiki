@@ -50,7 +50,7 @@ More information can be found in the AnnotationReference.
 
 = Registering Your Classes =
 
-Before you perform any datastore operations, you must register all your entity classes with the {{{ObjectifyFactory}}}.
+Before you perform any datastore operations, you must register all your entity classes with the {{{ObjectifyService}}}.
 
 {{{
 ObjectifyService.register(Car.class);
@@ -63,7 +63,7 @@ If you want autoregistration anyways, file an enhancement request - if there is 
 
 = Basic Operations: Get, Put, Delete =
 
-You can obtain an {{{Objectify}}} interface from the {{{ObjectifyFactory}}}:
+You can obtain an {{{Objectify}}} interface from the {{{ObjectifyService}}}:
 
 {{{
 Objectify ofy = ObjectifyService.begin();
@@ -99,9 +99,9 @@ ofy.put(porche, unimog, tesla);	// varargs; Car[] and Iterable<Car> also work
 
 // Get the data back
 Map<OKey<Car>, Car> fetched1 = ofy.get(
-	ObjectifyFactory.createKey(Car.class, porche.id),
-	ObjectifyFactory.createKey(Car.class, unimog.id),
-	ObjectifyFactory.createKey(Car.class, tesla.id));
+	ObjectifyService.createKey(Car.class, porche.id),
+	ObjectifyService.createKey(Car.class, unimog.id),
+	ObjectifyService.createKey(Car.class, tesla.id));
 
 // More convenient shorthand
 Map<OKey<Car>, Car> fetched2 = ofy.get(Car.class, new Long[] { porche.id, unimog.id, tesla.id });
@@ -273,7 +273,7 @@ This is sometimes useful, but should be used with caution for two reasons:
 Because appengine stores an index entry for each value in the collection, it is possible to issue queries like this:
 
 {{{
-Objectify ofy = ObjectifyFactory.begin();
+Objectify ofy = ObjectifyService.begin();
 
 OKey<Employee> bobKey = ObjectifyService.createKey(Employee.class, "bob");
 ObQuery<Employee> q = ObjectifyService.createQuery(Employee.class);
@@ -289,7 +289,7 @@ The decision to use a Multi-Value Relationship will depend heavily upon the shap
 Working with transactions is almost the same as working with Objectify normally.
 
 {{{
-Objectify ofy = ObjectifyFactory.beginTransaction();  // instead of begin()
+Objectify ofy = ObjectifyService.beginTransaction();  // instead of begin()
 try
 {
 	ClubMembers cm = ofy.get(ClubMembers.class, "k123");
