@@ -23,7 +23,7 @@ public class OS extends ObjectifyService
 }
 }}}
 
-Now, always use this service (never directly refer to ObjectifyService):
+Now, always use this service (never directly referring to ObjectifyService):
 
 {{{
 Objectify ofy = OS.begin();
