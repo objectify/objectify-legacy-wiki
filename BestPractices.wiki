@@ -37,7 +37,7 @@ This pattern guarantees that your classes will be registered properly before the
 
 == Use a DAO ==
 
-This is the non-static way of using Objectify, and the author's preferred method.  Create a DAO class extending DAOBase:
+This is the non-static way of using Objectify, and the author's preferred method because it provides a convenient place to put domain-specific helper methods.  Create a DAO class extending DAOBase:
 
 {{{
 public class DAO extends DAOBase
