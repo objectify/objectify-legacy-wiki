@@ -1,0 +1,19 @@
+#summary Patterns and best practices for using Objectify
+
+= Registering Your Entities =
+
+The first question you will have is "when and how should I register my entity classes?"
+
+The best way is to create your own service class extending ObjectifyService:
+
+{{{
+public class DAO extends ObjectifyService
+{
+	static {
+		fact().register(YourEntity.class);
+		fact().register(YourOtherEntity.class);
+
+		fact().setDatastoreTimeoutRetryCount(3);
+	}
+}
+}}}
