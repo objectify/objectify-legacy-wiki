@@ -1,6 +1,8 @@
 #summary Patterns and best practices for using Objectify
 #labels Featured
 
+<wiki:toc max_depth="2" />
+
 = Registering Your Entities =
 
 The first question you will have is "when and how should I register my entity classes?"  There are two recommended approaches.
@@ -90,10 +92,10 @@ public class ThingA
 This is dangerous!  Because Java loads (and initializes) classes on-demand, Objectify cannot guarantee that your class will be registered at the time that it is fetched from the database.  For example, suppose you execute a query that might return several different kinds of entities:
 
 {{{
-	OQuery<Object> lotsOfThingsQuery = ObjectifyService.factory().createQuery();
-	lotsOfThingsQuery.ancestor(someParent);	// could find both ThingA and ThingB entities
-	Objectify ofy = ObjectifyService.factory().begin();
-	ofy.prepare(lotsOfThingsQuery).asSingle();	// throws IllegalStateException!
+OQuery<Object> lotsOfThingsQuery = ObjectifyService.factory().createQuery();
+lotsOfThingsQuery.ancestor(someParent);	// could find both ThingA and ThingB entities
+Objectify ofy = ObjectifyService.factory().begin();
+ofy.prepare(lotsOfThingsQuery).asSingle();	// throws IllegalStateException!
 }}}
 
 When Objectify tries to reconstitute an object of type ThingA, it won't be able to because the ThingA class will not yet have been loaded and the static initializer will not have been called.  If your application actually does use a ThingA before this query is executed, it will work - and in fact, it may work 99.99% of the time.  But do you really want to hunt down mysterious IllegalStateExceptions 0.01% of the time?
