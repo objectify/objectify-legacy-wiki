@@ -103,7 +103,7 @@ Most J2EE-style frameworks, including Appengine's JDO/JPA system, do classpath s
 
   # This feature requires either [http://scannotation.sourceforge.net/ Scannotations] or [http://code.google.com/p/reflections/ Reflections], bringing in 5-6 dependency jars.  Objectify requires zero dependency jars, and we are loathe to change that.
   # Developers would need to add a startup hook to your web.xml (a ServletContextListener) in order to trigger this scanning.  Objectify currently requires zero changes to web.xml.
-  # Classpath scanning is *slow* because it is essentially opening each .class and .jar file in your project and processing every single class file with a bytecode manipulator.  For a moderately sized project this easily adds 3-5 seconds to your application initialization time.  That's 3-5 seconds additional seconds that real-world users must sit waiting while your application cold-starts.
+  # Classpath scanning is *slow* because it opens each .class and .jar file in your project and processes every single class file with a bytecode manipulator.  For a moderately sized project this easily adds 3-5 seconds to your application initialization time.  That's 3-5 additional seconds that real-world users must sit waiting while your application cold-starts.
 
 Of these issues, the last is the most fatal.  If you think "My application gets a lot of traffic!  I don't need to worry about cold starts!", you are overlooking the fact that App Engine starts and stops instances to meet demand all the time - at least one user somewhere is going to be affected on every spinup.  Plus this happens every time you redeploy your application!  There is no escaping cold-start time.
 
