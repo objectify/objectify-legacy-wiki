@@ -31,8 +31,8 @@ Instead of passing three parameters around all the time, the datastore wraps the
 The native Datastore {{{Key}}} class is simple and untyped, like the native {{{Entity}}} objects.  Objectify uses a generified class called {{{OKey}}} instead.  It works nearly identically to native keys, but carries type information:
 
 {{{
-OKey<Car> rootKey = ObjectifyFactory.createKey(Car.class, 959);
-OKey<Car> keyWithParent = ObjectifyFactory.createKey(parent, Car.class, 959);
+OKey<Car> rootKey = ObjectifyService.factory().createKey(Car.class, 959);
+OKey<Car> keyWithParent = ObjectifyService.factory().createKey(parent, Car.class, 959);
 }}}
 
 With an {{{OKey}}} you can use the most fundamental method on the {{{Objectify}}} interface, nearly identical to the {{{DatastoreService}}} equivalent.  If the generics are confusing, hold on - there will be examples later.
@@ -57,7 +57,7 @@ Map<OKey<Car>, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
 By the way, {{{OKey}}} is used for relationship references as well.  Remember that value that defines a parent entity?  The type of this parent is {{{OKey}}}:
 
 {{{
-public static <T> OKey<T> ObjectifyFactory.createKey(OKey<?> parent, Class<T> kind, long id)
+public static <T> OKey<T> ObjectifyService.factory().createKey(OKey<?> parent, Class<T> kind, long id)
 }}}
 
 When you create relationships to other entities in your system, the type of the entity relationship should be {{{OKey}}}.
