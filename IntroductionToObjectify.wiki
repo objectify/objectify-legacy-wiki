@@ -57,9 +57,7 @@ ObjectifyService.register(Car.class);
 ObjectifyService.register(Motorcycle.class);
 }}}
 
-Objectify does not scan your classpath for {{{@Entity}}} classes.  It would be trivial to add this feature, but it would require additional jar dependencies (for scannotation or reflections) and a registered startup servlet context listener.  It's easier to just register the classes by hand.
-
-If you want autoregistration anyways, file an enhancement request - if there is enough demand, it will be implemented.
+Objectify does not scan your classpath for {{{@Entity}}} classes.  There are good reasons for and against this - see the  discussion in BestPractices.
 
 = Basic Operations: Get, Put, Delete =
 
