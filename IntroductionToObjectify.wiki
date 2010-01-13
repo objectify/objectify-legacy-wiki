@@ -110,7 +110,7 @@ Map<OKey<Car>, Car> fetched3 = ofy.get(Car.class, Arrays.asList(porche.id, unimo
 // Batch operations need not be homogenous:
 Map<OKey<Vehicle>, Vehicle> fetched4 = ofy.get(
     new OKey<Car>(Car.class, porche.id),
-    new OKey<Car>(Motorcycle.class, ktm.id));
+    new OKey<Motorcycle>(Motorcycle.class, ktm.id));
 
 // Delete the data
 ofy.delete(fetched1.values());
