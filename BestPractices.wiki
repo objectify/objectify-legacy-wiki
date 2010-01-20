@@ -14,12 +14,12 @@ Create your own version of ObjectifyService and register your classes in a stati
 {{{
 public class OS extends ObjectifyService
 {
-	static {
-		factory.register(YourEntity.class);
-		factory.register(YourOtherEntity.class);
+    static {
+        factory.register(YourEntity.class);
+        factory.register(YourOtherEntity.class);
 
-		factory.setDatastoreTimeoutRetryCount(3);
-	}
+        factory.setDatastoreTimeoutRetryCount(3);
+    }
 }
 }}}
 
@@ -29,7 +29,7 @@ Now, always use this service (never directly referring to ObjectifyService):
 Objectify ofy = OS.begin();
 MyThing thing = ofy.find(MyThing.class, 123);
 if (thing == null)
-	thing = new MyThing(123);
+    thing = new MyThing(123);
 
 thing.incrementUseCount();
 ofy.put(thing);
@@ -44,22 +44,22 @@ This is the non-static way of using Objectify, and the author's preferred method
 {{{
 public class DAO extends DAOBase
 {
-	static {
-		ObjectifyService.factory().register(YourEntity.class);
-		ObjectifyService.factory().register(YourOtherEntity.class);
+    static {
+        ObjectifyService.factory().register(YourEntity.class);
+        ObjectifyService.factory().register(YourOtherEntity.class);
 
-		ObjectifyService.factory().setDatastoreTimeoutRetryCount(3);
-	}
+        ObjectifyService.factory().setDatastoreTimeoutRetryCount(3);
+    }
 
-	/** Your DAO can have your own useful methods */
-	public MyThing getOrCreateMyThing(long id)
-	{
-		MyThing found = ofy().find(clazz, id);
-		if (found == null)
-			return new MyThing(id);
-		else
-			return found;
-	}
+    /** Your DAO can have your own useful methods */
+    public MyThing getOrCreateMyThing(long id)
+    {
+        MyThing found = ofy().find(clazz, id);
+        if (found == null)
+            return new MyThing(id);
+        else
+            return found;
+    }
 }
 }}}
 
@@ -74,7 +74,7 @@ thing.incrementUseCount();
 dao.ofy().put(thing);
 
 // Access the factory by calling the fact() method
-OKey<MyThing> key = dao.fact().createKey(MyThing.class, 123);
+OQuery<MyThing> query = dao.fact().createQuery(MyThing.class);
 }}}
 
 == How NOT To Register Entities ==
@@ -84,8 +84,8 @@ You might think that you could register an entity as a static initializer for th
 {{{
 public class ThingA
 {
-	static { ObjectifyService.factory().register(ThingA.class); }
-	// ... the rest of the entity definition
+    static { ObjectifyService.factory().register(ThingA.class); }
+    // ... the rest of the entity definition
 }
 }}}
 
@@ -93,9 +93,9 @@ This is dangerous!  Because Java loads (and initializes) classes on-demand, Obje
 
 {{{
 OQuery<Object> lotsOfThingsQuery = ObjectifyService.factory().createQuery();
-lotsOfThingsQuery.ancestor(someParent);	// could find both ThingA and ThingB entities
+lotsOfThingsQuery.ancestor(someParent);    // could find both ThingA and ThingB entities
 Objectify ofy = ObjectifyService.factory().begin();
-ofy.prepare(lotsOfThingsQuery).asSingle();	// throws IllegalStateException!
+ofy.prepare(lotsOfThingsQuery).asSingle();    // throws IllegalStateException!
 }}}
 
 When Objectify tries to reconstitute an object of type ThingA, it won't be able to because the ThingA class will not yet have been loaded and the static initializer will not have been called.  If your application actually does use a ThingA before this query is executed, it will work - and in fact, it may work 99.99% of the time.  But do you really want to hunt down mysterious IllegalStateExceptions 0.01% of the time?
