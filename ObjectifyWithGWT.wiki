@@ -19,7 +19,7 @@ With a tiny amount of care, your entity objects can be passed through GWT serial
   * Don't call methods which are not part of the JRE emulation.
   * All referenced classes must themselves be GWT-safe.
 
-But, you may ask, what about OKey fields?  This class is part of a Objectify, how does the GWT compiler find it?
+But, you may ask, what about OKey fields?  This class is part of Objectify, how does the GWT compiler find it?
 
 OKey is deliberately GWT-safe, and objectify-X.X.jar includes the OKey.java source and a .gwt.xml module.  Simply add this to your module.gwt.xml:
 
