@@ -1,6 +1,8 @@
 #summary Using Objectify with Google Web Toolkit
 #labels Featured
 
+== Got CRUD? ==
+
 This must be _the_ most common "design pattern" when developing web applications:
 
   # Load some data from the datastore
