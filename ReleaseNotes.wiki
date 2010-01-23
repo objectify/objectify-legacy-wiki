@@ -1,6 +1,14 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 1.0.1 =
+2009-01-22
+
+  * Requires Appengine SDK 1.3.0 or newer
+  * Added support for Enum types
+  * Fixed OPreparedQuery.asSingle() when resultset was empty
+  * Added full support for the common collection types
+
 = 1.0 =
 2009-01-13
 
