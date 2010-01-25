@@ -5,50 +5,20 @@
 
 = Registering Your Entities =
 
-The first question you will have is "when and how should I register my entity classes?"  There are two recommended approaches.
-
-== Extending ObjectifyService ==
-
-Create your own version of ObjectifyService and register your classes in a static constructor.  Use a nice short name so you don't end up typing so much:
-
-{{{
-public class OS extends ObjectifyService
-{
-    static {
-        factory.register(YourEntity.class);
-        factory.register(YourOtherEntity.class);
-
-        factory.setDatastoreTimeoutRetryCount(3);
-    }
-}
-}}}
-
-Now, always use this service (never directly referring to ObjectifyService):
-
-{{{
-Objectify ofy = OS.begin();
-MyThing thing = ofy.find(MyThing.class, 123);
-if (thing == null)
-    thing = new MyThing(123);
-
-thing.incrementUseCount();
-ofy.put(thing);
-}}}
-
-This pattern guarantees that your classes will be registered properly before they are used.
+The first question you will have is "when and how should I register my entity classes?"  The obvious answer is to do it at application startup in a servlet context listener or an init servlet - wherever your application starts running.  However, there is an easier way:
 
 == Use a DAO ==
 
-This is the non-static way of using Objectify, and the author's preferred method because it provides a convenient place to put domain-specific helper methods.  Create a DAO class extending DAOBase:
+By accessing Objectify through your own DAO class, you can register your entities in a static initializer and also add domain-specific helper methods.  Create a DAO class extending DAOBase:
 
 {{{
 public class DAO extends DAOBase
 {
     static {
-        ObjectifyService.factory().register(YourEntity.class);
-        ObjectifyService.factory().register(YourOtherEntity.class);
+        ObjectifyService.register(YourEntity.class);
+        ObjectifyService.register(YourOtherEntity.class);
 
-        ObjectifyService.factory().setDatastoreTimeoutRetryCount(3);
+        ObjectifyService.setDatastoreTimeoutRetryCount(3);
     }
 
     /** Your DAO can have your own useful methods */
