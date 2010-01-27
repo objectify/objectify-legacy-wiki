@@ -1,6 +1,15 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 1.0.2 =
+2009-01-26
+  * Requires Appengine SDK 1.3.0 or newer
+
+  * Entity superclasses now processed correctly.
+  * OKey now serializes properly in GWT.
+  * Fixed classloader exception when using FetchOptions with datastore retries.
+  * Better error msg if entity missing no-args constructor.
+
 = 1.0.1 =
 2009-01-22
   * Requires Appengine SDK 1.3.0 or newer
