@@ -83,3 +83,8 @@ Of these issues, the last is the most fatal.  If you think "My application gets 
 Furthermore, classpath scanning costs accumulate.  If you use other tools that perform classpath scanning (Weld, Spring, JAX-RS, etc), they each will also spend 3-5s scanning your jars.  It isn't hard to push your cold-start time into the tens of seconds.
 
 That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  If you want to contribute this code, we would consider adding it as an optional module.
+
+= Interesting discussion related to Objectify =
+
+ * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - ..Scalable, Complex Apps on App Engine]
+ * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/f20d922ffecb310c Differences between Twig and Objectify plus example of million user fanout]
