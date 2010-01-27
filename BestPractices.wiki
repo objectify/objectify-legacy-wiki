@@ -85,6 +85,6 @@ Furthermore, classpath scanning costs accumulate.  If you use other tools that p
 That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  If you want to contribute this code, we would consider adding it as an optional module.
 
 = Interesting discussion related to Objectify =
-
+ * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/4467986eaf01788b/d3a1678a44242c25 Original release  announcement on GAE-Java]
  * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - ..Scalable, Complex Apps on App Engine]
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/f20d922ffecb310c Differences between Twig and Objectify plus example of million user fanout]
