@@ -41,7 +41,7 @@ With an {{{OKey}}} you can use the most fundamental method on the {{{Objectify}}
 <T> T get(OKey<? extends T> key) throws EntityNotFoundException;
 }}}
 
-In Objectify, you define your object as a Java class with a mandatory identifier (Long, long, or String) and an optional parent.  However, when you lookup or reference your object, you do so by _OKey_.  In fact, you can (and should) batch together a variety of requests into a single call, even if it will fetch many different kinds of objects:
+In Objectify, you define your object as a Java class with a mandatory identifier (Long, long, or String) and an optional parent.  However, when you look up or reference your object, you do so by _OKey_.  In fact, you can (and should) batch together a variety of requests into a single call, even if it will fetch many different kinds of objects:
 
 {{{
 Map<OKey<Object>, Object> lotsOfThings = objectify.get(carKey, airplaneKey, chairKey, personKey, yourMamaKey);
