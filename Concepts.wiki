@@ -47,7 +47,7 @@ In Objectify, you define your object as a Java class with a mandatory identifier
 Map<OKey<Object>, Object> lotsOfThings = objectify.get(carKey, airplaneKey, chairKey, personKey, yourMamaKey);
 }}}
 
-Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating a {{{OKey}}} and calling get()!
+Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating an {{{OKey}}} and calling get()!
 
 {{{
 Car c = objectify.get(Car.class, 959);
