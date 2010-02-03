@@ -89,6 +89,7 @@ That said, 3-5s might be reasonable for your specific project.  It should be ver
  * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - ..Scalable, Complex Apps on App Engine]
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/f20d922ffecb310c Differences between Twig and Objectify plus example of million user fanout]
  * [http://turbomanage.wordpress.com/2010/01/28/simplify-with-objectify/ David M. Chandler's blog posting about Objectify]
+ * [http://iqbalyusuf.wordpress.com/gwt-uibinder-with-jax-rs-jersey/ GWT Example App with Objectify]
 
 = Frequently Asked Questions =
 
