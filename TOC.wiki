@@ -4,6 +4,7 @@
   * [Concepts Concepts]
   * [IntroductionToObjectify Introduction To Objectify]
   * [BestPractices Best Practices]
+  * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
   * [ObjectifyWithGWT Objectify With GWT]
   * [ReleaseNotes Release Notes]
