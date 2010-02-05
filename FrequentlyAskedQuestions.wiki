@@ -1,0 +1,10 @@
+#summary Frequently Asked Questions
+
+<wiki:toc max_depth="2" />
+
+= Frequently Asked Questions =
+
+== How do I shut off the datanucleus byte code enhancer? ==
+ * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
+== How can I integrate with memcached? ==
+ * [http://groups.google.com/group/google-appengine-java/msg/ca9a275cc48858ba CachingDatastoreService]
