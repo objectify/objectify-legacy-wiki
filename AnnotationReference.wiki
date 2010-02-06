@@ -4,24 +4,24 @@
 {{{
 @Entity(name="Emp")
 class Employee {
-   @Id long id;
-   @Parent OKey<Company> employer;
+   @Id long id;
+   @Parent OKey<Company> employer;
 
    @Unindexed int vacationDays;
 
-   // field getting renamed
-   @OldName("boss") OKey<Employee> manager;
+   // field getting renamed
+   @OldName("boss") OKey<Employee> manager;
 
-   String firstName;
-   String lastName;
+   String firstName;
+   String lastName;
 
-   // we used to store fullName, now we store first and last separately
-   @OldName("fullName") public void oldWay(String fullName)
-   {
-       String[] split = fullName.split(" ");
-       firstName = split[0];
-       lastName = split[1];
-   }
+   // we used to store fullName, now we store first and last separately
+   @OldName("fullName") public void oldWay(String fullName)
+   {
+       String[] split = fullName.split(" ");
+       firstName = split[0];
+       lastName = split[1];
+   }
 }
 }}}
 
