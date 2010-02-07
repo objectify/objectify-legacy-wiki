@@ -18,7 +18,7 @@ There are only four basic operations in the datastore, and any persistence API m
   * *get()* an entity whole from the datastore.  You can get many at a time.
   * *put()* an entity whole in the datastore.  You can store many at a time.
   * *delete()* an entity from the datastore.  (You guessed it) You can delete many at a time.
-  * *prepare()* a Query, which searches the datastore for entities matching criteria you define.
+  * *query()* for entities matching criteria you define.
 
 = Keys =
 
@@ -28,39 +28,39 @@ By the way, I lied.  There is actually a third value which is necessary to uniqu
 
 Instead of passing three parameters around all the time, the datastore wraps these values into a single object - a _Key_.  That's all a {{{Key}}} is, a holder for the three parts that uniquely identify an entity.
 
-The native Datastore {{{Key}}} class is simple and untyped, like the native {{{Entity}}} objects.  Objectify uses a generified class called {{{OKey}}} instead.  It works nearly identically to native keys, but carries type information:
+The native Datastore {{{Key}}} class is simple and untyped, like the native {{{Entity}}} objects.  Objectify provides a generified {{{Key}}} that carries type information:
 
 {{{
-OKey<Car> rootKey = new OKey<Car>(Car.class, 959);
-OKey<Car> keyWithParent = new OKey<Car>(parent, Car.class, 959);
+Key<Car> rootKey = new Key<Car>(Car.class, 959);
+Key<Car> keyWithParent = new Key<Car>(parent, Car.class, 959);
 }}}
 
-With an {{{OKey}}} you can use the most fundamental method on the {{{Objectify}}} interface, nearly identical to the {{{DatastoreService}}} equivalent.  If the generics are confusing, hold on - there will be examples later.
+With a {{{Key}}} you can use the most fundamental method on the {{{Objectify}}} interface, nearly identical to the {{{DatastoreService}}} equivalent.  If the generics are confusing, hold on - there will be examples later.
 
 {{{
-<T> T get(OKey<? extends T> key) throws EntityNotFoundException;
+<T> T get(Key<? extends T> key) throws EntityNotFoundException;
 }}}
 
-In Objectify, you define your object as a Java class with a mandatory identifier (Long, long, or String) and an optional parent.  However, when you look up or reference your object, you do so by _OKey_.  In fact, you can (and should) batch together a variety of requests into a single call, even if it will fetch many different kinds of objects:
+In Objectify, you define your object as a Java class with a mandatory identifier (Long, long, or String) and an optional parent.  However, when you look up or reference your object, you do so by _Key_.  In fact, you can (and should) batch together a variety of requests into a single call, even if it will fetch many different kinds of objects:
 
 {{{
-Map<OKey<Object>, Object> lotsOfThings = objectify.get(carKey, airplaneKey, chairKey, personKey, yourMamaKey);
+Map<Key<Object>, Object> lotsOfThings = objectify.get(carKey, airplaneKey, chairKey, personKey, yourMamaKey);
 }}}
 
-Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating an {{{OKey}}} and calling get()!
+Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating an {{{Key}}} and calling get()!
 
 {{{
 Car c = objectify.get(Car.class, 959);
-Map<OKey<Car>, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
+Map<Key<Car>, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
 }}}
 
-By the way, {{{OKey}}} is used for relationship references as well.  Remember that value that defines a parent entity?  The type of this parent is {{{OKey}}}:
+By the way, {{{Key}}} is used for relationship references as well.  Remember that value that defines a parent entity?  The type of this parent is {{{Key}}}:
 
 {{{
-public OKey(OKey<?> parent, Class<? extends T> kind, long id)
+public Key(Key<?> parent, Class<? extends T> kind, long id)
 }}}
 
-When you create relationships to other entities in your system, the type of the entity relationship should be {{{OKey}}}.
+When you create relationships to other entities in your system, the type of the entity relationship should be {{{Key}}}.
 
 = Transactions =
 
@@ -70,7 +70,7 @@ The datastore has a lot of odd concepts designed to facilitate building a JTA in
 
 When you put() your entity, it gets stored somewhere in a gigantic farm of thousands of machines.  In order to perform an atomic transaction, the datastore (currently) requires that all the data that is a part of that transaction live on the same server.  To give you some control over where your data is stored, the datastore has the concept of an *entity group*.
 
-Remember the _parent_ that is part of a {{{OKey}}}?  If an entity has a parent, it belongs to the same entity group as its parent.  If an entity does not have a parent, it is the "root" of an entity group, and may be physically located anywhere in the cluster.
+Remember the _parent_ that is part of a {{{Key}}}?  If an entity has a parent, it belongs to the same entity group as its parent.  If an entity does not have a parent, it is the "root" of an entity group, and may be physically located anywhere in the cluster.
 
 Within a transaction, you can only access data from a single entity group.  If you try to access data from multiple entity groups, you will get an Exception.  This means you must pick your entity groups carefully, usually to correspond to the data associated with a single user.  Yes, this severely limits the utility of transactions.
 
@@ -80,7 +80,7 @@ It should be worth mentioning that the term _parent_ is somewhat misleading.  Th
 
 == Executing Transactions ==
 
-When you execute a {{{get()}}}, {{{put()}}}, {{{delete()}}}, or {{{prepare(Query)}}}, you will either be in a [http://code.google.com/appengine/docs/java/datastore/transactions.html transaction] or you will not.
+When you execute a {{{get()}}}, {{{put()}}}, {{{delete()}}}, or {{{query()}}}, you will either be in a [http://code.google.com/appengine/docs/java/datastore/transactions.html transaction] or you will not.
 
 If you execute within a transaction:
   * You must only get/put/delete/query objects within a single entity group.
