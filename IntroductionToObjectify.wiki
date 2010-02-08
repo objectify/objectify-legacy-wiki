@@ -1,6 +1,8 @@
 #summary Beginner's guide to Objectify-Appengine
 #labels Featured
 
+*This documentation reflects the 2.0 beta 1 release of Objectify, which is recommended for use.*
+
 If you haven't read the [Concepts] yet, please do so first.
 
 <wiki:toc max_depth="2" />
