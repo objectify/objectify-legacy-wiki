@@ -6,7 +6,7 @@
 
 == Can I use Dependency Injection (Spring, Guice, Weld) with Objectify? ==
 Yes!  Objectify was designed with this in mind.
-  # Ignore the {{{ObjectifyService}}} class and its static methods.  It is merely a static proxy for a single instance of {{{ObjectifyFactory}}}.  You will not use it.
+  # Ignore the {{{ObjectifyService}}} class and its static methods.  It is merely a static proxy for a single instance of {{{ObjectifyFactory}}}.  Instead you will use {{{ObjectifyFactory}}} directly.
   # Create an application-scoped {{{ObjectifyFactory}}} instance, register your classes, and inject it!
   # Alternatively, use the DAO pattern (see BestPractices) and inject your DAO.
 
