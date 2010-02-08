@@ -7,4 +7,5 @@
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
   * [ObjectifyWithGWT Objectify With GWT]
+  * [MavenRepository Maven Repository]
   * [ReleaseNotes Release Notes]
