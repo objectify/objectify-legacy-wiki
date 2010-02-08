@@ -458,14 +458,14 @@ ofy.put(ent);
 
 This will produce an entity that contains:
 
-|| ones.foo || ["foo1", "foo2", "foo3", "foo4"] ||
-|| ones.two.bar || ["bar1", "bar2", "bar3", "bar4"] ||
+|| ones.foo || {{{ ["foo1", "foo2", "foo3", "foo4"] }}} ||
+|| ones.two.bar || {{{ ["bar1", "bar2", "bar3", "bar4"] }}} ||
 
 This is what the entity would look like if the second and third values in the {{{ones}}} collection were {{{null}}}:
 
-|| ones.foo^null || [1, 2] ||
-|| ones.foo || ["foo1", "foo4"] ||
-|| ones.two.bar || ["bar1", "bar4"] ||
+|| ones.foo^null || {{{ [1, 2] }}} ||
+|| ones.foo || {{{ ["foo1", "foo4"] }}} ||
+|| ones.two.bar || {{{ ["bar1", "bar4"] }}} ||
 
 The synthetic ^null property only exists if the collection contains nulls.
 
