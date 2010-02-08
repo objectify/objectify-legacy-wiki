@@ -9,6 +9,7 @@
   * OKey<?> has been renamed to Key<?>
   * Added @Embedded classes, collections, and arrays
   * Added GWT versions of all basic datastore types (Email, Link, GeoPt, etc)
+  * Fields using the `transient` keyword *will* now be persisted. The `@Transient` annotation is now the only way to tell Objectify to ignore a field.
   * New architecture and many more unit tests!
 
 = 1.0.3 =
