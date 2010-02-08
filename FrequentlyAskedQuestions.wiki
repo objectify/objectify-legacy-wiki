@@ -4,7 +4,15 @@
 
 = Frequently Asked Questions =
 
+== Can I use Dependency Injection (Spring, Guice, Weld) with Objectify? ==
+Yes!  Objectify was designed with this in mind.
+  # Ignore the {{{ObjectifyService}}} class and its static methods.  It is merely a static proxy for a single instance of {{{ObjectifyFactory}}}.  You will not use it.
+  # Create an application-scoped {{{ObjectifyFactory}}} instance, register your classes, and inject it!
+  # Alternatively, use the DAO pattern (see BestPractices) and inject your DAO.
+
 == How do I shut off the datanucleus byte code enhancer? ==
- * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
+  * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
+
 == How can I integrate with memcached? ==
- * [http://groups.google.com/group/google-appengine-java/msg/ca9a275cc48858ba CachingDatastoreService]
+  * A simple write-through cache will be integrated into Objectify for 2.0 final.
+  * Until then, you can use [http://groups.google.com/group/google-appengine-java/msg/ca9a275cc48858ba CachingDatastoreService], but beware: it has issues with transactions.  Simply extend {{{ObjectifyFactory}}} and override the {{{getDatastoreService()}}} method.
