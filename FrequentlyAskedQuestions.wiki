@@ -8,5 +8,3 @@
  * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
 == How can I integrate with memcached? ==
  * [http://groups.google.com/group/google-appengine-java/msg/ca9a275cc48858ba CachingDatastoreService]
-== Do you provide Maven artifacts for Objectify? ==
- * Yes, since 2.0. See MavenRepository.
