@@ -364,6 +364,129 @@ You can specify {{{@OldName}}} on the parameter of any method that takes a singl
 
 Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
 
+= @Embedded =
+
+New in 2.0, Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
+
+== Embedded Classes ==
+
+You can nest objects to any arbitrary level.
+
+{{{
+class LevelTwo {
+    String bar;
+}
+
+class LevelOne {
+    String foo;
+    @Unindexed @Embedded LevelTwo two
+}
+
+class EntityWithEmbedded {
+    @Id Long id;
+    @Embedded LevelOne one;
+}
+}}}
+
+As with normal properties, all values are indexed by default.  You can place @Unindexed on any @Embedded field and all the decendant fields will be @Unindexed.
+
+== Embedded Collections and Arrays ==
+
+You can use @Embedded on collections or arrays:
+
+{{{
+class EntityWithEmbeddedCollection {
+    @Id Long id;
+    @Embedded List<LevelOne> ones = new ArrayList<LevelOne>();
+}
+}}}
+
+Some things to keep in mind:
+
+  # An @Embedded array/collection cannot be nested inside of another @Embedded array/collection.  It can, however, be nested inside any number of @Embedded classes.
+  # You should initialize collections.  Null or empty collections are not written to the datastore and therefore get ignored during load.  Furthermore, the concrete instance will be used as-is, allowing you to initialize collections with Comparators or other state.
+
+== Querying ==
+
+For any indexed field, you can query like this:
+
+{{{
+Objectify ofy = ObjectifyService.begin();
+ofy.query(EntityWithEmbedded.class).filter("one.two.bar =", "findthis");
+}}}
+
+Filtering works for embedded collections just as it does for normal collections.
+
+== Entity Representation ==
+
+You may wish to know how @Embedded fields are persisted so that you an access them through the Low-Level API.  Here is an example:
+
+{{{
+EntityWithEmbedded ent = new EntityWithEmbedded();
+ent.one = new LevelOne();
+ent.one.foo = "Foo Value";
+ent.one.two = new LevelTwo();
+ent.one.two.bar = "Bar Value";
+
+Objectify ofy = ObjectifyService.begin();
+ofy.put(ent);
+}}}
+
+This will produce an entity that contains:
+
+|| one.foo || "Foo Value" ||
+|| one.two.bar || "Bar Value" ||
+
+You can see why query filters work the way they do.
+
+For @Embedded collections and arrays, the storage mechanism is more complicated:
+
+{{{
+EntityWithEmbeddedCollection ent = new EntityWithEmbeddedCollection();
+for (int i=1; i<=4; i++) {
+    LevelOne one = new LevelOne();
+    one.foo = "foo" + i;
+    one.two = new LevelTwo();
+    one.two.bar = "bar" + i;
+
+    ent.ones.add(one);
+}
+
+Objectify ofy = ObjectifyService.begin();
+ofy.put(ent);
+}}}
+
+This will produce an entity that contains:
+
+|| ones.foo || ["foo1", "foo2", "foo3", "foo4"] ||
+|| ones.two.bar || ["bar1", "bar2", "bar3", "bar4"] ||
+
+This is what the entity would look like if the second and third values in the {{{ones}}} collection were {{{null}}}:
+
+|| ones.foo^null || [1, 2] ||
+|| ones.foo || ["foo1", "foo4"] ||
+|| ones.two.bar || ["bar1", "bar4"] ||
+
+The synthetic ^null property only exists if the collection contains nulls.
+
+== Schema Migration ==
+
+The {{{@OldName}}} annotation can be used on any field, including {{{@Embedded}}} fields.  For example, this class will safely read in instances previously saved with {{{EntityWithEmbeddedCollection}}}:
+
+{{{
+class Together {
+    @OldName("foo") String partOne;
+    @OldName("two.bar") String partTwo;
+}
+
+class NextEntity {
+    @Id Long id;
+    @OldName("ones") @Embedded List<Together> stuff = new ArrayList<Together>();
+}
+}}}
+
+{{{@OldName}}} methods work as well, however you cannot use {{{@Embedded}}} on method parameters.
+
 -----
 
 Now, read the BestPractices.
