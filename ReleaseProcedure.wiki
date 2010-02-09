@@ -20,8 +20,8 @@ Requirements:
   * {{{ant javadoc dist maven }}} (specify version when asked)
 
 == Upload it ==
-  * Upload to googlecode (title: Objectify-Appengine v2.0 with tags: OsSys-All, Features)
-  * Depreciate old versions
+  * Upload to googlecode (title: Objectify-Appengine v2.0 , tags: OsSys-All,Featured)
+  * Dep. old versions
   * Commit maven repo stuff ?
 
 == Announce it ==
