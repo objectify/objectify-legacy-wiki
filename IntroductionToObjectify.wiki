@@ -487,6 +487,30 @@ class NextEntity {
 
 {{{@OldName}}} methods work as well, however you cannot use {{{@Embedded}}} on method parameters.
 
+= Caching =
+
+New in 2.0rc1, Objectify integrates the appengine memcache to improve the performance of your application.  Simply annotate your entity class with {{{@Cached}}}:
+
+{{{
+@Cached
+public class MyEntity {
+    @Id Long id;
+    ...
+}
+}}}
+
+That's it!  Objectify will utilize the memcache service to reduce read load on the datastore.
+
+What you should know about caching:
+
+  * This feature is new and should be considered somewhat experimental.  However, all unit tests pass with the cache enabled.
+  * The raw data of your entity is cached, not your POJO class.  Your objects will not be serialized.
+  * Only get(), put(), and delete() interact with the cache.  query() is not cached.
+  * Writes will "write through" the cache to the datastore.  Performance is only improved on read-heavy applications (which, fortunately, most are).
+  * Negative results are cached as well as positive results.
+  * Transactional reads bypass the cache.  Only successful commits modify the cache.
+  * You can define an expiration time for each entity in the annotation: {{@Cached(expirationSeconds=600)}}}.  By default entities will be cached until memory pressure (or an 'incident' in the datacenter) evicts them.
+
 -----
 
 Now, read the BestPractices.
