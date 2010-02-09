@@ -1,0 +1,29 @@
+#labels Phase-Deploy
+#What to do for a release.
+
+= Release Procedure =
+
+When it is time for a release please do the following (in order).
+
+Requirements:
+  * java 1.6 sdk
+  * ant
+  * svn checkout of trunk
+  * be online
+
+== Prepare Documents==
+  * Update wiki ReleaseNotes, mainPage
+  * Build and commit javadocs
+
+== Build it ==
+  * Tag it (/tags/2.0)
+  * {{{ant javadoc dist maven }}} (specify version when asked)
+
+== Upload it ==
+  * Upload to googlecode (title: Objectify-Appengine v2.0 with tags: OsSys-All, Features)
+  * Depreciate old versions
+  * Commit maven repo stuff ?
+
+== Announce it ==
+  * Push an email out to user list, appengine-java list
+  * Announce on TSS/Other
