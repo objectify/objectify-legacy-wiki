@@ -9,6 +9,7 @@ Requirements:
   * java 1.6 sdk
   * ant
   * svn checkout of trunk
+  * svn checkout of maven (_recommended_)
   * be online
 
 == Prepare Documents==
@@ -17,12 +18,12 @@ Requirements:
 
 == Build it ==
   * Tag it (/tags/2.0)
-  * {{{ant javadoc dist maven }}} (specify version when asked)
+  * {{{ant javadoc dist}}} (specify version when asked)
 
 == Upload it ==
   * Upload to googlecode (title: Objectify-Appengine v2.0 , tags: OsSys-All,Featured)
   * Dep. old versions
-  * Commit maven repo stuff ?
+  * Commit maven checkout
 
 == Announce it ==
   * Push an email out to user list, appengine-java list
