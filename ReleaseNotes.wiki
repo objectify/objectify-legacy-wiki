@@ -1,5 +1,10 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
+= 2.0 rc 1 =
+2010-02-09
+  * beta 1 +
+  * Caching datastoreservice (write-through, transaction safe, negative caching, custom class expiration)
+  * @Cached annotation
 
 = 2.0 beta 1 =
 2010-02-07
