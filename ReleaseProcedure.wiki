@@ -1,5 +1,5 @@
+#summary What to do for a release.
 #labels Phase-Deploy
-#What to do for a release.
 
 = Release Procedure =
 
