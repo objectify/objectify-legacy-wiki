@@ -14,5 +14,5 @@ Yes!  Objectify was designed with this in mind.
   * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
 
 == How can I integrate with memcached? ==
-  * A simple write-through cache will be integrated into Objectify for 2.0 final.
+  * A simple [IntroductionToObjectify#Caching write-through cache] will be integrated into Objectify for 2.0 final.
   * Until then, you can use [http://groups.google.com/group/google-appengine-java/msg/ca9a275cc48858ba CachingDatastoreService], but beware: it has issues with transactions.  Simply extend {{{ObjectifyFactory}}} and override the {{{getDatastoreService()}}} method.
