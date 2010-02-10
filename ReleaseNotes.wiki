@@ -1,5 +1,13 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
+
+= 2.0 =
+2010-02-10
+  * Requires Appengine SDK 1.3.0 or newer
+
+  * See 2.0rc1 and 2.0b1 release notes for significant changes since 1.0.3.
+  * Changed ObjectifyFactory.createKey() to slightly-different ObjectifyFactory.getKey() and removed createKey() from ObjectifyService.
+
 = 2.0 rc 1 =
 2010-02-09
   * Requires Appengine SDK 1.3.0 or newer
