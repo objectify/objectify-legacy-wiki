@@ -2,9 +2,9 @@
 #labels Featured
 = 2.0 rc 1 =
 2010-02-09
-  * beta 1 +
-  * Caching datastoreservice (write-through, transaction safe, negative caching, custom class expiration)
-  * @Cached annotation
+  * Requires Appengine SDK 1.3.0 or newer
+
+  * Adds memcache integration (write-through, transaction safe, negative caching, custom class expiration) with a @Cached annotation.
 
 = 2.0 beta 1 =
 2010-02-07
