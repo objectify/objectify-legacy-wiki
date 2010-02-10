@@ -503,7 +503,7 @@ class EntityWithSerialized {
 There are some limitations:
 
   * All objects stored in the graph must follow Java serialization rules, including implement {{{java.io.Serializable}}}.
-  * The total size of an entity cannot exceed 1 megabyte.  If your serialized data exceeds this size, you will get an exception.
+  * The total size of an entity cannot exceed 1 megabyte.  If your serialized data exceeds this size, you will get an exception when you try to {{{put()}}} it.
   * You will not be able to use the field or any child fields in queries.
   * As per serializaton rules, {{{transient}}} (the java keyword, not the annotation) fields will not be stored.
   * All Objectify annotations will be ignored within your serialized data structure.  This means {{{@Transient}}} fields within your serialized structure will be stored!
@@ -519,7 +519,7 @@ However, there are significant benefits to storing data this way:
 You are *strongly* advised to place {{{serialVersionUID}}} on all classes that you intend to store as {{{@Serialized}}}.  Without this, *any* change to your classes will prevent stored objects from being deserialized on fetch.  Example:
 
 {{{
-class SomeStuff {
+class SomeStuff implements Serializable {
     /** start with 1 for all classes */
     private static final long serialVersionUID = 1L;
 
