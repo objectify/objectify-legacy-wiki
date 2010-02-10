@@ -1,7 +1,7 @@
 #summary Beginner's guide to Objectify-Appengine
 #labels Featured
 
-*This documentation reflects the 2.0 beta 1 release of Objectify, which is recommended for use.*
+*This documentation reflects the 2.0 rc 1 release of Objectify, which is recommended for use.*
 
 If you haven't read the [Concepts] yet, please do so first.
 
@@ -486,6 +486,52 @@ class NextEntity {
 }}}
 
 {{{@OldName}}} methods work as well, however you cannot use {{{@Embedded}}} on method parameters.
+
+= @Serialized =
+
+*This feature is in svn trunk and will be part of 2.0 final.  It is not in 2.0rc1.*
+
+An alternative to {{{@Embedded}}} is to use {{{@Serialized}}}, which will let you store nearly any Java object graph.
+
+{{{
+class EntityWithSerialized {
+    @Id Long id;
+    @Serialized Map<Object, Object> stuff;
+}
+}}}
+
+There are some limitations:
+
+  * All objects stored in the graph must follow Java serialization rules, including implement Serializable.
+  * The total size of an entity cannot exceed 1 megabyte.  If your serialized data exceeds this size, you will get an exception.
+  * You will not be able to use the field or any child fields in queries.
+  * As per serializaton rules, {{{transient}}} (the java keyword, not the annotation) fields will not be stored.
+  * {{{@Transient}}} fields will be stored!  All Objectify annotations will be ignored within your serialized data structure.
+  * Java serialization data is opaque to the datastore viewer and other languages (ie GAE/Python).  You will only be able to retrieve your data from Java.
+
+However, there are significant benefits to storing data this way:
+
+  * You can store nearly any object graph - nested collections, circular object references, etc.  If Java can serialize it, you can store it.
+  * Your field need not be statically typed.  Declare {{{Object}}} if you want.
+  * Collections can be stored in their full state; for example, a SortedSet will remember its Comparator implementation.
+  * {{{@Serialized}}} collections can be nested inside {{{@Embedded}}} collections.
+
+You are *strongly* advised to place {{{serialVersionUID}}} on all classes that you intend to store as {{{@Serialized}}}.  Without this, *any* change to your classes will prevent stored objects from being deserialized on fetch.  Example:
+
+{{{
+class SomeStuff {
+    /** start with 1 for all classes */
+    private static final long serialVersionUID = 1L;
+
+    String foo;
+    Object bar;
+}
+
+class EntityWithSerialized {
+    @Id Long id;
+    @Serialized SomeStuff stuff;
+}
+}}}
 
 = Caching =
 
