@@ -10,11 +10,11 @@ Requirements:
   * ant
   * svn checkout of trunk
   * svn checkout of maven (_recommended_)
-  * be online
 
 == Prepare Documents==
   * Update wiki ReleaseNotes, mainPage
   * Build and commit javadocs
+    * *Ensure you have [http://stuffthathappens.com/blog/2007/11/09/howto-publish-javadoc-on-google-code/ correct svn mime type] setup, the default is wrong.*  Do not commit javadocs without changing your subversion properties.
 
 == Build it ==
   * Tag it (/tags/2.0)
@@ -22,7 +22,7 @@ Requirements:
 
 == Upload it ==
   * Upload to googlecode (title: Objectify-Appengine v2.0 , tags: OsSys-All,Featured)
-  * Dep. old versions
+  * Deprecate old versions
   * Commit maven checkout
 
 == Announce it ==
