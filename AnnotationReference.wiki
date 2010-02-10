@@ -2,6 +2,7 @@
 
 = Example =
 {{{
+@Cached
 @Entity(name="Emp")
 class Employee {
    @Id long id;
@@ -56,3 +57,19 @@ class Employee {
 == @com.googlecode.objectify.annotation.Parent ==
   * Placed on at most one field of type {{{Key}}}
   * Defines the entity group parent for an entity
+
+== @com.googlecode.objectify.annotation.Cached ==
+  * Placed on an entity class
+  * Stores entity data in a write-through cache for faster read performance
+  * Allows you to specify the expiration of entities in the cache
+
+== @com.googlecode.objectify.annotation.Embedded ==
+  * Placed on an entity field, or the field of any class embedded in an entity.
+  * Field can be any custom type or a collection or array of your custom type.
+  * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#@Embedded @Embedded] documentation.
+
+== @com.googlecode.objectify.annotation.Serialized ==
+  * Placed on any entity field of Serializable type
+  * Causes the object graph at that point to be stored as a serialized Blob.
+  * Can be used on fields inside @Embedded classes.
+  * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#@Serialized @Serialized] documentation.
