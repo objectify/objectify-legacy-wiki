@@ -22,7 +22,7 @@ With a tiny amount of care, your entity objects can be passed through GWT serial
 Simply add this to your module.gwt.xml:
 
 {{{
-    <inherits name="com.googlecode.Objectify" />
+    <inherits name="com.googlecode.objectify.Objectify" />
 }}}
 
 You can now manipulate your entity objects in GWT and seamlessly pass them back and forth to the server through GWT-RPC.  Objectify enables you to use Key<?>, Key (the datastore version), and all the datastore basic types (Link, Email, GeoPt, etc) in your client code.
