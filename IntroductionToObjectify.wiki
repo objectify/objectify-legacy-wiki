@@ -502,7 +502,7 @@ class EntityWithSerialized {
 
 There are some limitations:
 
-  * All objects stored in the graph must follow Java serialization rules, including implement Serializable.
+  * All objects stored in the graph must follow Java serialization rules, including implement {{{java.io.Serializable}}}.
   * The total size of an entity cannot exceed 1 megabyte.  If your serialized data exceeds this size, you will get an exception.
   * You will not be able to use the field or any child fields in queries.
   * As per serializaton rules, {{{transient}}} (the java keyword, not the annotation) fields will not be stored.
