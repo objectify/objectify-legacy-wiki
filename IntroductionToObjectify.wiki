@@ -1,8 +1,6 @@
 #summary Beginner's guide to Objectify-Appengine
 #labels Featured
 
-*This documentation reflects the 2.0 rc 1 release of Objectify, which is recommended for use.*
-
 If you haven't read the [Concepts] yet, please do so first.
 
 <wiki:toc max_depth="2" />
@@ -489,8 +487,6 @@ class NextEntity {
 
 = @Serialized =
 
-*This feature is in svn trunk and will be part of 2.0 final.  It is not in 2.0rc1.*
-
 An alternative to {{{@Embedded}}} is to use {{{@Serialized}}}, which will let you store nearly any Java object graph.
 
 {{{
@@ -535,7 +531,7 @@ class EntityWithSerialized {
 
 = Caching =
 
-New in 2.0rc1, Objectify integrates the appengine memcache to improve the performance of your application.  Simply annotate your entity class with {{{@Cached}}}:
+Objectify integrates the appengine memcache to improve the performance of your application.  Simply annotate your entity class with {{{@Cached}}}:
 
 {{{
 @Cached
