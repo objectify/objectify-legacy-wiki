@@ -506,7 +506,7 @@ There are some limitations:
   * The total size of an entity cannot exceed 1 megabyte.  If your serialized data exceeds this size, you will get an exception.
   * You will not be able to use the field or any child fields in queries.
   * As per serializaton rules, {{{transient}}} (the java keyword, not the annotation) fields will not be stored.
-  * {{{@Transient}}} fields will be stored!  All Objectify annotations will be ignored within your serialized data structure.
+  * All Objectify annotations will be ignored within your serialized data structure.  This means {{{@Transient}}} fields within your serialized structure will be stored!
   * Java serialization data is opaque to the datastore viewer and other languages (ie GAE/Python).  You will only be able to retrieve your data from Java.
 
 However, there are significant benefits to storing data this way:
