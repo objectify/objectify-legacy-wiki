@@ -32,7 +32,7 @@ class Employee {
    // Allows you to query for employess in a building by filtering on "offices.building"
    @Embedded Office[] offices;
 
-   // Whatever gets put here will be serialized out and back
+   // Whatever gets put here will be serialized out and back (and cannot be filtered)
    @Seralized Object misc;
 }
 }}}
