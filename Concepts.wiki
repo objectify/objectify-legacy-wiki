@@ -28,7 +28,7 @@ By the way, I lied.  There is actually a third value which is necessary to uniqu
 
 Instead of passing three parameters around all the time, the datastore wraps these values into a single object - a _Key_.  That's all a {{{Key}}} is, a holder for the three parts that uniquely identify an entity.
 
-The native Datastore {{{Key}}} class is simple and untyped, like the native {{{Entity}}} objects.  Objectify provides a generified {{{Key}}} that carries type information:
+The native Datastore {{{Key}}} class is simple and untyped, like the native {{{Entity}}} class.  Objectify provides a generified {{{Key}}} that carries type information:
 
 {{{
 Key<Car> rootKey = new Key<Car>(Car.class, 959);
