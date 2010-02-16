@@ -15,3 +15,17 @@ Yes!  Objectify was designed with this in mind.
 
 == How can I integrate with memcached? ==
   * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation.
+
+== How do I migrate from JDO to Objectify? ==
+
+You should have no trouble using Objectify side-by-side with JDO.
+Just don't use the javax.persistence.Entity annotation on Objectify
+entities, it will likely make the JDO bytecode enhancer try to enhance
+it.
+
+For the most part, migrating JDO classes to Objectify classes should
+be pretty straightforward.  The only trick will be mapping the
+relationships.  Look at the raw Entity objects to see what structure
+JDO created - relationships are just a Key on one end or both.  If you
+make this field a Key<?> (or Collection<Key<?>>) in your Objectify
+entities, it will map just fine.
