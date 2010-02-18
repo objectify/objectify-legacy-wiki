@@ -34,6 +34,9 @@ class Employee {
 
    // Whatever gets put here will be serialized out and back (and cannot be filtered)
    @Seralized Object misc;
+
+   @PostLoad void onLoad() { /* do something after load */ }
+   @PrePersist void onPersist() { /* do something before persisting */ }
 }
 }}}
 
@@ -84,3 +87,15 @@ class Employee {
   * Causes the object graph at that point to be stored as a serialized Blob.
   * Can be used on fields inside @Embedded classes.
   * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#@Serialized @Serialized] documentation.
+
+== @javax.persistence.PostLoad ==
+  * Placed on any method that either takes no parameters or a single parameter of type Entity.
+  * Called after the POJO is populated with data.
+  * Can be specified on multiple methods in this class or any base class.
+  * Methods are called in declared order, with superclass methods first.
+
+== @javax.persistence.PrePersist ==
+  * Placed on any method that either takes no parameters or a single parameter of type Entity.
+  * Called before the POJO is written to the datastore Entity.
+  * Can be specified on multiple methods in this class or any base class.
+  * Methods are called in declared order, with superclass methods first.
