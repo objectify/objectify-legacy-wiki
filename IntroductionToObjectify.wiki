@@ -600,6 +600,34 @@ What you should know about caching:
   * Transactional reads bypass the cache.  Only successful commits modify the cache.
   * You can define an expiration time for each entity in the annotation: {{{@Cached(expirationSeconds=600)}}}.  By default entities will be cached until memory pressure (or an 'incident' in the datacenter) evicts them.
 
+= Lifecycle Callbacks =
+
+Objectify supports two of the JPA lifecycle callbacks:  {{{@PostLoad}}} and {{{@PrePersist}}}.  If you mark methods on your POJO entity class (or any superclasses) with these annotations, they will be called:
+
+  * {{{@PostLoad}}} methods are called after your data has been populated on your POJO class from the datastore.
+  * {{{@PrePersist}}} methods are called just before your data is written to the datastore from your POJO class.
+
+You can have any number of these callback methods in your POJO entity class or its superclasses.  They will be called in order of declaration, with superclass methods called first.  Example:
+
+{{{
+class MyEntityBase {
+    String foo;
+    String lowercaseFoo;
+    @PrePersist maintainCaseInsensitiveSearchField() { this.lowercaseFoo = foo.toLowerCase(); }
+}
+
+class MyEntity extends MyEntityBase {
+    @Id Long id;
+
+    @Transient Date loaded;
+    @PostLoad trackLoadedDate() { this.loaded = new Date(); }
+
+    List<String> stuff = new ArrayList<String>();
+    int stuffSize;   // indexed so we can query by list size
+    @PrePersist maintainStuffSize() { this.stuffSize = stuff.size(); }
+}
+}}}
+
 -----
 
 Now, read the BestPractices.
