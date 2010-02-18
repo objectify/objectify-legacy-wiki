@@ -613,18 +613,18 @@ You can have any number of these callback methods in your POJO entity class or i
 class MyEntityBase {
     String foo;
     String lowercaseFoo;
-    @PrePersist maintainCaseInsensitiveSearchField() { this.lowercaseFoo = foo.toLowerCase(); }
+    @PrePersist void maintainCaseInsensitiveSearchField() { this.lowercaseFoo = foo.toLowerCase(); }
 }
 
 class MyEntity extends MyEntityBase {
     @Id Long id;
 
     @Transient Date loaded;
-    @PostLoad trackLoadedDate() { this.loaded = new Date(); }
+    @PostLoad void trackLoadedDate() { this.loaded = new Date(); }
 
     List<String> stuff = new ArrayList<String>();
     int stuffSize;   // indexed so we can query by list size
-    @PrePersist maintainStuffSize() { this.stuffSize = stuff.size(); }
+    @PrePersist void maintainStuffSize() { this.stuffSize = stuff.size(); }
 }
 }}}
 
