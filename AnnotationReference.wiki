@@ -74,7 +74,7 @@ class Employee {
   * Stores entity data in a write-through cache for faster read performance
   * Allows you to specify the expiration of entities in the cache
 
-== @com.googlecode.objectify.annotation.Embedded ==
+== @javax.persistence.Embedded ==
   * Placed on an entity field, or the field of any class embedded in an entity.
   * Field can be any custom type or a collection or array of your custom type.
   * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#@Embedded @Embedded] documentation.
