@@ -1,6 +1,12 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 2.0.2 =
+2010-??-??
+  * Requires Appengine SDK 1.3.1 or newer
+
+  * Added @Un/Indexed class and field support
+
 = 2.0.1 =
 2010-02-18
   * Requires Appengine SDK 1.3.1 or newer
