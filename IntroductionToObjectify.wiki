@@ -542,7 +542,7 @@ This is what the entity would look like if the second and third values in the {{
 || ones.foo || {{{ ["foo1", "foo4"] }}} ||
 || ones.two.bar || {{{ ["bar1", "bar4"] }}} ||
 
-The synthetic ^null property only exists if the collection contains nulls.
+The synthetic ^null property only exists if the collection contains nulls and is unindexed.
 
 == Schema Migration ==
 
