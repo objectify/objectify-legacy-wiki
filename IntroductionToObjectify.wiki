@@ -39,9 +39,9 @@ Things to note:
 
   * You can persist any of the [http://code.google.com/appengine/docs/java/datastore/dataclasses.html#Core_Value_Types core value types], Collections (ie Lists and Sets) of the core value types, or arrays of the core value types.  You can also persist properties of type {{{Key}}}.
 
-  * There must be a no-arg constructor.  It can be private.
+  * There must be a no-arg constructor; the default one is fine if there are no constructors explicitly defined. (The no-arg constructor can have any protection level -- private/protected/public).
 
-  * For fields that will never be queried against, use @Unindexed to reduce the cost of building indexes.
+  * For fields that will never be queried against, use @Unindexed to reduce the cost of building indexes and storing them.
 
 More information can be found in the AnnotationReference.
 
@@ -433,7 +433,31 @@ class EntityWithEmbedded {
 }
 }}}
 
-As with normal properties, all values are indexed by default.  You can place @Unindexed on any @Embedded field and all the decendant fields will be @Unindexed.
+As with normal properties, all values are indexed by default.  You can place @Unindexed on any @Embedded field and all the decendant fields will be @Unindexed. In addition you can annotate the class with @Unindexed to change the default indexing behavior for the all the fields. Here is more interesting example with indexing enabled:
+
+{{{
+class LevelTwo {
+   @Indexed String bar;
+}
+
+class LevelOne {
+    String foo;
+    @Embedded LevelTwo two
+}
+
+@Unindexed
+class EntityWithEmbedded {
+    @Id Long id;
+    @Embedded LevelOne one;
+    String prop;
+}
+
+EntityWithEmbedded ewe = ofy.get(...);
+//ewe.one.two.bar (indexed)
+//ewe.one.foo (not indexed)
+//ewe.prop (not indexed)
+}}}
+
 
 == Embedded Collections and Arrays ==
 
@@ -450,7 +474,8 @@ Some things to keep in mind:
 
   # An @Embedded array/collection cannot be nested inside of another @Embedded array/collection.  It can, however, be nested inside any number of @Embedded classes.
   # You should initialize collections.  Null or empty collections are not written to the datastore and therefore get ignored during load.  Furthermore, the concrete instance will be used as-is, allowing you to initialize collections with Comparators or other state.
-
+  # @Un/Indexed applied to an @Embedded array/collection will override all indexing annotations for the embedded classes.
+ 
 == Querying ==
 
 For any indexed field, you can query like this:
