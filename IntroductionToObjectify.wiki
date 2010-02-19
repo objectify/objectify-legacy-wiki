@@ -460,7 +460,12 @@ Objectify ofy = ObjectifyService.begin();
 ofy.query(EntityWithEmbedded.class).filter("one.two.bar =", "findthis");
 }}}
 
-Filtering works for embedded collections just as it does for normal collections.
+Filtering works for embedded collections just as it does for normal collections:
+
+{{{
+Objectify ofy = ObjectifyService.begin();
+ofy.query(EntityWithEmbedded.class).filter("ones.two.bar =", "findthis");
+}}}
 
 == Entity Representation ==
 
