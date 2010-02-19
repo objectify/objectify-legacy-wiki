@@ -433,7 +433,7 @@ class EntityWithEmbedded {
 }
 }}}
 
-As with normal properties, all values are indexed by default.  You can place @Unindexed on any @Embedded field and all the decendant fields will be @Unindexed. In addition you can annotate the class with @Unindexed to change the default indexing behavior for the all the fields. Here is more interesting example with indexing enabled:
+As with normal properties, all values are indexed by default.  You can place @Unindexed on any @Embedded field and all the decendant fields will be @Unindexed. In addition you can annotate the class with @Unindexed to change the default indexing behavior for all the fields. Here is a more interesting example with indexing enabled:
 
 {{{
 class LevelTwo {
