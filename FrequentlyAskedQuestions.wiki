@@ -13,15 +13,18 @@ Yes!  Objectify was designed with this in mind.
 == How do I shut off the datanucleus byte code enhancer? ==
   * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
 
+== Can I change data after it is loaded or before it is stored? ==
+  * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Lifecycle_Callbacks Lifecycle Callbacks]
+
 == How can I integrate with memcached? ==
-  * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation.
+  * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation. Hint, add @Cached to your (entity) class.
 
 == How do I migrate from JDO to Objectify? ==
 
 You should have no trouble using Objectify side-by-side with JDO.
 Just don't use the javax.persistence.Entity annotation on Objectify
 entities, it will likely make the JDO bytecode enhancer try to enhance
-it.
+it. Don't use an annotation if you don't need to name your entity something different than the classname.
 
 For the most part, migrating JDO classes to Objectify classes should
 be pretty straightforward.  The only trick will be mapping the
