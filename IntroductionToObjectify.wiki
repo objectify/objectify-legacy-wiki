@@ -424,40 +424,14 @@ class LevelTwo {
 
 class LevelOne {
     String foo;
-    @Unindexed @Embedded LevelTwo two
-}
-
-class EntityWithEmbedded {
-    @Id Long id;
-    @Embedded LevelOne one;
-}
-}}}
-
-As with normal properties, all values are indexed by default.  You can place @Unindexed on any @Embedded field and all the decendant fields will be @Unindexed. In addition you can annotate the class with @Unindexed to change the default indexing behavior for all the fields. Here is a more interesting example with indexing enabled:
-
-{{{
-class LevelTwo {
-   @Indexed String bar;    // @Indexed supported in version 2.0.2+
-}
-
-class LevelOne {
-    String foo;
     @Embedded LevelTwo two
 }
 
-@Unindexed
 class EntityWithEmbedded {
     @Id Long id;
     @Embedded LevelOne one;
-    String prop;
 }
-
-EntityWithEmbedded ewe = ofy.get(...);
-//ewe.one.two.bar (indexed)
-//ewe.one.foo (not indexed)
-//ewe.prop (not indexed)
 }}}
-
 
 == Embedded Collections and Arrays ==
 
@@ -474,8 +448,46 @@ Some things to keep in mind:
 
   # An @Embedded array/collection cannot be nested inside of another @Embedded array/collection.  It can, however, be nested inside any number of @Embedded classes.
   # You should initialize collections.  Null or empty collections are not written to the datastore and therefore get ignored during load.  Furthermore, the concrete instance will be used as-is, allowing you to initialize collections with Comparators or other state.
-  # @Un/Indexed applied to an @Embedded array/collection will override all indexing annotations for the embedded classes (version 2.0.2+).
  
+== Indexing Embedded Classes ==
+
+Note:  @Indexed annotation only exists in Objectify version 2.0.2+
+
+As with normal entities, all fields within embedded classes are indexed by default.  You can control this in two ways:
+
+  * Putting @Indexed or @Unindexed on a class (entity or embedded) will make all of its fields default to indexed or unindexed, respectively.
+  * Putting @Indexed or @Unindexed on a field will make it indexed or unindexed, respectively.
+  * @Indexed or @Unindexed status for nested classes and fields are generally inherited from containing fields and classes, except that:
+    * @Indexed or @Unindexed on a field overrides the default of the class containing the field.
+    * @Indexed or @Unindexed on a field of type @Embedded will override the default on the class inside the field (be it a single class or a collection).
+
+{{{
+class LevelTwo {
+    @Indexed String gamma;
+    String delta;
+}
+
+@Indexed
+class LevelOne {
+    String beta;
+    @Unindexed @Embedded LevelTwo two
+}
+
+@Unindexed
+class EntityWithComplicatedIndexing {
+    @Id Long id;
+    @Embedded LevelOne one;
+    String alpha;
+}
+}}}
+
+If you persist one of these EntityWithComplicatedIndexing objects, you will find:
+
+|| {{{alpha}}} || not indexed ||
+|| {{{one.beta}}} || indexed ||
+|| {{{one.two.gamma}}} || indexed ||
+|| {{{one.two.delta}}} || not indexed ||
+
 == Querying ==
 
 For any indexed field, you can query like this:
@@ -497,6 +509,20 @@ ofy.query(EntityWithEmbedded.class).filter("ones.two.bar =", "findthis");
 You may wish to know how @Embedded fields are persisted so that you an access them through the Low-Level API.  Here is an example:
 
 {{{
+class LevelTwo {
+    String bar;
+}
+
+class LevelOne {
+    String foo;
+    @Embedded LevelTwo two
+}
+
+class EntityWithEmbedded {
+    @Id Long id;
+    @Embedded LevelOne one;
+}
+
 EntityWithEmbedded ent = new EntityWithEmbedded();
 ent.one = new LevelOne();
 ent.one.foo = "Foo Value";
@@ -542,7 +568,7 @@ This is what the entity would look like if the second and third values in the {{
 || ones.foo || {{{ ["foo1", "foo4"] }}} ||
 || ones.two.bar || {{{ ["bar1", "bar4"] }}} ||
 
-The synthetic ^null property only exists if the collection contains nulls; this synthetic property is unindexed.
+The synthetic ^null property only exists if the collection contains nulls.  It is never indexed.
 
 == Schema Migration ==
 
