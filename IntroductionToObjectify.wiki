@@ -453,7 +453,7 @@ Some things to keep in mind:
 
 Note:  @Indexed annotation only exists in Objectify version 2.0.2+
 
-As with normal entities, all fields within embedded classes are indexed by default.  You can control this in two ways:
+As with normal entities, all fields within embedded classes are indexed by default.  You can control this:
 
   * Putting {{{@Indexed}}} or {{{@Unindexed}}} on a class (entity or embedded) will make all of its fields default to indexed or unindexed, respectively.
   * Putting {{{@Indexed}}} or {{{@Unindexed}}} on a field will make it indexed or unindexed, respectively.
@@ -501,7 +501,7 @@ Filtering works for embedded collections just as it does for normal collections:
 
 {{{
 Objectify ofy = ObjectifyService.begin();
-ofy.query(EntityWithEmbedded.class).filter("ones.two.bar =", "findthis");
+ofy.query(EntityWithEmbeddedCollection.class).filter("ones.two.bar =", "findthis");
 }}}
 
 == Entity Representation ==
