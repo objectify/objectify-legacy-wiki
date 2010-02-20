@@ -39,7 +39,7 @@ Things to note:
 
   * You can persist any of the [http://code.google.com/appengine/docs/java/datastore/dataclasses.html#Core_Value_Types core value types], Collections (ie Lists and Sets) of the core value types, or arrays of the core value types.  You can also persist properties of type {{{Key}}}.
 
-  * There must be a no-arg constructor; the default one is fine if there are no constructors explicitly defined. (The no-arg constructor can have any protection level -- private/protected/public).
+  * There must be a no-arg constructor (or no constructors - Java creates a default no-arg constructor).  The no-arg constructor can have any protection level (private, public, etc).
 
   * For fields that will never be queried against, use @Unindexed to reduce the cost of building indexes and storing them.
 
@@ -411,7 +411,7 @@ Caution:  Objectify has no way of knowing that the importCruft() method has load
 
 = @Embedded =
 
-New in 2.0, Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
+Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
 
 == Embedded Classes ==
 
@@ -437,7 +437,7 @@ As with normal properties, all values are indexed by default.  You can place @Un
 
 {{{
 class LevelTwo {
-   @Indexed String bar;
+   @Indexed String bar;    // @Indexed supported in version 2.0.2+
 }
 
 class LevelOne {
@@ -474,7 +474,7 @@ Some things to keep in mind:
 
   # An @Embedded array/collection cannot be nested inside of another @Embedded array/collection.  It can, however, be nested inside any number of @Embedded classes.
   # You should initialize collections.  Null or empty collections are not written to the datastore and therefore get ignored during load.  Furthermore, the concrete instance will be used as-is, allowing you to initialize collections with Comparators or other state.
-  # @Un/Indexed applied to an @Embedded array/collection will override all indexing annotations for the embedded classes.
+  # @Un/Indexed applied to an @Embedded array/collection will override all indexing annotations for the embedded classes (version 2.0.2+).
  
 == Querying ==
 
