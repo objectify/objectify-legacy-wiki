@@ -14,7 +14,11 @@ Yes!  Objectify was designed with this in mind.
   * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
 
 == Can I change data after it is loaded or before it is stored? ==
+Absolutely:
   * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Lifecycle_Callbacks Lifecycle Callbacks]
+
+== Should I Use a String (Name) Id? ==
+If it is a natural key, sure; Objectify allows this no problem. Here is a little more of a discussion about it. http://groups.google.com/group/google-appengine-java/browse_thread/thread/998289f853f5a688/c50446d98eb90017?#c50446d98eb90017
 
 == How can I integrate with memcached? ==
   * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation. Hint, add @Cached to your (entity) class.
