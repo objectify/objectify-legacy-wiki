@@ -83,10 +83,11 @@ Furthermore, classpath scanning costs accumulate.  If you use other tools that p
 
 That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  If you want to contribute this code, we would consider adding it as an optional module.
 
-= Interesting discussions related to Objectify =
+= Interesting discussions related to Objectify and the DataStore =
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/4467986eaf01788b/d3a1678a44242c25 Original release  announcement on GAE-Java]
  * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - ..Scalable, Complex Apps on App Engine]
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/f20d922ffecb310c Differences between Twig and Objectify plus example of million user fanout]
  * [http://turbomanage.wordpress.com/2010/01/28/simplify-with-objectify/ David M. Chandler's blog posting about Objectify] and [http://turbomanage.wordpress.com/2010/02/09/generic-dao-for-objectify-2/ Objectify 2]
  * [http://iqbalyusuf.wordpress.com/gwt-uibinder-with-jax-rs-jersey/ GWT Example App with Objectify]
  * [http://groups.google.com/group/objectify-appengine/msg/14a326058a0870be Example of a Cursor based IteratingTask base class]
+ * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/afa0d43de5db483f Controlling user access to data with queries]
