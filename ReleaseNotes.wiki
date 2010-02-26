@@ -2,10 +2,11 @@
 #labels Featured
 
 = 2.0.2 =
-2010-??-??
+2010-02-25
   * Requires Appengine SDK 1.3.1 or newer
 
-  * Added @Un/Indexed class and field support
+  * Added @Unindexed and @Indexed class and field support
+  * Fixed bugs in query Cursor and limit() support.
 
 = 2.0.1 =
 2010-02-18
