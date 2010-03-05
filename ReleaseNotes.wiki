@@ -1,6 +1,14 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 2.0.3 (not released yet) =
+2010-??-??
+  * Requires Appengine SDK 1.3.1 or newer
+
+  * Added @AlsoLoad
+  * Added @LoadOnly
+  * Deprecated @OldName
+
 = 2.0.2 =
 2010-02-25
   * Requires Appengine SDK 1.3.1 or newer
