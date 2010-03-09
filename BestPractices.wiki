@@ -116,3 +116,4 @@ Consider using @Unindexed on your entities and then only @Index the fields you s
  * [http://iqbalyusuf.wordpress.com/gwt-uibinder-with-jax-rs-jersey/ GWT Example App with Objectify]
  * [http://groups.google.com/group/objectify-appengine/msg/14a326058a0870be Example of a Cursor based IteratingTask base class]
  * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/afa0d43de5db483f Controlling user access to data with queries]
+ * [http://iqbalyusuf.wordpress.com/jersey-guice-on-google-app-engine-java/ Jersey + Guice on Google App Engine Java]
