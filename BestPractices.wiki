@@ -111,8 +111,8 @@ Consider using @Unindexed on your entities and then only @Index the fields you s
 = Interesting discussions related to Objectify =
 
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/4467986eaf01788b/d3a1678a44242c25 Original release  announcement on GAE-Java]
- * [http://sites.google.com/site/io/under-the-covers-of-the-google-app-engine-datastore Under the Covers of the Google App Engine Datastore] (this is required watching for anyone that uses App Engine)
- * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - ..Scalable, Complex Apps on App Engine]
+ * [http://sites.google.com/site/io/under-the-covers-of-the-google-app-engine-datastore Google I/O 2008 - Under the Covers of the Google App Engine Datastore] (required watching for anyone that uses App Engine!)
+ * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - Scalable, Complex Apps on App Engine]
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/f20d922ffecb310c Differences between Twig and Objectify plus example of million user fanout]
  * [http://turbomanage.wordpress.com/2010/01/28/simplify-with-objectify/ David M. Chandler's blog posting about Objectify] and [http://turbomanage.wordpress.com/2010/02/09/generic-dao-for-objectify-2/ Objectify 2]
  * [http://iqbalyusuf.wordpress.com/gwt-uibinder-with-jax-rs-jersey/ GWT Example App with Objectify]
