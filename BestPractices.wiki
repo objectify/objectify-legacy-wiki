@@ -83,7 +83,32 @@ Furthermore, classpath scanning costs accumulate.  If you use other tools that p
 
 That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  If you want to contribute this code, we would consider adding it as an optional module.
 
+= Avoid {{{@Parent}}} =
+
+Unless you specifically need transactions, do not use the {{{@Parent}}} feature - even when there is a natural parent/child relationship like Blog/Comment.  You are almost always better off using a normal non-{{{@Parent}}} {{{Key<?>}}} field.
+
+To understand why, realize that all datastore writes are transactional - even if you have not explicitly defined a transaction.  When an entity is put(), a transaction timestamp journal at the root of an entity group is updated, and if a collision is detected, the put() is retried (without an explicit transaction) or rolled back (with an explicit transaction).  This means that writes to all entities in an entity group contend for the same transaction journal, potentially causing numerous retries.  This will diminish performance.
+
+Furthermore, working with parented keys is cumbersome.  It is far simpler to construct a {{{Key<?>}}} with simply a class and an id.
+
+You gain only the potential for transactions - the datastore does not perform cascading saves or deletes or enforce any sort of referential integrity.  You lose parallelism (performance) and are forced to use complicated key construction patterns.  Unless you need transactions, don't bother with {{{@Parent}}}.
+
+= Use Batch Gets Instead of Queries =
+
+In SQL, all data lives in tables and is accessed through queries.  It is best not to imagine the Appengine datastore this way - conceptually shift to thinking of the datastore as a key-value store that happens to also let you index and query some values.
+
+The reason this shift is important is because your most effective tool when working with chunks of data is the batch get() and put().  A batch get() by key will quickly fetch up to 500 entities in parallel; running 500 queries would take a relative eternity.
+
+Furthermore, a batch get() can be efficiently cached.  Use Objectify's {{{@Cached}}} annotation and your get() may never need a trip to the datastore.
+
+= Use Indexes Sparingly =
+
+If you make no explicit decision, all fields of your objects will be indexed.  This might be convenient if you're not sure what you will need to query on later, but comes at a high computational price.  Every single indexed property requires a separate write into a BigTable tablet.  Unindexed properties are almost "free".
+
+Consider using @Unindexed on your entities and then only @Index the fields you specifically need to query.
+
 = Interesting discussions related to Objectify =
+
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/4467986eaf01788b/d3a1678a44242c25 Original release  announcement on GAE-Java]
  * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - ..Scalable, Complex Apps on App Engine]
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/f20d922ffecb310c Differences between Twig and Objectify plus example of million user fanout]
