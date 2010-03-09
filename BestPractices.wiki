@@ -61,10 +61,9 @@ public class ThingA
 This is dangerous!  Because Java loads (and initializes) classes on-demand, Objectify cannot guarantee that your class will be registered at the time that it is fetched from the database.  For example, suppose you execute a query that might return several different kinds of entities:
 
 {{{
-OQuery<Object> lotsOfThingsQuery = ObjectifyService.factory().createQuery();
+Query<Object> lotsOfThingsQuery = ObjectifyService.begin().query();
 lotsOfThingsQuery.ancestor(someParent);    // could find both ThingA and ThingB entities
-Objectify ofy = ObjectifyService.factory().begin();
-ofy.prepare(lotsOfThingsQuery).asSingle();    // throws IllegalStateException!
+lotsOfThingsQuery.get();    // throws IllegalStateException!
 }}}
 
 When Objectify tries to reconstitute an object of type ThingA, it won't be able to because the ThingA class will not yet have been loaded and the static initializer will not have been called.  If your application actually does use a ThingA before this query is executed, it will work - and in fact, it may work 99.99% of the time.  But do you really want to hunt down mysterious IllegalStateExceptions 0.01% of the time?
@@ -100,6 +99,8 @@ In SQL, all data lives in tables and is accessed through queries.  It is best no
 The reason this shift is important is because your most effective tool when working with chunks of data is the batch get() and put().  A batch get() by key will quickly fetch up to 500 entities in parallel; running 500 queries would take a relative eternity.
 
 Furthermore, a batch get() can be efficiently cached.  Use Objectify's {{{@Cached}}} annotation and your get() may never need a trip to the datastore.
+
+Of course, batch gets and queries are not necessarily fungible operations - but when they are, use a batch get.
 
 = Use Indexes Sparingly =
 
