@@ -84,13 +84,22 @@ That said, 3-5s might be reasonable for your specific project.  It should be ver
 
 = Avoid {{{@Parent}}} =
 
-Unless you specifically need transactions, do not use the {{{@Parent}}} feature - even when there is a natural parent/child relationship like Blog/Comment.  You are almost always better off using a normal non-{{{@Parent}}} {{{Key<?>}}} field.
+It is best not to use the {{{@Parent}}} feature - even when there is a natural parent/child relationship like Blog/Comment.  You are almost always better off using a normal non-{{{@Parent}}} {{{Key<?>}}} field. If for no other reason than the cost of concurrent updates and the inability to re-key all ancestors easily.
 
-To understand why, realize that all datastore writes are transactional - even if you have not explicitly defined a transaction.  When an entity is put(), a transaction timestamp journal at the root of an entity group is updated, and if a collision is detected, the put() is retried (without an explicit transaction) or rolled back (with an explicit transaction).  This means that writes to all entities in an entity group contend for the same transaction journal, potentially causing numerous retries.  This will diminish performance.
+There are a few exceptions to this rule:
+ * Transactions: You may want to update multiple entities in a single transaction (must be in a single entity group).
+ * [AdvancedPatterns#Parent Advanced Queries]: You may want to do an ancestor query (while specifying additional filters).
+ * Updates: You may have a system where entity group updates will never be concurrent (one user updates the entity group).
 
-Furthermore, working with parented keys is cumbersome.  It is far simpler to construct a {{{Key<?>}}} with simply a class and an id.
+To understand why, realize that all datastore writes are transactional - even if you have not explicitly defined a transaction.  When an entity is put(), a transaction timestamp journal at the root of an entity group is updated, and if a collision is detected, the put() is retried (without an explicit transaction) or rolled back (with an explicit transaction).  This means that writes to all entities in an entity group contend for the same transaction journal, potentially causing numerous retries.  This will diminish performance on concurrent writes. It means that updates to the same entity group will always be serialized and may create undue contention if there are many entities in that group.
 
-You gain only the potential for transactions - the datastore does not perform cascading saves or deletes or enforce any sort of referential integrity.  You lose parallelism (performance) and are forced to use complicated key construction patterns.  Unless you need transactions, don't bother with {{{@Parent}}}.
+Furthermore, working with parented keys is cumbersome.  It is far simpler to construct a {{{Key<?>}}} with simply a class and an id. 
+
+Note: It is possible to create a {{{Key<?>}}} without the parent, which is still valid, but non-existent. In the Blog/Comment example you might want {{{Comment[id=4]}}} but forget that really it is {{{Comment[Parent=Blog[id=1],id=4]}}}.
+
+The main advantage of using {{{@Parent}}} is the potential for transactions with multiple entities. 
+
+The datastore does not perform cascading saves or deletes. Nor does it enforce any sort of referential integrity (checking for the existence of your parent on a put/delete).
 
 = Use Batch Gets Instead of Queries =
 
