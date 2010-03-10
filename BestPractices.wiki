@@ -102,13 +102,13 @@ Consider using @Unindexed on your entities and then only @Index the fields you s
 
 New appengine developers tend to overuse the {{{@Parent}}} annotation feature because at first it seems conceptually similar to owned relationships in the world of JPA.  However, they are quite different concepts.
 
-In JPA, an "owned" entity relationship provides referential integrity checking and cascading deletes/saves.  The appengine datastore does neither of these things!  All entities are simply values in a key/value store.  Relationships are simply fields of type Key.
+In JPA, an "owned" entity relationship provides referential integrity checking and cascading deletes/saves.  The appengine datastore does neither of these things!  All entities are simply values in a key/value store.  Relationships are simply fields of type Key. 
 
-{{{@Parent}}} defines something different - a relationship that is embedded within an entity's Key.  This means that part of what identifies the entity is the parent lineage.  Why would you do this?
+{{{@Parent}}} defines something different - a relationship that is embedded within an entity's Key.  This means that part of what identifies the entity (its key) is the parent lineage. It means that a key for a Comment, without a {{{@Parent}}}, would look like this ({{{Comment[id=x]}}}) while a Comment, with a {{{@Parent}}} Blog, would look like this ({{{Comment[Blog[id=x],id=y}}}). Why would you do this?
 
   * Transactions only work on entity groups, and entity groups are defined by the root parent.  Transactions can only be used across entities with a common root parent.
 
-  * Ancestor keys can make some types of exotic queries easier.
+  * Ancestor keys can make some types of [AdvancedPatterns#Ancestor_Queries (exotic) queries] easier.
 
 However, using {{{@Parent}}} has several undesirable effects:
 
