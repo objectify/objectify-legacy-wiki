@@ -82,25 +82,6 @@ Furthermore, classpath scanning costs accumulate.  If you use other tools that p
 
 That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  If you want to contribute this code, we would consider adding it as an optional module.
 
-= Avoid {{{@Parent}}} =
-
-It is best not to use the {{{@Parent}}} feature - even when there is a natural parent/child relationship like Blog/Comment.  You are almost always better off using a normal non-{{{@Parent}}} {{{Key<?>}}} field. If for no other reason than the cost of concurrent updates and the inability to re-key all ancestors easily.
-
-There are a few exceptions to this rule:
- * Transactions: You may want to update multiple entities in a single transaction (must be in a single entity group).
- * [AdvancedPatterns#Ancestor_Queries Advanced Queries]: You may want to do an ancestor query (while specifying additional filters).
- * Updates: You may have a system where entity group updates will never be concurrent (one user updates the entity group).
-
-To understand why, realize that all datastore writes are transactional - even if you have not explicitly defined a transaction.  When an entity is put(), a transaction timestamp journal at the root of an entity group is updated, and if a collision is detected, the put() is retried (without an explicit transaction) or rolled back (with an explicit transaction).  This means that writes to all entities in an entity group contend for the same transaction journal, potentially causing numerous retries.  This will diminish performance on concurrent writes. It means that updates to the same entity group will always be serialized and may create undue contention if there are many entities in that group.
-
-Furthermore, working with parented keys is cumbersome.  It is far simpler to construct a {{{Key<?>}}} with simply a class and an id. 
-
-Note: It is possible to create a {{{Key<?>}}} without the parent, which is still valid, but non-existent. In the Blog/Comment example you might want {{{Comment[id=4]}}} but forget that really it is {{{Comment[Parent=Blog[id=1],id=4]}}}.
-
-The main advantage of using {{{@Parent}}} is the potential for transactions with multiple entities. 
-
-The datastore does not perform cascading saves or deletes. Nor does it enforce any sort of referential integrity (checking for the existence of your parent on a put/delete).
-
 = Use Batch Gets Instead of Queries =
 
 In SQL, all data lives in tables and is accessed through queries.  It is best not to imagine the Appengine datastore this way - conceptually shift to thinking of the datastore as a key-value store that happens to also let you index and query some values.
@@ -116,6 +97,32 @@ Of course, batch gets and queries are not necessarily fungible operations - but 
 If you make no explicit decision, all fields of your objects will be indexed.  This might be convenient if you're not sure what you will need to query on later, but comes at a high computational price.  Every single indexed property requires a separate write into a BigTable tablet.  Unindexed properties are almost "free".
 
 Consider using @Unindexed on your entities and then only @Index the fields you specifically need to query.
+
+= Avoid {{{@Parent}}} =
+
+New appengine developers tend to overuse the {{{@Parent}}} annotation feature because at first it seems conceptually similar to owned relationships in the world of JPA.  However, they are quite different concepts.
+
+In JPA, an "owned" entity relationship provides referential integrity checking and cascading deletes/saves.  The appengine datastore does neither of these things!  All entities are simply values in a key/value store.  Relationships are simply fields of type Key.
+
+{{{@Parent}}} defines something different - a relationship that is embedded within an entity's Key.  This means that part of what identifies the entity is the parent lineage.  Why would you do this?
+
+  * Transactions only work on entity groups, and entity groups are defined by the root parent.  Transactions can only be used across entities with a common root parent.
+
+  * Ancestor keys can make some types of exotic queries easier.
+
+However, using {{{@Parent}}} has several undesirable effects:
+
+  * Creating key objects is cumbersome:  {{{new Key<Comment>(Comment.class, 123)}}} is a lot easier to type than {{{new Key<Comment>(new Key<Blog>(Blog.class, 456), Comment.class, 123)}}}
+
+  * Generated ids are only unique within a parent.  Your entities will have duplicate ids (but always unique keys!)
+
+  * You cannot reparent an entity without deleting it and recreating it.  If the entity you wish to reparent itself has children, all those must be deleted and recreated.
+
+  * Using {{{@Parent}}} can *diminish* the performance of your application when there is contention.
+
+This last point is worth explaining in detail.  All datastore writes are transactional - even if you have not explicitly defined a transaction.  When an entity is put(), a transaction timestamp journal at the root of an entity group is updated, and if a collision is detected, the put() is retried (without an explicit transaction) or rolled back (with an explicit transaction).  This means that writes to all entities in an entity group contend for the same transaction journal, potentially causing numerous retries.
+
+Unless you specifically require transactional behavior, you should probably avoid using {{{@Parent}}} even when when entities have a conceptual parent/child relationship (eg Blog/Comment).
 
 = Interesting discussions related to Objectify =
 
