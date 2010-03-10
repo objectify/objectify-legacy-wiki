@@ -88,7 +88,7 @@ It is best not to use the {{{@Parent}}} feature - even when there is a natural p
 
 There are a few exceptions to this rule:
  * Transactions: You may want to update multiple entities in a single transaction (must be in a single entity group).
- * [AdvancedPatterns#Parent Advanced Queries]: You may want to do an ancestor query (while specifying additional filters).
+ * [AdvancedPatterns#Ancestor_Queries Advanced Queries]: You may want to do an ancestor query (while specifying additional filters).
  * Updates: You may have a system where entity group updates will never be concurrent (one user updates the entity group).
 
 To understand why, realize that all datastore writes are transactional - even if you have not explicitly defined a transaction.  When an entity is put(), a transaction timestamp journal at the root of an entity group is updated, and if a collision is detected, the put() is retried (without an explicit transaction) or rolled back (with an explicit transaction).  This means that writes to all entities in an entity group contend for the same transaction journal, potentially causing numerous retries.  This will diminish performance on concurrent writes. It means that updates to the same entity group will always be serialized and may create undue contention if there are many entities in that group.
