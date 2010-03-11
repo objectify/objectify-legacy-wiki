@@ -7,6 +7,8 @@ This is a combined introduction to Objectify and to the Appengine datastore.
 
 So, you want to persist some data.  You've probably looked at the [http://code.google.com/appengine/docs/java/datastore/overview.html datastore documentation] and thought "crap, that's complicated!"  Entities, query languages, fetch groups, detaching, transactions... hell those things have bloody _lifecycles_!  However, the complexity of JDO is hiding a lot of simplicity under the covers.  
 
+The first thing you should do is set aside all your preconceived notions about relational databases.  *The GAE datastore is not an RDBMS*.  In fact, it acts much more like a !HashMap that gives you the additional ability to index and query for values.  When you think of the datastore, imagine a persistent !HashMap.
+
 = Entities =
 
 This document will talk a lot about entities.  An _entity_ is an object's worth of data in the datastore.  Using Objectify, an entity will correspond to a single POJO class you define.  In the datastore, an entity is a HashMap-like object of type Entity.  Conceptually, they are the same.
