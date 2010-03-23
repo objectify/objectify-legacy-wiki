@@ -241,7 +241,7 @@ These {{{If}}} conditions work with both {{{@Indexed}}} and {{{@Unindexed}}} on 
 
 Check the [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/com/googlecode/objectify/condition/package-summary.html javadocs] for available classes.  Here are some basics to start:  {{{IfNull.class, IfFalse.class, IfTrue.class, IfZero.class, IfEmptyString.class, IfDefault.class}}}
 
-=== IfDefault.class ===
+=== {{{IfDefault.class}}} ===
 
 {{{IfDefault.class}}} is special.  It tests true when the field value is whatever the default value is when you construct an object of your class.  For example:
 
@@ -317,6 +317,8 @@ public class Player
     @NotSaved(IfDefault.class) Date retired = null;
 }
 }}}
+
+Note that {{{@NotSaved}}} values are not stored at all, so they aren't indexed and you can't query for them.
 
 = Relationships =
 
