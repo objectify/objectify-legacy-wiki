@@ -53,7 +53,7 @@ Actually, I lied again.  We don't force you to create keys by hand all the time.
 
 {{{
 Car c = objectify.get(Car.class, 959);
-Map<Key<Car>, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
+Map<Long, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
 }}}
 
 By the way, {{{Key}}} is used for relationship references as well.  Remember that value that defines a parent entity?  The type of this parent is {{{Key}}}:
