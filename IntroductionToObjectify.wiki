@@ -525,7 +525,7 @@ When a Person is get()ed, the {{{fullName}}} field will be loaded either the val
 
 Caveat:  Queries do not know about the rename; if you filter by "fullName", you will only get entities that have been converted.  You can still filter by "name" to get only the old ones.
 
-== Translating Data ==
+== Transforming Data ==
 
 Now that you've migrated all of your data to the new Person format, let's say you now want to store separate first and last names instead of a single fullName field.  Objectify can help:
 
@@ -549,13 +549,115 @@ You can specify {{{@AlsoLoad}}} on the parameter of any method that takes a sing
 
 Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
 
-== Moving Fields ==
-
-TODO:  moving fields from one entity to another
-
 == Changing Enums ==
 
-TODO:  working with enums
+Changing enum values is just a special case of transforming data.  Enums are actually stored as Strings (and actually, all fields can be converted to String automatically), so you can use an @AlsoLoad method to process the data.
+
+Let's say you wanted to delete the AQUA color and replace it with GREEN:
+
+{{{
+public class Car
+{
+    @Id Long id;
+    Color color;
+
+    void importColor(@AlsoLoad("color") String colorStr)
+    {
+        if ("AQUA".equals(colorStr))
+            this.color = Color.GREEN;
+        else
+            this.color = Color.valueOf(colorStr);
+    }
+}
+}}}
+
+The {{{@AlsoLoad}}} method automatically overrides the loading of the Color field, but the Color field is what gets written on save.  Note that you cannot have conflicting {{{@AlsoLoad}}} values on multiple methods.
+
+== Moving Fields ==
+
+Changing the structure of your entities is by far the most challenging kind of schema migration; perhaps you want to combine two entities into one, or perhaps you want to move an {{{@Embedded}}} field into a separate entity.  There are many possible scenarios that require many different approaches.  Your essential tools are:
+
+  * {{{@AlsoLoad}}}, which lets you load from a variety of field names (or former field names), and lets you transform data in methods.
+  * {{{@NotSaved}}}, which lets you load data into fields without saving them again.
+  * {{{@PostLoad}}}, which lets you execute arbitrary code after all fields have been loaded.
+  * {{{@PrePersist}}}, which lets you execute arbitrary code before your entity gets written to the datastore.
+
+Let's say you have some embedded address fields and you want to make them into a separate Address entity.  You start with:
+
+{{{
+public class Person
+{
+    @Id Long id;
+    String name;
+    String street;
+    String city;
+}
+}}}
+
+You can take two general approaches, either of which can be appropriate depending on how you use the data.  You can perform the transformation on save or on load.  Here is how you do it on load:
+
+{{{
+public class Address
+{
+    @Id Long id;
+    String street;
+    String city;
+}
+
+public class Person
+{
+    @Id Long id;
+    String name;
+
+    @NotSaved String street;
+    @NotSaved String city;
+
+    Key<Address> address;
+
+    @PostLoad void onLoad()
+    {
+        if (this.street != null || this.city != null)
+        {
+            Objectify ofy = ObjectifyService.begin();
+            this.address = ofy.put(new Address(this.street, this.city));
+            ofy.put(this);
+        }
+    }
+}
+}}}
+
+If changing the data on load is not right for your app, you can change it on save:
+
+{{{
+public class Address
+{
+    @Id Long id;
+    String street;
+    String city;
+}
+
+public class Person
+{
+    @Id Long id;
+    String name;
+
+    @NotSaved String street;
+    @NotSaved String city;
+
+    Key<Address> address;
+
+    @PrePersist void onSave()
+    {
+        if (this.street != null || this.city != null)
+        {
+            Objectify ofy = ObjectifyService.begin();
+            this.address = ofy.put(new Address(this.street, this.city));
+        }
+    }
+}
+}}}
+
+If you have an especially difficult transformation, post to the objectify-appengine google group.  We're happy to help.
 
 = @Embedded =
 
