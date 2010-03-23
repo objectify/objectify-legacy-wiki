@@ -5,12 +5,12 @@
 2010-??-??
   * Requires Appengine SDK 1.3.1 or newer
 
-  * Changed return type of Objectify.get(Class<? extends T> clazz, Iterable<S> idsOrNames) to Map<S, T> rather than Map<Key<T>, T>
+  * Changed return type of {{{Objectify.get(Class<? extends T> clazz, Iterable<S> idsOrNames)}}} to {{{Map<S, T>}}} rather than {{{Map<Key<T>, T>}}}
   * Added support for partial index conditions to @Indexed and @Unindexed
   * Added @NotSaved (with conditions)
   * Added @AlsoLoad as replacement for @OldName
   * Deprecated @OldName
-  * Added Objectify.getFactory() method
+  * Added {{{Objectify.getFactory()}}} method
   * Added wrapper helper classes for Objectify, Query, and QueryResultIterator
 
 = 2.0.2 =
