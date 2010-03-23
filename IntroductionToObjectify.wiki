@@ -483,6 +483,78 @@ You can interleave multiple transactions or nontransactional actions as long as 
 
 Yes, this means you can get() objects from a transactional Objectify and put() to a nontrasactional Objectify. 
 
+= Migrating Schemas =
+
+It is a rare schema that remains unchanged through the life of an application.  BigTable's schemaless nature is both a blessing and a curse - you can easily change schemas object-by-object on the fly, but you can't easily do it in bulk with an ALTER TABLE.  Objectify provides some simple but powerful tools to help with common types of structure change.
+
+The basic process of schema migration using Objectify looks like this:
+
+  # Change your entity classes to reflect your desired schema.
+  # Use Objectify's annotations to map data in the old schema onto the new schema.
+  # Deploy your code, which now works with objects in the old schema and the new schema.
+  # Let your natural get()/put() churn convert objects for as long as you care to wait.
+  # Run a batch job to get() & put() any remaining entities.
+
+Here are some common cases.
+
+== Renaming A Field ==
+
+Let's say you have an entity that looks like this:
+
+{{{
+public class Person
+{
+    @Id Long id;
+    String name;
+}
+}}}
+
+You're doing some refactoring and you want to rename the field "name" to "fullName".  You can!
+
+{{{
+public class Person
+{
+    @Id Long id;
+    @AlsoLoad("name") String fullName;
+}
+}}}
+
+When a Person is get()ed, the {{{fullName}}} field will be loaded either the value of _fullName_ or _name_.  If both fields exist, an IllegalStateException will be thrown.  When put(), only _fullName_ will be written.
+
+Caveat:  Queries do not know about the rename; if you filter by "fullName", you will only get entities that have been converted.  You can still filter by "name" to get only the old ones.
+
+== Translating Data ==
+
+Now that you've migrated all of your data to the new Person format, let's say you now want to store separate first and last names instead of a single fullName field.  Objectify can help:
+
+{{{
+public class Person
+{
+    @Id Long id;
+    String firstName;
+    String lastName;
+
+    void importCruft(@AlsoLoad("fullName") String full)
+    {
+        String[] names = full.split(" ");
+        this.firstName = names[0];
+        this.lastName = names[1];
+    }
+}
+}}}
+
+You can specify {{{@AlsoLoad}}} on the parameter of any method that takes a single parameter.  The parameter must be type-appropriate for what is in the datastore; you can pass Object and use reflection if you aren't sure.  Process the data in whatever way you see fit.  When the entity is put() again, it will only have _firstName_ and _lastName_.
+
+Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
+
+== Moving Fields ==
+
+TODO:  moving fields from one entity to another
+
+== Changing Enums ==
+
+TODO:  working with enums
+
 = @Embedded =
 
 Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
@@ -644,21 +716,21 @@ The synthetic ^null property only exists if the collection contains nulls.  It i
 
 == Schema Migration ==
 
-The {{{@OldName}}} annotation can be used on any field, including {{{@Embedded}}} fields.  For example, this class will safely read in instances previously saved with {{{EntityWithEmbeddedCollection}}}:
+The {{{@AlsoLoad}}} annotation can be used on any field, including {{{@Embedded}}} fields.  For example, this class will safely read in instances previously saved with {{{EntityWithEmbeddedCollection}}}:
 
 {{{
 class Together {
-    @OldName("foo") String partOne;
-    @OldName("two.bar") String partTwo;
+    @AlsoLoad("foo") String partOne;
+    @AlsoLoad("two.bar") String partTwo;
 }
 
 class NextEntity {
     @Id Long id;
-    @OldName("ones") @Embedded List<Together> stuff = new ArrayList<Together>();
+    @AlsoLoad("ones") @Embedded List<Together> stuff = new ArrayList<Together>();
 }
 }}}
 
-{{{@OldName}}} methods work as well, however you cannot use {{{@Embedded}}} on method parameters.
+{{{@AlsoLoad}}} methods work as well, however you cannot use {{{@Embedded}}} on method parameters.
 
 = @Serialized =
 
@@ -703,78 +775,6 @@ class EntityWithSerialized {
     @Serialized SomeStuff stuff;
 }
 }}}
-
-= Migrating Schemas =
-
-It is a rare schema that remains unchanged through the life of an application.  BigTable's schemaless nature is both a blessing and a curse - you can easily change schemas object-by-object on the fly, but you can't easily do it in bulk with an ALTER TABLE.  Objectify provides some simple but powerful tools to help with common types of structure change.
-
-The basic process of schema migration using Objectify looks like this:
-
-  # Change your entity classes to reflect your desired schema.
-  # Use Objectify's annotations to map data in the old schema onto the new schema.
-  # Deploy your code, which now works with objects in the old schema and the new schema.
-  # Let your natural get()/put() churn convert objects for as long as you care to wait.
-  # Run a batch job to get() & put() any remaining entities.
-
-Here are some common cases.
-
-== Renaming A Field ==
-
-Let's say you have an entity that looks like this:
-
-{{{
-public class Person
-{
-    @Id Long id;
-    String name;
-}
-}}}
-
-You're doing some refactoring and you want to rename the field "name" to "fullName".  You can!
-
-{{{
-public class Person
-{
-    @Id Long id;
-    @OldName("name") String fullName;
-}
-}}}
-
-When a Person is get()ed, the {{{fullName}}} field will be loaded either the value of _fullName_ or _name_.  If both fields exist, an IllegalStateException will be thrown.  When put(), only _fullName_ will be written.
-
-Caveat:  Queries do not know about the rename; if you filter by "fullName", you will only get entities that have been converted.  You can still filter by "name" to get only the old ones.
-
-== Translating Data ==
-
-Now that you've migrated all of your data to the new Person format, let's say you now want to store separate first and last names instead of a single fullName field.  Objectify can help:
-
-{{{
-public class Person
-{
-    @Id Long id;
-    String firstName;
-    String lastName;
-
-    void importCruft(@OldName("fullName") String full)
-    {
-        String[] names = full.split(" ");
-        this.firstName = names[0];
-        this.lastName = names[1];
-    }
-}
-}}}
-
-You can specify {{{@OldName}}} on the parameter of any method that takes a single parameter.  The parameter must be type-appropriate for what is in the datastore; you can pass Object and use reflection if you aren't sure.  Process the data in whatever way you see fit.  When the entity is put() again, it will only have _firstName_ and _lastName_.
-
-Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
-
-== Moving Fields ==
-
-TODO:  moving fields from one entity to another
-
-== Changing Enums ==
-
-TODO:  working with enums
 
 = Caching =
 
