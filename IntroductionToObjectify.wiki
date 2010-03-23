@@ -16,12 +16,12 @@ public class Car
 {
     @Id Long id;
     String vin;
-    @Unindexed String color;
+    int color;
     @Transient String doNotPersist;
 
     private Car() {}
     
-    public Car(String vin, long color)
+    public Car(String vin, int color)
     {
         this.vin = vin;
         this.color = color;
@@ -40,8 +40,6 @@ Things to note:
   * You can persist any of the [http://code.google.com/appengine/docs/java/datastore/dataclasses.html#Core_Value_Types core value types], Collections (ie Lists and Sets) of the core value types, or arrays of the core value types.  You can also persist properties of type {{{Key}}}.
 
   * There must be a no-arg constructor (or no constructors - Java creates a default no-arg constructor).  The no-arg constructor can have any protection level (private, public, etc).
-
-  * For fields that will never be queried against, use @Unindexed to reduce the cost of building indexes and storing them.
 
 More information can be found in the AnnotationReference.
 
@@ -185,6 +183,138 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
             break;
         }
     }
+}
+}}}
+
+= Optimizing With @Indexed, @Unindexed, and @NotSaved =
+
+Indexes are necessary for queries, but they are very expensive to create and update.  It costs, in api_cpu_ms, about 60ms to put() a single entity with no indexes.  Each standard indexed field adds 20ms to this number.  The indexes are written in parallel, so they do not add real-world time... but you'll see the real-world cost on your bill at the end of the week!  Indexes also consume a significant amount of storage space - sometimes many times the amount of original data.
+
+== @Indexed and @Unindexed ==
+
+By default, all entity fields except {{{Text}}} and {{{Blob}}} are indexed.  You can control this behavior with {{{@Indexed}}} and {{{@Unindexed}}} annotations on fields or classes:
+
+{{{
+// By default, fields are indexed
+public class Car
+{
+    @Id Long id;
+    String vin;
+    @Unindexed String color;
+}
+
+// This has exactly the same effect
+@Unindexed
+public class Car
+{
+    @Id Long id;
+    @Indexed String vin;
+    String color;
+}
+}}}
+
+== Partial Indexes ==
+
+Often you only need to query on a particular subset of values for a field.  If these represent a small percentage of your entities, why index all the rest?  Some examples:
+
+  * You might have a boolean "admin" field and only ever need to query for a list of the (very few) admins.
+  * You might have a "status" field and never need to query for inactive values.
+  * Your queries might not include null values.
+
+Objectify gives developers the ability to define arbitrary conditions for any field.  You can create your own {{{If}}} classes or use one of the provided ones:
+
+{{{
+public class Person
+{
+    @Id Long id;
+    String name;
+
+    // The admin field is only indexed when it is true
+    @Unindexed(IfFalse.class) boolean admin;
+
+    // You can provide multiple conditions, any of which will satisfy
+    @Unindexed({IfNull.class, IfEmptyString.class}) String title;
+}
+}}}
+
+These {{{If}}} conditions work with both {{{@Indexed}}} and {{{@Unindexed}}} on fields.  You cannot specify {{{If}}} conditions on the class-level annotations.
+
+Check the [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/com/googlecode/objectify/condition/package-summary.html javadocs] for available classes.  Here are some basics to start:  {{{IfNull.class, IfFalse.class, IfTrue.class, IfZero.class, IfEmptyString.class, IfDefault.class}}}
+
+=== IfDefault.class ===
+
+{{{IfDefault.class}}} is special.  It tests true when the field value is whatever the default value is when you construct an object of your class.  For example:
+
+{{{
+public class Account
+{
+    @Id Long id;
+
+    // Only indexed when status is something other than INACTIVE
+    @Unindexed(IfDefault.class) StatusType status = StatusType.INACTIVE;
+}
+}}}
+
+Note that you can initialize field values inline (as above) or in your no-arg constructor; either will work.
+
+=== Custom Conditions ===
+
+You can easily create your own custom conditions by extending {{{ValueIf}}} or {{{PojoIf}}}.  {{{ValueIf}}} is a simple test of a field value.  For example:
+
+{{{
+public static class IfGREEN extends ValueIf<Color>
+{
+    @Override
+    public boolean matches(Color value)
+    {
+        return color == Color.GREEN;
+    }
+}
+
+public class Car
+{
+    @Id Long id;
+    @Unindexed(IfGREEN.class) Color color;
+}
+}}}
+
+You can use {{{PojoIf}}} to examine other fields to determine whether or not to index!  This example is inspired by the example in the [http://en.wikipedia.org/wiki/Partial_index Partial Index] Wikipedia page, and will use a static inner class for convenience:
+
+{{{
+// We are modeling:  create index partial_salary on employee(age) where salary > 2100;
+@Unindexed
+public class Employee
+{
+    static class SalaryCheck extends PojoIf<Employee>
+    {
+        @Override
+        public boolean matches(Employee pojo)
+        {
+            return pojo.salary > 2100;
+        }
+    }
+
+    @Id Long id;
+    @Index(SalaryCheck.class) int age;
+    int salary;
+}
+}}}
+
+You can examine the [http://code.google.com/p/objectify-appengine/source/browse/#svn/trunk/src/com/googlecode/objectify/condition source code] of the {{{If}}} classes to see how to construct your own.  Most are one or two lines of code.
+
+== @NotSaved ==
+
+If you would like to exclude a field value from being stored, you can use the {{{@NotSaved}}} annotation.  The field will not be saved and will not occupy any space in the datastore.  This works well in concert with {{{IfDefault.class}}}:
+
+{{{
+@Unindexed
+public class Player
+{
+    @Id Long id;
+    @Indexed String name;
+    @NotSaved(IfDefault.class) RankType rank = RankType.PRIVATE;
+    @NotSaved(IfDefault.class) int health = 100;
+    @NotSaved(IfDefault.class) Date retired = null;
 }
 }}}
 
@@ -352,78 +482,6 @@ finally
 You can interleave multiple transactions or nontransactional actions as long as you obey the the cardinal rule:  Within a single transaction (defined by an Objectify object created with beginTransaction()), you may only read or write from a single entity group.
 
 Yes, this means you can get() objects from a transactional Objectify and put() to a nontrasactional Objectify. 
-
-= Migrating Schemas =
-
-It is a rare schema that remains unchanged through the life of an application.  BigTable's schemaless nature is both a blessing and a curse - you can easily change schemas object-by-object on the fly, but you can't easily do it in bulk with an ALTER TABLE.  Objectify provides some simple but powerful tools to help with common types of structure change.
-
-The basic process of schema migration using Objectify looks like this:
-
-  # Change your entity classes to reflect your desired schema.
-  # Use Objectify's annotations to map data in the old schema onto the new schema.
-  # Deploy your code, which now works with objects in the old schema and the new schema.
-  # Let your natural get()/put() churn convert objects for as long as you care to wait.
-  # Run a batch job to get() & put() any remaining entities.
-
-Here are some common cases.
-
-== Renaming A Field ==
-
-Let's say you have an entity that looks like this:
-
-{{{
-public class Person
-{
-    @Id Long id;
-    String name;
-}
-}}}
-
-You're doing some refactoring and you want to rename the field "name" to "fullName".  You can!
-
-{{{
-public class Person
-{
-    @Id Long id;
-    @OldName("name") String fullName;
-}
-}}}
-
-When a Person is get()ed, the {{{fullName}}} field will be loaded either the value of _fullName_ or _name_.  If both fields exist, an IllegalStateException will be thrown.  When put(), only _fullName_ will be written.
-
-Caveat:  Queries do not know about the rename; if you filter by "fullName", you will only get entities that have been converted.  You can still filter by "name" to get only the old ones.
-
-== Translating Data ==
-
-Now that you've migrated all of your data to the new Person format, let's say you now want to store separate first and last names instead of a single fullName field.  Objectify can help:
-
-{{{
-public class Person
-{
-    @Id Long id;
-    String firstName;
-    String lastName;
-
-    void importCruft(@OldName("fullName") String full)
-    {
-        String[] names = full.split(" ");
-        this.firstName = names[0];
-        this.lastName = names[1];
-    }
-}
-}}}
-
-You can specify {{{@OldName}}} on the parameter of any method that takes a single parameter.  The parameter must be type-appropriate for what is in the datastore; you can pass Object and use reflection if you aren't sure.  Process the data in whatever way you see fit.  When the entity is put() again, it will only have _firstName_ and _lastName_.
-
-Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
-
-== Moving Fields ==
-
-TODO:  moving fields from one entity to another
-
-== Changing Enums ==
-
-TODO:  working with enums
 
 = @Embedded =
 
@@ -645,6 +703,78 @@ class EntityWithSerialized {
     @Serialized SomeStuff stuff;
 }
 }}}
+
+= Migrating Schemas =
+
+It is a rare schema that remains unchanged through the life of an application.  BigTable's schemaless nature is both a blessing and a curse - you can easily change schemas object-by-object on the fly, but you can't easily do it in bulk with an ALTER TABLE.  Objectify provides some simple but powerful tools to help with common types of structure change.
+
+The basic process of schema migration using Objectify looks like this:
+
+  # Change your entity classes to reflect your desired schema.
+  # Use Objectify's annotations to map data in the old schema onto the new schema.
+  # Deploy your code, which now works with objects in the old schema and the new schema.
+  # Let your natural get()/put() churn convert objects for as long as you care to wait.
+  # Run a batch job to get() & put() any remaining entities.
+
+Here are some common cases.
+
+== Renaming A Field ==
+
+Let's say you have an entity that looks like this:
+
+{{{
+public class Person
+{
+    @Id Long id;
+    String name;
+}
+}}}
+
+You're doing some refactoring and you want to rename the field "name" to "fullName".  You can!
+
+{{{
+public class Person
+{
+    @Id Long id;
+    @OldName("name") String fullName;
+}
+}}}
+
+When a Person is get()ed, the {{{fullName}}} field will be loaded either the value of _fullName_ or _name_.  If both fields exist, an IllegalStateException will be thrown.  When put(), only _fullName_ will be written.
+
+Caveat:  Queries do not know about the rename; if you filter by "fullName", you will only get entities that have been converted.  You can still filter by "name" to get only the old ones.
+
+== Translating Data ==
+
+Now that you've migrated all of your data to the new Person format, let's say you now want to store separate first and last names instead of a single fullName field.  Objectify can help:
+
+{{{
+public class Person
+{
+    @Id Long id;
+    String firstName;
+    String lastName;
+
+    void importCruft(@OldName("fullName") String full)
+    {
+        String[] names = full.split(" ");
+        this.firstName = names[0];
+        this.lastName = names[1];
+    }
+}
+}}}
+
+You can specify {{{@OldName}}} on the parameter of any method that takes a single parameter.  The parameter must be type-appropriate for what is in the datastore; you can pass Object and use reflection if you aren't sure.  Process the data in whatever way you see fit.  When the entity is put() again, it will only have _firstName_ and _lastName_.
+
+Caution:  Objectify has no way of knowing that the importCruft() method has loaded the firstName and lastName fields.  If both fullName and firstName/lastName exist in the datastore, the results are undefined.
+
+== Moving Fields ==
+
+TODO:  moving fields from one entity to another
+
+== Changing Enums ==
+
+TODO:  working with enums
 
 = Caching =
 
