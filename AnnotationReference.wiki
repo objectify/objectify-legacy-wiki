@@ -12,13 +12,13 @@ class Employee {
    @Unindexed int vacationDays;
 
    // field getting renamed
-   @OldName("boss") Key<Employee> manager;
+   @AlsoLoad("boss") Key<Employee> manager;
 
    String firstName;
    String lastName;
 
    // we used to store fullName, now we store first and last separately
-   public void oldWay(@OldName("fullName") String fullName)
+   public void oldWay(@AlsoLoad("fullName") String fullName)
    {
        String[] split = fullName.split(" ");
        firstName = split[0];
@@ -59,6 +59,7 @@ class Employee {
 == @com.googlecode.objectify.annotation.Indexed ==
   * Placed on a field or class.
   * When placed on a class, sets the default state for all fields of the class.
+  * Can take {{{If}}} conditions which allow partial indexing.
   * @Indexed state is inherited by embedded classes and their fields, but can be overriden with @Unindexed.
   * Indexed fields cost more space and cpu time to store, but can be queried on.
   * Translates to {{{Entity.setProperty()}}} at the low-level api.
@@ -67,14 +68,15 @@ class Employee {
 == @com.googlecode.objectify.annotation.Unindexed ==
   * Placed on a field or class.
   * When placed on a class, sets the default state for all fields of the class.
+  * Can take {{{If}}} conditions which allow partial indexing.
   * @Unindexed state is inherited by embedded classes and their fields, but can be overridden with @Indexed.
   * Unindexed fields consume less space and require less cpu time to store, but cannot be queried for.
   * Translates to {{{Entity.setUnindexedProperty()}}} at the low-level api.
 
-== @com.googlecode.objectify.annotation.OldName ==
+== @com.googlecode.objectify.annotation.AlsoLoad ==
   * Placed on a field or the single parameter to a method
   * Requires one value, the name of a property in the datastore to load into the field.
-  * Example:  {{{@OldName("whatThisFieldUsedToBeCalled")}}}
+  * Example:  {{{@AlsoLoad("whatThisFieldUsedToBeCalled")}}}
   * Causes the field to be loaded from an alternate name in the underlying datastore
   * If placed on the parameter to a method that takes a single parameter, the method will be called with the datastore value
   * If there is a load conflict with the true name of field, an IllegalStateException will be thrown.
