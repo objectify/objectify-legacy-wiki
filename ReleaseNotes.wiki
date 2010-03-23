@@ -1,13 +1,17 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
-= 2.0.3 (not released yet) =
+= 2.1 (not released yet) =
 2010-??-??
   * Requires Appengine SDK 1.3.1 or newer
 
-  * Added @AlsoLoad
-  * Added @LoadOnly
+  * Changed return type of Objectify.get(Class<? extends T> clazz, Iterable<S> idsOrNames) to Map<S, T> rather than Map<Key<T>, T>
+  * Added support for partial index conditions to @Indexed and @Unindexed
+  * Added @NotSaved (with conditions)
+  * Added @AlsoLoad as replacement for @OldName
   * Deprecated @OldName
+  * Added Objectify.getFactory() method
+  * Added wrapper helper classes for Objectify, Query, and QueryResultIterator
 
 = 2.0.2 =
 2010-02-25
