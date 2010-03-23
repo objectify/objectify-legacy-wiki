@@ -98,11 +98,11 @@ Map<Key<Car>, Car> fetched1 = ofy.get(
     new Key<Car>(Car.class, unimog.id),
     new Key<Car>(Car.class, tesla.id));
 
-// More convenient shorthand
-Map<Key<Car>, Car> fetched2 = ofy.get(Car.class, new Long[] { porche.id, unimog.id, tesla.id });
+// More convenient shorthand, note the return type
+Map<Long, Car> fetched2 = ofy.get(Car.class, new Long[] { porche.id, unimog.id, tesla.id });
 
 // This works too
-Map<Key<Car>, Car> fetched3 = ofy.get(Car.class, Arrays.asList(porche.id, unimog.id, tesla.id));
+Map<Long, Car> fetched3 = ofy.get(Car.class, Arrays.asList(porche.id, unimog.id, tesla.id));
 
 // Batch operations need not be homogenous:
 Map<Key<Vehicle>, Vehicle> fetched4 = ofy.get(
