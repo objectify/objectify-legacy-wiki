@@ -188,7 +188,7 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
 
 = Optimizing Storage =
 
-Indexes are necessary for queries, but they are very expensive to create and update.  It costs, in api_cpu_ms, about 60ms to put() a single entity with no indexes.  Each standard indexed field adds 20ms to this number.  The indexes are written in parallel, so they do not add real-world time... but you'll see the real-world cost on your bill at the end of the week!  Indexes also consume a significant amount of storage space - sometimes many times the amount of original data.
+Indexes are necessary for queries, but they are very expensive to create and update.  It costs, in api_cpu_ms, about 48ms to put() a single entity with no indexes.  Each standard indexed field adds 17ms to this number.  The indexes are written in parallel, so they do not add real-world time... but you'll see the real-world cost on your bill at the end of the week!  Indexes also consume a significant amount of storage space - sometimes many times the amount of original data.
 
 == @Indexed and @Unindexed ==
 
