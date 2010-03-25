@@ -73,6 +73,11 @@ class Employee {
   * Unindexed fields consume less space and require less cpu time to store, but cannot be queried for.
   * Translates to {{{Entity.setUnindexedProperty()}}} at the low-level api.
 
+== @com.googlecode.objectify.annotation.NotSaved ==
+  * Placed on a field.
+  * Can take {{{If}}} conditions which specify particular values which are not saved.
+  * Field is still loaded as normal.
+
 == @com.googlecode.objectify.annotation.AlsoLoad ==
   * Placed on a field or the single parameter to a method
   * Requires one value, the name of a property in the datastore to load into the field.
