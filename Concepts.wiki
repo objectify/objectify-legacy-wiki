@@ -90,7 +90,7 @@ If you execute within a transaction:
   * You must only get/put/delete/query objects within a single entity group.
     * Queries must include an ancestor (like the root entity).
   * All operations will either succeed completely or fail completely.
-  * get() and query operations will see the database as if it were frozen in time at the start of the transaction.  They will *not* even reflect put()s and delete()s you perform _within the transaction_.
+  * get() and query operations will see the database as if it were frozen in time at the start of the transaction.  They will *not* reflect put()s and delete()s you perform _within the transaction_.
   * If another process modifies your data before you commit, your datastore operations will fail with a {{{ConcurrentModificationException}}}
 
 If you execute without a transaction:
