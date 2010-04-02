@@ -11,9 +11,9 @@ The first thing you should do is set aside all your preconceived notions about r
 
 = Entities =
 
-This document will talk a lot about entities.  An _entity_ is an object's worth of data in the datastore.  Using Objectify, an entity will correspond to a single POJO class you define.  In the datastore, an entity is a HashMap-like object of type Entity.  Conceptually, they are the same.
+This document will talk a lot about entities.  An _entity_ is an object's worth of data in the datastore.  Using Objectify, an entity will correspond to a single POJO class you define.  In the datastore, an entity is a !HashMap-like object of type Entity.  Conceptually, they are the same.
 
-Since the datastore is conceptually a HashMap of keys to entities, and an entity is conceptually a HashMap of name/value pairs, your mental model of the datastore should be a HashMap of HashMaps!
+Since the datastore is conceptually a !HashMap of keys to entities, and an entity is conceptually a !HashMap of name/value pairs, your mental model of the datastore should be a !HashMap of !HashMaps!
 
 = Operations =
 
