@@ -7,7 +7,7 @@
 
   * Added ObjectifyOpts parameter to begin()
   * Added optional session cache
-  * Fixed automatic byte[] <-> Blob conversion
+  * Fixed automatic byte[] to Blob conversion
 
 = 2.1 =
 2010-03-25
