@@ -1,6 +1,14 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 2.2 =
+2010-??-??
+  * Requires Appengine SDK 1.3.2 or newer
+
+  * Added ObjectifyOpts parameter to begin()
+  * Added optional session cache
+  * Fixed automatic byte[] <-> Blob conversion
+
 = 2.1 =
 2010-03-25
   * Requires Appengine SDK 1.3.1 or newer
