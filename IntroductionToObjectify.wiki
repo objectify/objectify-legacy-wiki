@@ -485,6 +485,39 @@ You can interleave multiple transactions or nontransactional actions as long as 
 
 Yes, this means you can get() objects from a transactional Objectify and put() to a nontrasactional Objectify. 
 
+= Lifecycle Callbacks =
+
+Objectify supports two of the JPA lifecycle callbacks:  {{{@PostLoad}}} and {{{@PrePersist}}}.  If you mark methods on your POJO entity class (or any superclasses) with these annotations, they will be called:
+
+  * {{{@PostLoad}}} methods are called after your data has been populated on your POJO class from the datastore.
+  * {{{@PrePersist}}} methods are called just before your data is written to the datastore from your POJO class.
+
+You can have any number of these callback methods in your POJO entity class or its superclasses.  They will be called in order of declaration, with superclass methods called first.  Two parameter types are allowed:
+
+  * The instance of {{{Objectify}}} which is being used to load/save the entity.
+  * The datastore {{{Entity}}} which is associated with the Java POJO entity.
+
+{{{
+class MyEntityBase {
+    String foo;
+    String lowercaseFoo;
+    @PrePersist void maintainCaseInsensitiveSearchField() { this.lowercaseFoo = foo.toLowerCase(); }
+}
+
+class MyEntity extends MyEntityBase {
+    @Id Long id;
+
+    @Transient Date loaded;
+    @PostLoad void trackLoadedDate() { this.loaded = new Date(); }
+
+    List<String> stuff = new ArrayList<String>();
+    int stuffSize;   // indexed so we can query by list size
+    @PrePersist void maintainStuffSize() { this.stuffSize = stuff.size(); }
+
+    @PrePersist void doMore(Objectify ofy, Entity ent) { ... }
+}
+}}}
+
 = Migrating Schemas =
 
 It is a rare schema that remains unchanged through the life of an application.  BigTable's schemaless nature is both a blessing and a curse - you can easily change schemas object-by-object on the fly, but you can't easily do it in bulk with an ALTER TABLE.  Objectify provides some simple but powerful tools to help with common types of structure change.
@@ -614,11 +647,10 @@ public class Person
 
     Key<Address> address;
 
-    @PostLoad void onLoad()
+    @PostLoad void onLoad(Objectify ofy)
     {
         if (this.street != null || this.city != null)
         {
-            Objectify ofy = ObjectifyService.begin();
             this.address = ofy.put(new Address(this.street, this.city));
             ofy.put(this);
         }
@@ -646,11 +678,10 @@ public class Person
 
     Key<Address> address;
 
-    @PrePersist void onSave()
+    @PrePersist void onSave(Objectify ofy)
     {
         if (this.street != null || this.city != null)
         {
-            Objectify ofy = ObjectifyService.begin();
             this.address = ofy.put(new Address(this.street, this.city));
         }
     }
@@ -934,39 +965,6 @@ What you should know about the global cache:
   * You can disable the global cache for an {{{Objectify}}} instance by creating it with the appropriate {{{ObjectifyOpts}}}.
   * The global cache can work in concert with the session cache.
     * Remember:  The session cache caches entity Java object instances, the global cache caches entity data.
-
-= Lifecycle Callbacks =
-
-Objectify supports two of the JPA lifecycle callbacks:  {{{@PostLoad}}} and {{{@PrePersist}}}.  If you mark methods on your POJO entity class (or any superclasses) with these annotations, they will be called:
-
-  * {{{@PostLoad}}} methods are called after your data has been populated on your POJO class from the datastore.
-  * {{{@PrePersist}}} methods are called just before your data is written to the datastore from your POJO class.
-
-You can have any number of these callback methods in your POJO entity class or its superclasses.  They will be called in order of declaration, with superclass methods called first.  Two parameter types are allowed:
-
-  * The instance of {{{Objectify}}} which is being used to load/save the entity.
-  * The datastore {{{Entity}}} which is associated with the Java POJO entity.
-
-{{{
-class MyEntityBase {
-    String foo;
-    String lowercaseFoo;
-    @PrePersist void maintainCaseInsensitiveSearchField() { this.lowercaseFoo = foo.toLowerCase(); }
-}
-
-class MyEntity extends MyEntityBase {
-    @Id Long id;
-
-    @Transient Date loaded;
-    @PostLoad void trackLoadedDate() { this.loaded = new Date(); }
-
-    List<String> stuff = new ArrayList<String>();
-    int stuffSize;   // indexed so we can query by list size
-    @PrePersist void maintainStuffSize() { this.stuffSize = stuff.size(); }
-
-    @PrePersist void doMore(Objectify ofy, Entity ent) { ... }
-}
-}}}
 
 -----
 
