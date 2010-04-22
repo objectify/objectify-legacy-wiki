@@ -8,6 +8,8 @@
   * Added ObjectifyOpts parameter to begin()
   * Added optional session cache
   * Fixed automatic byte[] to Blob conversion
+  * Added Query.list() and Query.listKeys() methods
+  * Fixed filtering with IN operator on key and id columns
 
 = 2.1 =
 2010-03-25
