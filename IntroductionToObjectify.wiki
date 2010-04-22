@@ -942,7 +942,10 @@ Objectify supports two of the JPA lifecycle callbacks:  {{{@PostLoad}}} and {{{@
   * {{{@PostLoad}}} methods are called after your data has been populated on your POJO class from the datastore.
   * {{{@PrePersist}}} methods are called just before your data is written to the datastore from your POJO class.
 
-You can have any number of these callback methods in your POJO entity class or its superclasses.  They will be called in order of declaration, with superclass methods called first.  Example:
+You can have any number of these callback methods in your POJO entity class or its superclasses.  They will be called in order of declaration, with superclass methods called first.  Two parameter types are allowed:
+
+  * The instance of {{{Objectify}}} which is being used to load/save the entity.
+  * The datastore {{{Entity}}} which is associated with the Java POJO entity.
 
 {{{
 class MyEntityBase {
@@ -960,6 +963,8 @@ class MyEntity extends MyEntityBase {
     List<String> stuff = new ArrayList<String>();
     int stuffSize;   // indexed so we can query by list size
     @PrePersist void maintainStuffSize() { this.stuffSize = stuff.size(); }
+
+    @PrePersist void doMore(Objectify ofy, Entity ent) { ... }
 }
 }}}
 
