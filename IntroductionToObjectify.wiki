@@ -882,7 +882,36 @@ class EntityWithSerialized {
 
 = Caching =
 
-Objectify integrates the appengine memcache to improve the performance of your application.  Simply annotate your entity class with {{{@Cached}}}:
+Objectify provides two different types of caches:
+
+  * A _session cache_ which holds entity instances inside a specific {{{Objectify}}} instance.
+  * A _global cache_ which holds entity data in the appengine memcache service.
+
+You must explicitly decide to use these caches.  If you do nothing, every get() will read through to the datastore.
+
+== Session Cache ==
+
+The session cache associates your entity object instances with a specific {{{Objectify}}} instance.  You must explicitly enable it by passing in {{{ObjectifyOpts}}} to the {{{ObjectifyService.begin()}}} method:
+
+{{{
+    ObjectifyOpts opts = new ObjectifyOpts().setSessionCache(true);
+    Objectify ofy = ObjectifyService.begin(opts);
+}}}
+
+Note:
+
+  * The session cache holds your *specific entity object instances*.  If you {{{get()}}} or {{{query()}}} for the same entity, you will receive the exact same Java entity object instance.
+  * The session cache is local to the {{{Objectify}}} instance.  If you {{{begin()}}} a new instance, it will have a separate cache.
+  * A {{{get()}}} (batch or otherwise) operation for a cached entity will return the entity instance *without* a call to the datastore or even to the memcache (if the global cache is enabled).  The operation is a simple hashmap lookup.
+  * A {{{query()}}} will return cached entity instances, however the (potentially expensive) call to the datastore will still be made.
+  * The session cache is *not* thread-safe.  You should never share an {{{Objectify}}} instance between threads.
+  * The session cache appears to be very similar to a JPA, JDO, or Hibernate session cache with one exception - there is no dirty change detection.  As per standard Objectify behavior, if you wish to change an entity in the datastore, you must explicitly {{{put()}}} your entity.
+
+== Global Cache ==
+
+Objectify can cache your entity data globally in the appengine memcache service for improved read performance.  This cache is shared by all running instances of your application.
+
+The global cache is enabled by default, however you must still annotate your entity classes with {{{@Cached}}} to make them cacheable:
 
 {{{
 @Cached
@@ -894,15 +923,17 @@ public class MyEntity {
 
 That's it!  Objectify will utilize the memcache service to reduce read load on the datastore.
 
-What you should know about caching:
+What you should know about the global cache:
 
-  * This feature is new and should be considered somewhat experimental.  However, all unit tests pass with the cache enabled.
   * The raw data of your entity is cached, not your POJO class.  Your objects will not be serialized.
   * Only get(), put(), and delete() interact with the cache.  query() is not cached.
   * Writes will "write through" the cache to the datastore.  Performance is only improved on read-heavy applications (which, fortunately, most are).
   * Negative results are cached as well as positive results.
   * Transactional reads bypass the cache.  Only successful commits modify the cache.
   * You can define an expiration time for each entity in the annotation: {{{@Cached(expirationSeconds=600)}}}.  By default entities will be cached until memory pressure (or an 'incident' in the datacenter) evicts them.
+  * You can disable the global cache for an {{{Objectify}}} instance by creating it with the appropriate {{{ObjectifyOpts}}}.
+  * The global cache can work in concert with the session cache.
+    * Remember:  The session cache caches entity Java object instances, the global cache caches entity data.
 
 = Lifecycle Callbacks =
 
