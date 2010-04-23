@@ -17,8 +17,6 @@ public class DAO extends DAOBase
     static {
         ObjectifyService.register(YourEntity.class);
         ObjectifyService.register(YourOtherEntity.class);
-
-        ObjectifyService.setDatastoreTimeoutRetryCount(3);
     }
 
     /** Your DAO can have your own useful methods */
