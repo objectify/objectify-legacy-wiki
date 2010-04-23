@@ -11,6 +11,7 @@
   * Added Query.list() and Query.listKeys() methods
   * Fixed filtering with IN operator on key and id columns
   * Lifecycle callbacks (@PostLoad and @PrePersist) can now take Objectify and/or Entity parameters
+  * Removed the datastore retry mechanism - this is now built into the appengine SDK.
 
 = 2.1 =
 2010-03-25
