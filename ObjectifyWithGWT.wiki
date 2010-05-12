@@ -26,3 +26,10 @@ Simply add this to your module.gwt.xml:
 }}}
 
 You can now manipulate your entity objects in GWT and seamlessly pass them back and forth to the server through GWT-RPC.  Objectify enables you to use Key<?>, Key (the datastore version), and all the datastore basic types (Link, Email, GeoPt, etc) in your client code.
+
+== Transience ==
+
+A careful distinction must be made between {{{@Transient}}} (the javax.persistence annotation) fields and {{{transient}}} (the Java keyword) fields:
+
+  * {{{@Transient}}} fields are ignored for the purposes of persistence.  They are still serialized in GWT.
+  * {{{transient}}} fields *are* persisted as normal.  However, they will NOT be serialized by GWT.
