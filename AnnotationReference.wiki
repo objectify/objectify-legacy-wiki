@@ -11,6 +11,12 @@ class Employee {
 
    @Unindexed int vacationDays;
 
+   // field value WILL be serialized (eg, with GWT) but will NOT be persisted in the datastore
+   @Transient int notPersistent;
+
+   // field value will NOT be serialized (eg, with GWT) but WILL be persisted in the datastore
+   transient int notSerialized;
+
    // field getting renamed
    @AlsoLoad("boss") Key<Employee> manager;
 
@@ -117,3 +123,8 @@ class Employee {
   * Called before the POJO is written to the datastore Entity.
   * Can be specified on multiple methods in this class or any base class.
   * Methods are called in declared order, with superclass methods first.
+
+== @javax.persistence.Transient ==
+  * Placed on any field
+  * Makes the field opaque to storage in the datastore; the field will be ignored for both read and write.
+  * Not to be confused with _transient_ fields which *will* be persisted in the datastore but will not be serialized during Java or GWT serialization.
