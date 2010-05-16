@@ -41,6 +41,8 @@ Things to note:
 
   * There must be a no-arg constructor (or no constructors - Java creates a default no-arg constructor).  The no-arg constructor can have any protection level (private, public, etc).
 
+  * If you are converting entities from a JDO project, note that Objectify uses JPA annotations ({{{javax.persistence}}}) and not JDO annotations ({{{javax.jdo.annotations}}}).  Of course, Objectify adds several annotations of its own.
+
 More information can be found in the AnnotationReference.
 
 = Registering Your Classes =
