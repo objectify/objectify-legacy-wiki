@@ -90,9 +90,7 @@ Objectify ofy = ObjectifyService.begin();
 Car porsche = new Car("2FAST", "red");
 Car unimog = new Car("2SLOW", "green");
 Car tesla = new Car("2NEW", "blue");
-List<Car> cars = new ArrayList<Car>();
-cars.add(porshe);cars.add(unimog);cars.add(tesla)
-ofy.put(cars);    // Any Iterable<Car> also work
+ofy.put(tesla, unimog, porsche);    //varargs; Car[] and Iterable<Car> also work
 
 // Get the data back
 Map<Key<Car>, Car> fetched1 = ofy.get(
