@@ -137,3 +137,4 @@ Unless you specifically require transactional behavior, you should probably avoi
  * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/afa0d43de5db483f Controlling user access to data with queries]
  * [http://iqbalyusuf.wordpress.com/jersey-guice-on-google-app-engine-java/ Jersey + Guice on Google App Engine Java]
  * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/25a9abfc86f8be51 How to emulate @Unique]
+ * [http://code.google.com/p/play-framework-objectify/ Example integration with the Play Framework]
