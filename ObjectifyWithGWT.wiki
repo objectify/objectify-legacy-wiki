@@ -34,6 +34,12 @@ A careful distinction must be made between {{{@Transient}}} (the javax.persisten
   * {{{@Transient}}} fields are ignored for the purposes of persistence.  They are still serialized in GWT.
   * {{{transient}}} fields *are* persisted as normal.  However, they will NOT be serialized by GWT.
 
+== Annotations ==
+
+In general GWT will ignore annotation on your classes. It is not necessary to include them in your gwt include modules.
+ 
+Annotations like {{{@Entity}}}, {{{@LoadAlso}}}, and the like will be ignored during GWT serialization. 
+
 == Client-Side Access ==
 
 None of the Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, DAO) can be used from GWT client code. Basically only entities (and their associated data (types) are allowed to cross the GWT Service boundaries).
