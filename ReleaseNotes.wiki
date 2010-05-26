@@ -1,6 +1,15 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 2.2.1 =
+2010-??-??
+  * Requires Appengine SDK 1.3.2 or newer
+
+  * Added typesafe ObjectifyFactory.allocateIds() methods.
+  * Enums are persisted using the .name() method rather than .toString()
+  * Added varargs versions of Objectify.put() and Objectify.get()
+  * DAOBase now lets you use ObjectifyOpts
+
 = 2.2 =
 2010-04-22
   * Requires Appengine SDK 1.3.2 or newer
