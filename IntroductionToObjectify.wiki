@@ -534,6 +534,14 @@ The basic process of schema migration using Objectify looks like this:
 
 Here are some common cases.
 
+== Adding Or Removing Fields ==
+
+This is the easiest - just do it!
+
+You can add any fields to your classes; if there is no data in the datastore associated with that field, it will be left at its default value when the class is initialized.  This is worlds better than the exceptions you often get from JDO.
+
+You can remove a field from your classes.  The data in the datastore will be ignored when the entity is get().  When you next put() the entity, the entity will be saved without this field.
+
 == Renaming A Field ==
 
 Let's say you have an entity that looks like this:
