@@ -36,3 +36,17 @@ relationships.  Look at the raw Entity objects to see what structure
 JDO created - relationships are just a Key on one end or both.  If you
 make this field a Key<?> (or Collection<Key<?>>) in your Objectify
 entities, it will map just fine.
+
+== Does Objectify support JDO Fetch Groups? ==
+
+There is no such thing as a fetch group in the GAE datastore; entities
+are fetched in their entirety or not at all.  Objectify reflects the
+underlying nature of the datastore so it does not require this
+JDO-ism.
+
+== Does Objectify support JDO detach copy? ==
+
+There is no need for this JDO-ism either.  Objectify entities are
+exactly as you define them.  They are not bytecode-enhanced, proxied,
+or manipulated in any way.  Want to serialize your entity?  Just make
+sure it is Serializable.
