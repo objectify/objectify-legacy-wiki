@@ -1,6 +1,10 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 2.2.2 =
+Not released yet
+  * Now handles java.sql.Date
+
 = 2.2.1 =
 2010-06-01
   * Requires Appengine SDK 1.3.2 or newer
