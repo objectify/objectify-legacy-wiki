@@ -23,8 +23,18 @@ If it is a natural key, sure; Objectify allows this no problem. Here is a little
 == How can I integrate with memcached? ==
   * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation. Hint, add @Cached to your (entity) class.
 
-== How do I migrate from JDO to Objectify? ==
+== How do I do a like query (LIKE "foo%") ==
 
+You can do something like a startWith, or endWith if you reverse the order when stored and searched. You do a range query with the starting value you want, and a value just above the one you want.
+
+{{{
+String start = "foo";
+... = ofy.query(MyEntity.class).filter("field >=", start).filter("field <", start + "\uFFFD"); 
+}}}
+
+See this discussion for [http://groups.google.com/group/objectify-appengine/browse_thread/thread/51cebf7fdf13b9aa/895ddc627ed639cc more background and details]
+ 
+== How do I migrate from JDO to Objectify? ==
 You should have no trouble using Objectify side-by-side with JDO.
 Just don't use the javax.persistence.Entity annotation on Objectify
 entities, it will likely make the JDO bytecode enhancer try to enhance
