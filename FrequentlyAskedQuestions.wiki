@@ -60,3 +60,7 @@ There is no need for this JDO-ism either.  Objectify entities are
 exactly as you define them.  They are not bytecode-enhanced, proxied,
 or manipulated in any way.  Want to serialize your entity?  Just make
 sure it is Serializable.
+
+== Can I use Spring to automatically register entities? ==
+
+Yes you can, see the [http://code.google.com/p/objectify-appengine-spring/ objectify-appengine-spring] project.
