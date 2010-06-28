@@ -78,7 +78,7 @@ Of these issues, the last is the most fatal.  If you think "My application gets 
 
 Furthermore, classpath scanning costs accumulate.  If you use other tools that perform classpath scanning (Weld, Spring, JAX-RS, etc), they each will also spend 3-5s scanning your jars.  It isn't hard to push your cold-start time into the tens of seconds.
 
-That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  If you want to contribute this code, we would consider adding it as an optional module.
+That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  Spring users may wish to use the [http://code.google.com/p/objectify-appengine-spring/ objectify-appengine-spring] project.
 
 = Use Batch Gets Instead of Queries =
 
