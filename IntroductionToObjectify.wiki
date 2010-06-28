@@ -54,7 +54,7 @@ ObjectifyService.register(Car.class);
 ObjectifyService.register(Motorcycle.class);
 }}}
 
-Objectify does not scan your classpath for {{{@Entity}}} classes.  There are good reasons for and against this - see the  discussion in BestPractices.
+Objectify does not scan your classpath for {{{@Entity}}} classes.  There are good reasons for and against this - see the  discussion in BestPractices.  If you are using Spring, see the [http://code.google.com/p/objectify-appengine-spring/ objectify-appengine-spring] project.
 
 = Basic Operations: Get, Put, Delete =
 
