@@ -43,6 +43,10 @@ Things to note:
 
   * If you are converting entities from a JDO project, note that Objectify uses JPA annotations ({{{javax.persistence}}}) and not JDO annotations ({{{javax.jdo.annotations}}}).  Of course, Objectify adds several annotations of its own.
 
+  * {{{String}}} fields which store more than 500 characters (the GAE limit) are automatically converted to {{{Text}}} internally.
+
+  * {{{byte[]}}} fields are automatically converted to {{{Blob}}} internally.  {{{Byte[]}}} is persisted normally as an array of (potentially indexed) {{{Byte}}} objects.
+
 More information can be found in the AnnotationReference.
 
 = Registering Your Classes =
