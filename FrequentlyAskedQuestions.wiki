@@ -78,4 +78,10 @@ ofy.getDatastore().put( makeSomeLowLevelEntity() )
 ofy.getTxn().commit()
 }}}
 
-Yes you can!
+Yes you can! With a few caveats...
+
+  * You're still limited by GAE's restrictions on transactions (namely, all objects must be part of the same entity group).
+  * If you have session caching enabled, the direct-datastore put() will bypass the session cache.  If the session cache already held a value for that key, subsequent a get() from the Objectify instance will produce the (now incorrect) cached value.
+  * The global cache will remain consistent as long as you obtain the DatastoreService from ofy.getDatastore(); if you get it directly from DatastoreServiceFactory it will bypass Objectify's global (memcache) cache.
+
+But yeah, you're free to interleave Objectify and Low-Level API calls.
