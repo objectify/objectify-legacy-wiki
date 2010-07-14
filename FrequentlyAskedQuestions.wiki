@@ -64,3 +64,18 @@ sure it is Serializable.
 == Can I use Spring to automatically register entities? ==
 
 Yes you can, see the [http://code.google.com/p/objectify-appengine-spring/ objectify-appengine-spring] project.
+
+== Can I mix Low Level and Objectify writes in a single Objectify transaction? ==
+
+Example...
+
+{{{
+Objectify ofy = ObjectifyService.beginTransaction()
+
+ofy.put( makeSomeObject() )
+ofy.getDatastore().put( makeSomeLowLevelEntity() )
+
+ofy.getTxn().commit()
+}}}
+
+Yes you can!
