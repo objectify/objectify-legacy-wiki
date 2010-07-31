@@ -22,3 +22,9 @@ http://code.google.com/p/gaelyk-objectify-plugin/
 A plugin which integrates Objectify with the Play framework:
 
 http://code.google.com/p/play-framework-objectify/
+
+= Full Text Search =
+
+This is a sample application that provides fulltext search using Objectify:
+
+http://code.google.com/p/fulltext-search-in-objectify/
