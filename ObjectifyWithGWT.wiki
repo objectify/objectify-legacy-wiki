@@ -1,5 +1,4 @@
 #summary Using Objectify with Google Web Toolkit
-#labels Featured
 
 == Got CRUD? ==
 
