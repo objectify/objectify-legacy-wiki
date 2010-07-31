@@ -1,0 +1,23 @@
+#summary Third-party extensions to Objectify
+
+There are a number of extensions to Objectify developed by third-parties:
+
+<wiki:toc max_depth="1" />
+
+= Spring =
+
+The objectify-appengine-spring plugin integrates Objectify with Spring, providing automatic classpath scanning.
+
+http://code.google.com/p/objectify-appengine-spring/
+
+= Gaelyk and Groovy =
+
+This is a plugin that provides support for Objectify in Gaelyk applications.  Gaelyk is a toolkit for using Groovy on Appengine.
+
+http://code.google.com/p/gaelyk-objectify-plugin/
+
+= Play Framework =
+
+A plugin which integrates Objectify with the Play framework:
+
+http://code.google.com/p/play-framework-objectify/
