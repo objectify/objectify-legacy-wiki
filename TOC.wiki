@@ -10,3 +10,4 @@
   * [ObjectifyWithGWT Objectify With GWT]
   * [MavenRepository Maven Repository]
   * [ReleaseNotes Release Notes]
+  * [Extensions Extensions]
