@@ -21,10 +21,9 @@ Absolutely:
 If it is a natural key, sure; Objectify allows this no problem. Here is a little more of a discussion [http://groups.google.com/group/google-appengine-java/browse_thread/thread/998289f853f5a688/c50446d98eb90017?#c50446d98eb90017 about it.]
 
 == How can I integrate with memcached? ==
-  * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation. Hint, add @Cached to your (entity) class.
+See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation. Hint, add @Cached to your (entity) class.
 
 == How do I do a like query (LIKE "foo%") ==
-
 You can do something like a startWith, or endWith if you reverse the order when stored and searched. You do a range query with the starting value you want, and a value just above the one you want.
 
 {{{
@@ -35,47 +34,26 @@ String start = "foo";
 See this discussion for [http://groups.google.com/group/objectify-appengine/browse_thread/thread/51cebf7fdf13b9aa/895ddc627ed639cc more background and details]
  
 == How do I migrate from JDO to Objectify? ==
-You should have no trouble using Objectify side-by-side with JDO.
-Just don't use the javax.persistence.Entity annotation on Objectify
-entities, it will likely make the JDO bytecode enhancer try to enhance
-it. Don't use an annotation if you don't need to name your entity something different than the classname.
+You should have no trouble using Objectify side-by-side with JDO.  Just don't use the {{{javax.persistence.Entity}}} annotation on Objectify entities, it will likely make the JDO bytecode enhancer try to enhance it. You can either leave the annotation absent or use the {{{com.googlecode.objectify.annotation.Entity}}} substitute annotation instead.
 
-For the most part, migrating JDO classes to Objectify classes should
-be pretty straightforward.  The only trick will be mapping the
-relationships.  Look at the raw Entity objects to see what structure
-JDO created - relationships are just a Key on one end or both.  If you
-make this field a Key<?> (or Collection<Key<?>>) in your Objectify
-entities, it will map just fine.
+For the most part, migrating JDO classes to Objectify classes should be pretty straightforward.  The only trick will be mapping the relationships.  Look at the raw Entity objects to see what structure JDO created - relationships are just a Key on one end or both.  If you make this field a Key<?> (or Collection<Key<?>>) in your Objectify entities, it will map just fine.
 
 == Does Objectify support JDO Fetch Groups? ==
-
-There is no such thing as a fetch group in the GAE datastore; entities
-are fetched in their entirety or not at all.  Objectify reflects the
-underlying nature of the datastore so it does not require this
-JDO-ism.
+There is no such thing as a fetch group in the GAE datastore; entities are fetched in their entirety or not at all.  Objectify reflects the underlying nature of the datastore so it does not require this JDO-ism.
 
 == Does Objectify support JDO detach copy? ==
-
-There is no need for this JDO-ism either.  Objectify entities are
-exactly as you define them.  They are not bytecode-enhanced, proxied,
-or manipulated in any way.  Want to serialize your entity?  Just make
-sure it is Serializable.
-
-== Can I use Spring to automatically register entities? ==
-
-Yes you can, see the [http://code.google.com/p/objectify-appengine-spring/ objectify-appengine-spring] project.
+There is no need for this JDO-ism either.  Objectify entities are exactly as you define them.  They are not bytecode-enhanced, proxied, or manipulated in any way.  Want to serialize your entity?  Just make sure it is Serializable.
 
 == Can I mix Low Level and Objectify writes in a single Objectify transaction? ==
-
 Example...
 
 {{{
-Objectify ofy = ObjectifyService.beginTransaction()
+Objectify ofy = ObjectifyService.beginTransaction();
 
-ofy.put( makeSomeObject() )
-ofy.getDatastore().put( makeSomeLowLevelEntity() )
+ofy.put(makeSomeObject());
+ofy.getDatastore().put(makeSomeLowLevelEntity());
 
-ofy.getTxn().commit()
+ofy.getTxn().commit();
 }}}
 
 Yes you can! With a few caveats...
@@ -85,7 +63,3 @@ Yes you can! With a few caveats...
   * The global cache will remain consistent as long as you obtain the DatastoreService from ofy.getDatastore(); if you get it directly from DatastoreServiceFactory it will bypass Objectify's global (memcache) cache.
 
 But yeah, you're free to interleave Objectify and Low-Level API calls.
-
-== Is there support for Groovy? ==
-
-Yes, see http://code.google.com/p/gaelyk-objectify-plugin/
