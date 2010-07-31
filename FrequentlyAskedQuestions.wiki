@@ -85,3 +85,7 @@ Yes you can! With a few caveats...
   * The global cache will remain consistent as long as you obtain the DatastoreService from ofy.getDatastore(); if you get it directly from DatastoreServiceFactory it will bypass Objectify's global (memcache) cache.
 
 But yeah, you're free to interleave Objectify and Low-Level API calls.
+
+== Is there support for Groovy? ==
+
+Yes, see http://code.google.com/p/gaelyk-objectify-plugin/
