@@ -78,7 +78,7 @@ Of these issues, the last is the most fatal.  If you think "My application gets 
 
 Furthermore, classpath scanning costs accumulate.  If you use other tools that perform classpath scanning (Weld, Spring, JAX-RS, etc), they each will also spend 3-5s scanning your jars.  It isn't hard to push your cold-start time into the tens of seconds.
 
-That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  Spring users may wish to use the [http://code.google.com/p/objectify-appengine-spring/ objectify-appengine-spring] project.
+That said, 3-5s might be reasonable for your specific project.  It should be very easy to add as your own ServletContextListener that calls Reflections and registers the @Entity classes.  Spring and other framework users should examine the [Extensions].
 
 = Use Batch Gets Instead of Queries =
 
@@ -137,4 +137,3 @@ Unless you specifically require transactional behavior, you should probably avoi
  * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/afa0d43de5db483f Controlling user access to data with queries]
  * [http://iqbalyusuf.wordpress.com/jersey-guice-on-google-app-engine-java/ Jersey + Guice on Google App Engine Java]
  * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/25a9abfc86f8be51 How to emulate @Unique]
- * [http://code.google.com/p/play-framework-objectify/ Example integration with the Play Framework]
