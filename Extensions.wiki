@@ -1,4 +1,5 @@
 #summary Third-party extensions to Objectify
+#labels Featured
 
 There are a number of extensions to Objectify developed by third-parties:
 
