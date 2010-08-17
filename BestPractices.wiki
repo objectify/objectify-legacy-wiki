@@ -136,4 +136,4 @@ Unless you specifically require transactional behavior, you should probably avoi
  * [http://groups.google.com/group/objectify-appengine/msg/14a326058a0870be Example of a Cursor based IteratingTask base class]
  * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/afa0d43de5db483f Controlling user access to data with queries]
  * [http://iqbalyusuf.wordpress.com/jersey-guice-on-google-app-engine-java/ Jersey + Guice on Google App Engine Java]
- * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/25a9abfc86f8be51 How to emulate @Unique]
+ * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/25a9abfc86f8be51 How to emulate @Unique] and [http://groups.google.com/group/objectify-appengine/browse_thread/thread/5edec724ca69719e/b7536d44d028ef02 a longer discussion] of enforcing uniqueness.
