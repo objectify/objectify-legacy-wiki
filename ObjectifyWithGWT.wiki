@@ -42,3 +42,7 @@ Annotations like {{{@Entity}}}, {{{@LoadAlso}}}, and the like will be ignored du
 == Client-Side Access ==
 
 None of the Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, DAO) can be used from GWT client code. Basically only entities (and their associated data (types) are allowed to cross the GWT Service boundaries).
+
+== Example ==
+
+A *very* simple example can be found [http://code.google.com/p/scratchmonkey/source/browse/#svn/appengine/objectify-gwt here].
