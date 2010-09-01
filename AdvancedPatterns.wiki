@@ -71,7 +71,7 @@ class BlogEntry {
 
 == Revision History ==
 
-This is a very simple examaple, but it shows the flexibility of using {{{@PrePersist}}}.
+This is a very simple example, but it shows the flexibility of using {{{@PrePersist}}}.
 
 {{{
 @Unindexed
