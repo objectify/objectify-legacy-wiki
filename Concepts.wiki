@@ -100,11 +100,31 @@ If you execute without a transaction:
 
 = Indexes =
 
-Indexes are used to query for data.  In the datastore, queries can only follow a single index and can only return results in the order specified for that index.  This means that you must have an index for every query you intend to run!
+When using a  traditional RDBMS, you become accustomed to issuing any ad-hoc SQL query you want and letting the query planner figure out how to obtain the result.  It may take twelve hours to linear scan five tables in the database and sort the 8 gigabyte result set in RAM, but eventually you get your result!  The appengine datastore does NOT work this way.
 
-To make this easier, the datastore has an innate ability to store each and every (single) property as "indexed" or "unindexed" ({{{Entity.setProperty()}}} vs {{{Entity.setUnindexedProperty()}}}.  This allows you to easily issue a queries based on single properties.  By default, Objectify defaults to setting all properties as indexed unless you flag the field with an {{{@Unindexed}}} annotation.
+Appengine only allows you to run _efficient_ queries.  The exact meaning of this limitation is somewhat arbitrary and changes as Google rolls out more powerful versions of the query planner, but generally this means:
 
-To run queries by filtering against multiple properties, you must create a multi-value index in your {{{datastore-indexes.xml}}}.  There is a great deal written on this subject; we recommend [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] and [http://code.google.com/appengine/articles/index_building.html Index Building].
+ * No table scans
+ * No joins
+ * No in-memory sorts
+
+The datastore query planner really only likes one operation:  Find an index and walk it in-order.  This means that for any query you perform, the datastore must already contain properly ordered index on the field or fields you want to filter by!  And since appengine doesn't do joins, queries are limited to what you can stuff into a single index -- you can't filter by one property and then sort by a different one.
+
+Actually, it's not quite true that appengine won't do joins.  It will do one kind of join - a "zig-zag" merge join which lets you perform equality filters on multiple separate properties.  But this is still an efficient query - it walks each of the property indexes in order without buffering chunks of data in RAM.
+
+What you should be getting out of this is that *if you want queries, you need indexes tailored to the queries you want to run*.
+
+To make this easier, the datastore has an innate ability to store each and every (single) property as "indexed" or "unindexed" ({{{Entity.setProperty()}}} vs {{{Entity.setUnindexedProperty()}}}.  This allows you to easily issue a queries based on single properties.  By default, Objectify defaults to setting all properties as indexed unless you flag the field (or class) with an {{{@Unindexed}}} annotation.
+
+To run queries by filtering or sorting against multiple properties (that is, if it can't be satisfied by a zigzag merge on single-property indexes), you must create a multi-value index in your {{{datastore-indexes.xml}}}.  There is a great deal written on this subject; we recommend [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] and [http://code.google.com/appengine/articles/index_building.html Index Building].
+
+Note that there are some tricks to creating indexes:
+
+ * Single property indexes are created/updated when you save an entity.  Let's say you have a {{{Car}}} with a {{{color}}} property.  If you save a {{{Car}}} with {{{color}}} unindexed, that entity instance will not appear in queries by color.  To index this entity instance, you must resave the entity.
+
+ * Multi-property indexes are built on-the-fly by appengine.  You can add new indexes to your {{{datastore-indexes.xml}}} and appengine will slowly build a brand-new index - possibly taking hours or days depending on total system load (index-building is a low-priority task).
+
+ * In order for an entity to be included in a multi-property index, *each of the relevant individual properties must have a single-property index*.  If your {{{Car}}} has a multi-property index on {{{color}}} and {{{brand}}}, an individual car will not appear in the multi-property index if it is saved with an unindexed {{{color}}}.
 
 -----
 
