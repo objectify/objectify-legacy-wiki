@@ -21,7 +21,7 @@ All code submissions should be well-commented and include TestNG unit tests.
 To run the unit tests you will need to do two things:
 
   # Install the TestNG plugin for Eclipse
-  # Create an Eclipse User Library called "App Engine Unit Testing X.X.X" the correct SDK version number.  The user library should contain [http://code.google.com/appengine/docs/java/tools/localunittesting.html#Introducing_App_Engine_Utilities these four appengine jars]:  `appengine-api.jar, appengine-api-labs.jar, appengine-api-stubs.jar, appengine-testing.jar`.
+  # Create an Eclipse User Library called "App Engine Unit Testing X.X.X" with the correct SDK version number.  The user library should contain [http://code.google.com/appengine/docs/java/tools/localunittesting.html#Introducing_App_Engine_Utilities these four appengine jars]:  `appengine-api.jar, appengine-api-labs.jar, appengine-api-stubs.jar, appengine-testing.jar`.
 
 Note that there are a few tests that fail "out of the box".  These expose broken behavior in the GAE SDK itself and are documented as such.  If in doubt, look at the test code - if it it doesn't say "this is expected to fail", it shouldn't fail.
 
