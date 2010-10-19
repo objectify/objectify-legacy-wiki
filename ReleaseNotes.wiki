@@ -3,8 +3,18 @@
 
 = 2.2.2 =
 Not released yet
+  * Requires Appengine SDK 1.3.8 or newer
+
+  * Deprecated Query.countAll(), added Query.count() method which behaves better.
+  * Deprecated Query.cursor(); added Query.startCursor() and Query.endCursor().
+  * Added Query.clone()
+  * Allows null @Parent keys.
   * Now handles java.sql.Date
   * Ignores synthetic fields (should make Groovy happier)
+  * Now respects @Indexed/@Unindexed on entity base classes.
+  * Added overrideable createDefaultOpts() method to ObjectifyFactory. Added clone() method to ObjectifyOpts.
+  * @Id and @Parent fields are now included when you embed an entity in another entity.
+  * Fixed a bug related to fields whose type base class name overlapped with entity names (eg, User)
 
 = 2.2.1 =
 2010-06-01
