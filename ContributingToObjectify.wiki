@@ -1,0 +1,38 @@
+#summary How to help out
+
+Interested in helping out with this project?  GREAT!  Here's some advice to get you started.
+
+= Build Environment =
+
+Objectify developers use Eclipse and ant.
+
+Eclipse is used to edit the code and run the unit tests.  You will need to install the Google Plugin and the latest version of the Google App Engine SDK.  Note that Objectify is not a "Google App Engine Project" with a `war/` directory, but it does use the Google App Engine SDK library configured automatically by the Eclipse plugin.
+
+Ant is used to build the distribution.  You will need to edit `edit-this-to-build.properties` and point it at the correct path to the GAE SDK.  Running "ant" alone will build the Objectify jar and "ant dist" will build the whole distribution zipfile including documentation.
+
+= Code Standards =
+
+Objectify code uses 4-space HARD tabs.  It uses Pascal-style bracing conventions.  Look at existing source code for an example and follow the pattern.
+
+All code submissions should be well-commented and include TestNG unit tests.
+
+= Running Unit Tests =
+
+To run the unit tests you will need to do two things:
+
+  # Install the TestNG plugin for Eclipse
+  # Create an Eclipse User Library called "App Engine Unit Testing X.X.X" the correct SDK version number.  The user library should contain [http://code.google.com/appengine/docs/java/tools/localunittesting.html#Introducing_App_Engine_Utilities these four appengine jars]:  `appengine-api.jar, appengine-api-labs.jar, appengine-api-stubs.jar, appengine-testing.jar`.
+
+Note that there are a few tests that fail "out of the box".  These expose broken behavior in the GAE SDK itself and are documented as such.  If in doubt, look at the test code - if it it doesn't say "this is expected to fail", it shouldn't fail.
+
+= Submitting Code =
+
+All patches should be submitted as an attachment to an issue in the issue tracker.  If there is no pre-existing issue, create one.  Discussions on the [http://groups.google.com/group/objectify-appengine objectify-appengine google group] are often helpful.
+
+= Welcome Aboard! =
+
+The Objectify team is very interested your ideas and submissions.  That said, we are also very picky about what features we include in the core - Objectify is intended to be a thin, convenient layer on top of the low-level datastore API rather than a "kitchen sink" framework.  We are happy to link to related projects from the [Extensions Extensions] page.
+
+If you are wondering where to start, look through the issue tracker.  Start a discussion early on the [http://groups.google.com/group/objectify-appengine objectify-appengine google group] - we will take the time to offer API advice and architectural guidance as well as to evaluate the proposal.
+
+The absolute best way to start is to submit a patch with some unit tests - even (especially!) if they fail.
