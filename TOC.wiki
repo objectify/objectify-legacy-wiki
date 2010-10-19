@@ -11,3 +11,4 @@
   * [MavenRepository Maven Repository]
   * [ReleaseNotes Release Notes]
   * [Extensions Extensions]
+  * [ContributingToObjectify Contributing To Objectify]
