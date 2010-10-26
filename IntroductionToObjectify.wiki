@@ -97,10 +97,11 @@ Car tesla = new Car("2NEW", "blue");
 ofy.put(tesla, unimog, porsche);    //varargs; Car[] and Iterable<Car> also work
 
 // Get the data back
-Map<Key<Car>, Car> fetched1 = ofy.get(
-    new Key<Car>(Car.class, porsche.id),
-    new Key<Car>(Car.class, unimog.id),
-    new Key<Car>(Car.class, tesla.id));
+List<Key<Car>> carKeys = new ArrayList<Key<Car>>();
+carKeys.add(new Key<Car>(Car.class, porsche.id));
+carKeys.add(new Key<Car>(Car.class, unimog.id));
+carKeys.add(new Key<Car>(Car.class, tesla.id)));
+Map<Key<Car>, Car> fetched1 = ofy.get(carKeys);
 
 // More convenient shorthand, note the return type
 Map<Long, Car> fetched2 = ofy.get(Car.class, new Long[] { porsche.id, unimog.id, tesla.id });
@@ -109,9 +110,10 @@ Map<Long, Car> fetched2 = ofy.get(Car.class, new Long[] { porsche.id, unimog.id,
 Map<Long, Car> fetched3 = ofy.get(Car.class, Arrays.asList(porsche.id, unimog.id, tesla.id));
 
 // Batch operations need not be homogenous:
-Map<Key<Vehicle>, Vehicle> fetched4 = ofy.get(
-    new Key<Car>(Car.class, porsche.id),
-    new Key<Motorcycle>(Motorcycle.class, ktm.id));
+List<Key<? extends Vehicle>> vehKeys = new ArrayList<Key<? extends Vehicle>>();
+vehKeys.add(new Key<Car>(Car.class, porsche.id));
+vehKeys.add(new Key<Motorcycle>(Motorcycle.class, ktm.id));
+Map<Key<Vehicle>, Vehicle> fetched4 = ofy.get(vehKeys);
 
 // Delete the data
 ofy.delete(fetched1.values());
