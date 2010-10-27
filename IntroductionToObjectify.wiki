@@ -974,7 +974,7 @@ That's it!  Objectify will utilize the memcache service to reduce read load on t
 
 What you should know about the global cache:
 
-  * The raw data of your entity is cached, not your POJO class.  Your objects will not be serialized.
+  * The fields of your entity are cached, not your POJO class itself.  Your entity objects will not be serialized (although any @Serialized fields will be).
   * Only get(), put(), and delete() interact with the cache.  query() is not cached.
   * Writes will "write through" the cache to the datastore.  Performance is only improved on read-heavy applications (which, fortunately, most are).
   * Negative results are cached as well as positive results.
