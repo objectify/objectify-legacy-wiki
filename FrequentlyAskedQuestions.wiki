@@ -5,6 +5,9 @@
 
 = Frequently Asked Questions =
 
+== Why am I getting NoSuchMethodError exceptions on GAE classes? ==
+You probably are running an old version of the Google App Engine SDK; check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
+
 == Can I use Dependency Injection (Spring, Guice, Weld) with Objectify? ==
 Yes!  Objectify was designed with this in mind.
   # Ignore the {{{ObjectifyService}}} class and its static methods.  It is merely a static proxy for a single instance of {{{ObjectifyFactory}}}.  Instead you will use {{{ObjectifyFactory}}} directly.
