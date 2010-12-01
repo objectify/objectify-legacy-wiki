@@ -176,7 +176,7 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
 
     String cursorStr = request.getParameter("cursor");
     if (cursorStr != null)
-        query.cursor(Cursor.fromWebSafeString(cursorStr));
+        query.startCursor(Cursor.fromWebSafeString(cursorStr));
 
     QueryResultIterator<Car> iterator = query.iterator();
     while (iterator.hasNext()) {
@@ -185,7 +185,7 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
         ... // process car
 
         if (System.currentTimeMillis() - startTime > LIMIT_MILLIS) {
-            Cursor cursor = iterator.getCursor();
+            Cursor cursor = iterator.getStartCursor();
             Queue queue = QueueFactory.getDefaultQueue();
             queue.add(url("/pathToThisServlet").param("cursor", cursor.toWebSafeString()));
             break;
