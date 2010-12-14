@@ -1,6 +1,16 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 2.2.3 =
+2010-12-13
+  * Requires Appengine SDK 1.4.0 or newer
+
+  * Added pluggable system for managing type conversions
+  * Unwraps InvocationTargetExceptions in lifecycle callbacks
+  * Made ObjectifyOpts.clone() public
+  * Fixed bug when filtering by enums
+  * Added a "Monotonic" helper class
+
 = 2.2.2 =
 2010-10-21
   * Requires Appengine SDK 1.3.8 or newer
