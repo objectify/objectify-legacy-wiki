@@ -605,6 +605,8 @@ Changing enum values is just a special case of transforming data.  Enums are act
 Let's say you wanted to delete the AQUA color and replace it with GREEN:
 
 {{{
+public enum Color { RED, GREEN }    // AQUA has been removed
+
 public class Car
 {
     @Id Long id;
