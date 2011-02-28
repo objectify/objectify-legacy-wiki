@@ -761,6 +761,7 @@ As with normal entities, all fields within embedded classes are indexed by defau
     * {{{@Indexed}}} or {{{@Unindexed}}} on a field of type {{{@Embedded}}} will override the default on the class inside the field (be it a single class or a collection).
 
 {{{
+@Indexed
 class LevelTwo {
     @Indexed String gamma;
     String delta;
@@ -769,7 +770,7 @@ class LevelTwo {
 @Indexed
 class LevelOne {
     String beta;
-    @Unindexed @Embedded LevelTwo two
+    @Unindexed @Embedded LevelTwo two;
 }
 
 @Unindexed
@@ -786,6 +787,8 @@ If you persist one of these EntityWithComplicatedIndexing objects, you will find
 || {{{one.beta}}} || indexed ||
 || {{{one.two.gamma}}} || indexed ||
 || {{{one.two.delta}}} || not indexed ||
+
+Note that {{{one.two.delta}}} is *not* indexed; the annotation on {{{LevelOne.two}}} overrides {{{LevelTwo}}}'s class default.
 
 == Querying ==
 
