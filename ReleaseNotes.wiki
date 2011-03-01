@@ -1,6 +1,14 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 3.0 beta 1 =
+2011-02-28
+  * Requires Appengine SDK 1.4.0 or newer
+
+  * Implemented asynchronous operations on {{{AsyncObjectify}}}
+  * *Breaking change*: Moved all classes in {{{com.googlecode.objectify.helper}}} to {{{com.googlecode.objectify.util}}}, including {{{DAOBase}}}
+  * Significant internal changes to support async API.
+
 = 2.2.3 =
 2010-12-13
   * Requires Appengine SDK 1.4.0 or newer
