@@ -194,6 +194,90 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
 }
 }}}
 
+= Asynchronous Calls =
+
+The GAE's low-level datastore API supports parallel asynchronous operations.  GAE's model of asynchrony does not follow Javascript's "pass in a callback function" model; rather, when you make an asynchronous call, you get back a reference to the pending operation.  You can create multiple references which will execute in parallel, however, any request to fetch a concrete result will block until the result is available.
+
+This is better explained by example.
+
+== Asynchronous Queries ==
+
+All *queries* are now asynchronous by default.  The "reference" to a query is the {{{Iterator}}} object.  For example, these two queries are executed in parallel:
+
+{{{
+Iterator<Fruit> fruitIt = ofy.query(Fruit.class).filter("color", "red").iterator();
+Iterator<Animal> animalIt = ofy.query(Animal.class).filter("hair", "short").iterator();
+
+// both queries are executing in the backend
+
+while (fruitIt.hasNext()) {    // hasNext() blocks until query results are available
+    ... process fruits
+}
+}}}
+
+Create multiple {{{Iterator}}}s, then execute over the iterators.
+
+== Asynchronous get()/put()/delete() ==
+
+*NOTE: This requires Objectify v3.x*
+
+*NOTE:  If you use Objectify's global memcache with asynchronous operations, you MUST install the {{{com.googlecode.objectify.cache.AsyncCacheFilter}}}.  If you do not, your cache will not properly synchronize with the datastore.* This is a workaround for a limitation of the GAE SDK; please star [http://code.google.com/p/googleappengine/issues/detail?id=4271 this issue].
+
+Queries require no special interface to parallelize requests because the {{{Iterator}}} interface acts as a convenience reference to a pending operation.  However, {{{get()}}}, {{{put()}}}, and {{{delete()}}} return concrete results.  The GAE low-level API provides a parallel set of methods that return results in a layer of indrection, the {{{java.util.concurrent.Future<?>}}} class.  However, {{{Future<?>}}} is cumbersome to use because it wraps and rethrows all exceptions as checked exceptions.
+
+Objectify provides a similar set of parallel methods, but they return {{{Result<?>}}} -- just like {{{Future<?>}}} but with sane exception handling behavior.  Here are the salient parts of Objectify's API:
+
+{{{
+public interface Result<T>
+{
+    T get();
+    Future<T> getFuture();
+}
+
+public interface Objectify
+{
+    ...
+    public AsyncObjectify async();
+}
+
+public interface AsyncObjectify
+{
+    ...
+    <T> Result<T> get(Key<? extends T> key);
+    <T> Result<T> get(Class<? extends T> clazz, long id);
+    ...
+    <T> Result<Key<T>> put(T obj);
+    ...
+    Result<Void> delete(Object... keysOrEntities);
+    ...
+}
+}}}
+
+You get the picture.  The AsyncObjectify interface has methods that parallel the synchronous Objectify methods, but return {{{Result<?>}}} instead.  You can issue multiple parallel requests like this:
+
+{{{
+Objectify ofy = ObjectifyService.begin();
+Result<Fruit> fruit = ofy.async().get(Fruit.class, "apple");
+Result<Map<Long, Animal>> animals = ofy.async().get(Animal.class, listOfAnimalIds);
+Result<Key<Fruit>> key = ofy.async().put(new Fruit("orange"));
+Iterator<City> citiesIterator = ofy.query(City.class).filter("population >", 1000).iterator();
+
+// All requests are executing in parallel
+
+String color = fruit.get().getColor();  // calling Result<?>.get() blocks until request is complete
+}}}
+
+== Considerations of Asynchronous Requests ==
+
+Parallel requests must be used carefully:
+
+ * If you use Objectify's global memcache (the @Cached annotaiton), you *must* install the {{{com.googlecode.objectify.cache.AsyncCacheFilter}}} in your web application.
+ * You cannot have more than a fixed number of asynchronous requests going simultaneously.  This number is documented in the Low-Level API documentation, currently 10.  Additional requests will block until previous requests complete.
+ * All pending requests will complete *before* your HTTP request returns data to the caller.  If you return from your {{{HttpServlet.service()}}} method while there are async requests pending, the SDK will block and complete these requests for you.
+ * This does not allow you to work around the 30s limit for requests (or 10m for task queue requests).  Any async requests pending when a {{{DeadlineExceededException}}} happens will be aborted.  The datastore may or may not reflect any writes.
+ * If you run up against {{{DeadlineExceededException}}} while using the global memcache, it is very likely that your cache will go out of sync with the datastore - even with the {{{AsyncCacheFilter}}}.  Do not do this.
+ * The synchronous API is no more efficient than the asynchronous API.  In fact, both Objectify's synchronous API and Google's low level synchronous API are implemented as calls to the respective async API followed by an immediate get().  
+
 = Optimizing Storage =
 
 Indexes are necessary for queries, but they are very expensive to create and update.  It costs, in api_cpu_ms, about 48ms to put() a single entity with no indexes.  Each standard indexed field adds 17ms to this number.  The indexes are written in parallel, so they do not add real-world time... but you'll see the real-world cost on your bill at the end of the week!  Indexes also consume a significant amount of storage space - sometimes many times the amount of original data.
