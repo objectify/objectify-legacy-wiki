@@ -84,7 +84,7 @@ That said, 3-5s might be reasonable for your specific project.  It should be ver
 
 In SQL, all data lives in tables and is accessed through queries.  It is best not to imagine the Appengine datastore this way - conceptually shift to thinking of the datastore as a key-value store that happens to also let you index and query some values.
 
-The reason this shift is important is because your most effective tool when working with chunks of data is the batch get() and put().  A batch get() by key will quickly fetch up to 500 entities in parallel; running 500 queries would take a relative eternity.
+The reason this shift is important is because your most effective tool when working with chunks of data is the batch get() and put().  A batch get() by key will quickly fetch thousands of entities in parallel; running thousands of queries would take a relative eternity.  Asynchronous queries can only provide limited help because GAE limits you to 10 concurrent requests.
 
 Furthermore, a batch get() can be efficiently cached.  Use Objectify's {{{@Cached}}} annotation and your get() may never need a trip to the datastore.
 
@@ -123,6 +123,8 @@ This last point is worth explaining in detail.  All datastore writes are transac
 Unless you specifically require transactional behavior, you should probably avoid using {{{@Parent}}} even when when entities have a conceptual parent/child relationship (eg Blog/Comment).
 
 = Interesting discussions related to Objectify =
+
+ * IBM developerWorks' _Twitter Mining with Objectify-Appengine_, [http://www.ibm.com/developerworks/java/library/j-javadev2-13/index.html part 1] and [http://www.ibm.com/developerworks/java/library/j-javadev2-14/index.html part 2]
 
  * [http://borglin.net/gwt-project/?page_id=604 Review of Objectify/Twig/SimpleDS]
  * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/4467986eaf01788b/d3a1678a44242c25 Original release  announcement on GAE-Java]
