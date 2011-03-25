@@ -1073,6 +1073,10 @@ What you should know about the global cache:
   * The global cache can work in concert with the session cache.
     * Remember:  The session cache caches entity Java object instances, the global cache caches entity data.
 
+= Example =
+
+Andrew Glover wrote an excellent article for IBM developerWorks:  _Twitter Mining with Objectify-Appengine_, [http://www.ibm.com/developerworks/java/library/j-javadev2-13/index.html part 1] and [http://www.ibm.com/developerworks/java/library/j-javadev2-14/index.html part 2].
+
 -----
 
 Now, read the BestPractices.
