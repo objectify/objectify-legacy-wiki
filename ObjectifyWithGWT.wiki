@@ -4,9 +4,9 @@
 
 This must be _the_ most common "design pattern" when developing web applications:
 
-  # Load some data from the datastore (Server)
-  # Pass this data to the presentation tier (Server)
-  # Render the data to the user (Server/Client)
+  # Load some data from the datastore
+  # Pass this data to the presentation tier via RPC
+  # Render the data to the user
 
 However, there is often an impedance mismatch between the data tier and the presentation tier in web development tools.  Because, for example, Hibernate or JDO proxies cannot be passed through GWT RPC, developers are often forced to construct Data Transfer Objects to shuffle data back and forth.  Sometimes this is a good idea (say, when you have sophisticated program logic in your entities) but sometimes this is a laborious pain in the arse.
 
@@ -47,4 +47,6 @@ None of the Objectify action objects (Objectify, ObjectifyService, ObjectifyFact
 
 A *very* simple example can be found [http://code.google.com/p/scratchmonkey/source/browse/#svn/appengine/objectify-gwt here].
 
-[http://turbomanage.wordpress.com/2011/03/25/using-gwt-requestfactory-with-objectify/ Using Objectify with RequestFactory.]
+== Request Factory==
+
+David Chandler has written an article on [http://turbomanage.wordpress.com/2011/03/25/using-gwt-requestfactory-with-objectify/ Using Objectify with RequestFactory].
