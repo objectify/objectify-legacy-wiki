@@ -49,4 +49,4 @@ A *very* simple example can be found [http://code.google.com/p/scratchmonkey/sou
 
 == Request Factory==
 
-David Chandler has written an article on [http://turbomanage.wordpress.com/2011/03/25/using-gwt-requestfactory-with-objectify/ Using Objectify with RequestFactory].
+David Chandler wrote an article on [http://turbomanage.wordpress.com/2011/03/25/using-gwt-requestfactory-with-objectify/ Using Objectify with RequestFactory].
