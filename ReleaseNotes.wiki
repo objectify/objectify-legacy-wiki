@@ -1,6 +1,19 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 3.0 beta 2=
+2011-04-04
+  * Requires Appengine SDK 1.4.0 or newer
+
+  * Implemented Polymorphic persistence
+  * Key<?> implementation changed - this WILL BREAK KEY SERIALIZATION.  If you have serialized keys in a persistent structure, read the discussion of this issue on the mailing list.  This only affects Key<?> in @Serialized fields; simple Key<?> properties and @Embedded Key<?>s are fine.
+  * Fields now receive their @Indexed/@Unindexed default state from the class they are declared on rather than the final class in the inheritance hierarchy.  This is a potential breaking change, although previous behavior was undocumented.
+  * Added a Query.fetch() method to produce an async Iterable
+  * Better error message if you try to register a nonstatic inner class
+  * Loading embedded collections with a null value for the property itself no longer throws an exception.
+  * Added IfEmpty and IfNotEmpty conditions
+  * A number of internal APIs changed to support polymorphism.
+
 = 3.0 beta 1 =
 2011-02-28
   * Requires Appengine SDK 1.4.0 or newer
