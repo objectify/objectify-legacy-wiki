@@ -259,7 +259,7 @@ public class DAOT extends DAO  // DAO is your class derived from DAOBase as desc
 }
 }}}
 
-This is the actual code used in [http://www.similarity/ Similarity] to run all transactions.
+This is the actual code used in [http://www.similarity.com/ Similarity] to run all transactions.
 
 = Interesting discussions related to Objectify =
 
