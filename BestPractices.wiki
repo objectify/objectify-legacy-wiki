@@ -255,8 +255,9 @@ public class DAOT extends DAO  // DAO is your class derived from DAOBase as desc
 			if (ofy().getTxn().isActive())
 				ofy().getTxn().rollback();
 		}
-	}
-}}}}
+ 	}
+}
+}}}
 
 This is the actual code used in [http://www.similarity/ Similarity] to run all transactions.
 
