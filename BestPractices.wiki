@@ -94,7 +94,7 @@ Of course, batch gets and queries are not necessarily fungible operations - but 
 
 If you make no explicit decision, all fields of your objects will be indexed.  This might be convenient if you're not sure what you will need to query on later, but comes at a high computational price.  Every single indexed property requires a separate write into a BigTable tablet.  Unindexed properties are almost "free".
 
-Consider using @Unindexed on your entities and then only @Index the fields you specifically need to query.
+Consider using @Unindexed on your entities and then only @Indexed the fields you specifically need to query.
 
 = Avoid {{{@Parent}}} =
 
