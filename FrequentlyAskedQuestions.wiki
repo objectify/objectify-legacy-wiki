@@ -67,3 +67,8 @@ Yes you can! With a few caveats...
   * The global cache will remain consistent as long as you obtain the DatastoreService from ofy.getDatastore(); if you get it directly from DatastoreServiceFactory it will bypass Objectify's global (memcache) cache.
 
 But yeah, you're free to interleave Objectify and Low-Level API calls.
+
+== Why can't I use @Embedded on {{{List<String>}}}? ==
+@Embedded tells Objectify to break classes down to their component parts based on their fields and store each field separately.  Therefore, this annotation must not be used on primitive types or types that are stored natively by the datastore (eg {{{String}}}, {{{Integer}}}, {{{GeoPt}}}, {{{User}}}, {{{Email}}}, etc).
+
+The datastore knows how to persist these native types as-is.  You do not need the @Embedded annotation to persist a {{{List<String>}}} - just declare the field normally.
