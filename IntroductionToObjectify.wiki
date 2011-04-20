@@ -829,6 +829,7 @@ class EntityWithEmbeddedCollection {
 
 Some things to keep in mind:
 
+  # Do not use @Embedded to store collections or arrays of simple types.  The datastore knows how to persist {{{List<String>}}}, {{{Set<GeoPt>}}}, etc without any special annotations.
   # You cannot recursively store @Embedded classes.  That is, an @Embedded class cannot contain a field of its own type, either directly or indirectly.
   # An @Embedded array/collection cannot be nested inside of another @Embedded array/collection.  It can, however, be nested inside any number of @Embedded classes.
   # Likewise, a native array/collection cannot be nested inside an @Embedded array/collection.  The only way to put a collection inside a collection (ie, create a 2D structure) is to make part (or all) of the structure @Serialized (see below).
