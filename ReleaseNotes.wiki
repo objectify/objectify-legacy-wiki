@@ -1,6 +1,15 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 3.0 =
+2011-04-22
+  * Requires Appengine SDK 1.4.0 or newer
+
+  IMPORTANT!  Read the release notes for beta1 and beta2, in particular the note about breaking Key<?> serialization.  If you have serialized Key<?> objects into persistent stores, this will affect you.  Also, you will not be able to construct Key<?> objects from client-side GWT.
+
+  * Fixed NPE when fetching polymorphic entities not in the database.
+  * Fixed NPE when fetching collection field with raw type (missing generics).
+
 = 3.0 beta 2=
 2011-04-04
   * Requires Appengine SDK 1.4.0 or newer
