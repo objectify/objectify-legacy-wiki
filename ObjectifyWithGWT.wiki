@@ -43,7 +43,7 @@ Annotations like {{{@Entity}}}, {{{@LoadAlso}}}, and the like will be ignored du
 
 None of the Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, DAO) can be used from GWT client code. Basically only entities (and their associated data (types) are allowed to cross the GWT Service boundaries).
 
-As of Objectify 3.0, constructing {{{Key<?>}}} objects client-side is now considerably more difficult.  You can only use one constructor, the one which takes a native datastore {{{Key}}}.  The other constructors do not exist in the {{{Key<?>}}} super-source.
+As of Objectify 3.0, constructing {{{Key<?>}}} objects client-side is now considerably more difficult.  You can only use one constructor, the one which takes a native datastore {{{Key}}}.  The other constructors do not exist in the {{{Key<?>}}} super-source.  See [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d6171c6a4956719/2d5004df1d7e20ee?hl=en_US&lnk=gst&q=polymorphism+gwt&pli=1#2d5004df1d7e20ee this discussion].
 
 == Example ==
 
