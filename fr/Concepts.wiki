@@ -1,82 +1,37 @@
 #summary Les concepts fondamentaux du Datastore
 #labels Featured
 
-<wiki:comment>
-This is a combined introduction to Objectify and to the Appengine datastore.
-</wiki:comment>
 Ceci est une introduction combinant Objectify et le datastore d'Appengine.
 
 <wiki:toc max_depth="1" />
 
-<wiki:comment>
-So, you want to persist some data.  You've probably looked at the [http://code.google.com/appengine/docs/java/datastore/overview.html datastore documentation] and thought "crap, that's complicated!"  Entities, query languages, fetch groups, detaching, transactions... hell those things have bloody _lifecycles_!  However, the complexity of JDO is hiding a lot of simplicity under the covers.
-</wiki:comment> 
 Ainsi, vous désirez stocker des données. Vous avez probablement lu la [http://code.google.com/appengine/docs/java/datastore/overview.html documentation du datastore] et vous vous êtes dit "Merde, que c'est compliqué" Entités, langage des requêtes, obtention des groupes, détachement, transactions tout ceci est consommateur de temps mental ! Cependant, la complexité de JDO cache l'arbre sous la forêt, en un mot la simplicité.  
 
-<wiki:comment>
-The first thing you should do is set aside all your preconceived notions about relational databases.  *The GAE datastore is not an RDBMS*.  In fact, it acts much more like a !HashMap that gives you the additional ability to index and query for values.  When you think of the datastore, imagine a persistent !HashMap.
-</wiki:comment>
 La première chose que vous devez faire est de mettre de côté toutes notions préconçues au sujet des bases de données relationnelles. *Le datastore GAE n'est pas un RDBMS*. Dans les faits, il fonctionne plus comme un !HashMap qui vous donne la capacité d'indexer et d'effectuer des recherches sur des valeurs. Quand vous pensez au datastore, imaginez-le comme un !HashMap persistant.
 
-<wiki:comment>
-= Entities =
-</wiki:comment>
 = Les entités =
 
-<wiki:comment>
-This document will talk a lot about entities.  An _entity_ is an object's worth of data in the datastore.  Using Objectify, an entity will correspond to a single POJO class you define.  In the datastore, an entity is a !HashMap-like object of type Entity.  Conceptually, they are the same.
-</wiki:comment>
 Ce document parlera souvent des entités. Une _entité_ est un objet contenant des donnes stockée dans le datastore. En utilisant Objectify, une entité correspondra à une simple classe POJO que vous définirez. Dans le datastore, une entité sera une sorte d'objet HashMap de type Entity. Conceptuellement, c'est la même chose.
 
-<wiki:comment>
-Since the datastore is conceptually a !HashMap of keys to entities, and an entity is conceptually a !HashMap of name/value pairs, your mental model of the datastore should be a !HashMap of !HashMaps!
-</wiki:comment>
 Depuis que le datastore est un !HashMap conceptuel de clés vers des entités, et une entité est conceptuellement un !HashMap de pair nom/valeur, votre modêle mental devra être un !HashMap d'!HashMaps !
 
-<wiki:comment>
-= Operations =
-</wiki:comment>
 = Les opérations =
 
-<wiki:comment>
-There are only four basic operations in the datastore, and any persistence API must boil operations down to:
-</wiki:comment>
 Il y a quatre opérations de base dans le datastore, et toute API persistante doit les posséder : 
 
-<wiki:comment>
-  * *get()* an entity whole from the datastore.  You can get many at a time.
-  * *put()* an entity whole in the datastore.  You can store many at a time.
-  * *delete()* an entity from the datastore.  (You guessed it) You can delete many at a time.
-  * *query()* for entities matching criteria you define.
-</wiki:comment>
   * *get()* : obtenir une entité du datastore. Vous pouvez en obtenir plusieurs à tout instant.
   * *put()* : stocker une entité dans le datastore. Vous pouvez en stocker plusieurs à tout instant.
   * *delete()* : supprimer une entité du datastore. (Vous devinez cela) Vous pouvez en effacer à tout instant.
   * *query()* : pour trouver des entités via des critères que vous définissez.
 
-<wiki:comment>
-= Keys =
-</wiki:comment>
 = Les clés =
 
-<wiki:comment>
-All entities have either a Long *id* or a String *name*, but those values are not unique by themselves.  In the datastore, entities are identified by the id (or name) and a *kind*, which corresponds to the type of object you are storing.  So, to get Car #959 from the datastore, you need to call something equivalent to {{{get_from_datastore("Car", 959)}}} (not real code yet).
-</wiki:comment>
 Toutes les entités ont un identifiant Long (*id*) ou un nom String (*name*), mais ces valeurs n'individualise pas l'entité. Dans le datastore, les entités sont identifiées par un identifiant (ou un nom) et un genre (*kind*), lequel correspond au type de l'objet que vous stockez. Ainsi, si vous obtenez un objet Car #959 du datastore, vous aurez besoin d'appeler une fonction équivalente à {{{get_from_datastore("Car", 959)}}} (pour information, ce code n'est pas réel).
 
-<wiki:comment>
-By the way, I lied.  There is actually a third value which is necessary to uniquely identify an entity, called *parent*.  Parent defines a special kind of relationship, placing the child in the same [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html entity group] as the parent.  Entity groups will be discussed next in the section on Transactions, but for now what you need to know is that this parent (which is often simply null, creating an unparented, root entity) is also required to uniquely identify an entity.  So, to get Car #959 from the datastore, you actually need to call something equivalent to {{{get_from_datastore("Car", 959, null)}}} or {{{get_from_datastore("Car", 959, theOwner)}}}.  Yeech.
-</wiki:comment>
 De cette manière, j'ai mentis. Actuellement il y a une troisième valeur nécessaire pour identifier une entité unique, appelée *parent*. Le parent définit une relation d'un genre spécial, plaçant l'entité enfant dans le même [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html groupe entité] que le parent. Les groupes entité seront discutés dans la section Transactions, mais pour le moment vous devez savoir qu'un parent (lequel est souvent nul, création non-parenté, entité racine) est aussi requis pour identifier une entité. Ainsi, pour obtenir un objet Car #959 du datastore, vous appellerez une fonction équivalente à {{{get_from_datastore("Car", 959, null)}}} ou  {{{get_from_datastore("Car", 959, theOwner)}}}.
 
-<wiki:comment>
-Instead of passing three parameters around all the time, the datastore wraps these values into a single object - a _Key_.  That's all a {{{Key}}} is, a holder for the three parts that uniquely identify an entity.
-</wiki:comment>
 A défaut de passer les trois paramètres à tout moment, le datastore emballe ces valeurs dans un unique objet nommé clé - _Key_. Une clé n'est que cela, un conteneur pour ces trois valeurs qui identifie de manière unique une entité ; une clé individualise une entité.
 
-<wiki:comment>
-The native Datastore {{{Key}}} class is simple and untyped, like the native {{{Entity}}} class.  Objectify provides a generified {{{Key}}} that carries type information:
-</wiki:comment>
 La classe native {{{Key}}} du datastore est simple et non-typée, tout comme la classe native {{{Entity}}}. Objectify fournit une clé générique {{{Key}}} qui transporte des informations de type :
 
 {{{
@@ -84,27 +39,18 @@ Key<Car> rootKey = new Key<Car>(Car.class, 959);
 Key<Car> keyWithParent = new Key<Car>(parent, Car.class, 959);
 }}}
 
-<wiki:comment>
-With a {{{Key}}} you can use the most fundamental method on the {{{Objectify}}} interface, nearly identical to the {{{DatastoreService}}} equivalent.  If the generics are confusing, hold on - there will be examples later.
-</wiki:comment>
 Avec une clé {{{Key}}} vous pouvez utiliser les méthodes fondamentales sur l'interface d'{{{Objectify}}}, comme si vous utilisiez le {{{DatastoreService}}} ; à quelques variantes. Si les génériques sont confus pour votre esprit - des exemples viendront plus tard.
 
 {{{
 <T> T get(Key<? extends T> key) throws EntityNotFoundException;
 }}}
 
-<wiki:comment>
-In Objectify, you define your object as a Java class with a mandatory identifier (Long, long, or String) and an optional parent.  However, when you look up or reference your object, you do so by _Key_.  In fact, you can (and should) batch together a variety of requests into a single call, even if it will fetch many different kinds of objects:
-</wiki:comment>
 Dans Objectify, vous définissez votre objet comme une classe Java avec un identifiant obligatoire (de type Long, long ou String) et un parent optionnel. Cependant, quand vous chercherez ou référencerez votre objet, vous devrez le faire au moyen d'une clé _Key_. Dans les faits, vous pouvez (et devez) lier ensemble une variété de requêtes dans un unique appel, même si cette appel obtient différents genres d'objets :
 
 {{{
 Map<Key<Object>, Object> lotsOfThings = objectify.get(carKey, airplaneKey, chairKey, personKey, yourMamaKey);
 }}}
 
-<wiki:comment>
-Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating an {{{Key}}} and calling get()!
-</wiki:comment>
 Mais, j'ai menti. Rien ne vous oblige, à chaque fois de créer des clés manuellement. Il y a un raccourci pour le cas d'un chargement d'un unique type d'objet, mais n'oubliez pas qu'il est juste de créer une clé {{{Key}}} et d'appeler la fonction *get()* !
 
 {{{
@@ -112,78 +58,34 @@ Car c = objectify.get(Car.class, 959);
 Map<Long, Car> cars = objectify.get(Car.class, 959, 911, 944, 924);
 }}}
 
-<wiki:comment>
-By the way, {{{Key}}} is used for relationship references as well.  Remember that value that defines a parent entity?  The type of this parent is {{{Key}}}:
-</wiki:comment>
 De cette façon, {{{Key}}} est utilisé pour référencer une relation. Souvenez-vous que c'est cette valeur qui définit une entité parent. Le type du parent étant {{{Key}}} :
 
 {{{
 public Key(Key<?> parent, Class<? extends T> kind, long id)
 }}}
 
-<wiki:comment>
-When you create relationships to other entities in your system, the type of the entity relationship should be {{{Key}}}.
-</wiki:comment>
 Quand vous créez des relations vers d'autres entités dans votre système, le type de la relation entité devra être {{{Key}}}.
 
-<wiki:comment>
-= Transactions =
-</wiki:comment>
 = Les transactions =
 
-<wiki:comment>
-The datastore has a lot of odd concepts designed to facilitate building a JTA interface - thread local transactions, implicit transaction management policies, and methods that behave differently whether you pass them a transaction or not.  Forget all that.  Here's what you need to know:
-</wiki:comment>
 Le datastore possède de nombreux concepts facilitant la mise en oeuvre d'interface [http://fr.wikipedia.org/wiki/Java_Transaction_API JTA] - les processus de transactions, les politiques de transactions et les méthodes ont un comportement différent si vous utilisez une transaction ou pas. Oubliez tout cela. Souvenez-vous de ce qui va suivre :
 
-<wiki:comment>
-= Entity groups =
-</wiki:comment>
 == Les groupes d'entités ==
 
-<wiki:comment>
-When you put() your entity, it gets stored somewhere in a gigantic farm of thousands of machines.  In order to perform an atomic transaction, the datastore (currently) requires that all the data that is a part of that transaction live on the same server.  To give you some control over where your data is stored, the datastore has the concept of an *entity group*.
-</wiki:comment>
 Quand vous stockez une entité avec *put()*, elle le sera dans une ferme gigantesque consituée de millier de machines. Pour réaliser des transactions atomiques, inséparable, entière, le datastore (actuelle) requière que toutes les données faisant partie de la transaction vivent dans le même serveur. Pour vous donnez plus de contrôle vers où les données seront stockées, le datastore introduit le concept de groupe entité (*entity group*).
 
-<wiki:comment>
-Remember the _parent_ that is part of a {{{Key}}}?  If an entity has a parent, it belongs to the same entity group as its parent.  If an entity does not have a parent, it is the "root" of an entity group, and may be physically located anywhere in the cluster.
-</wiki:comment>
 Souvenez-vous que le _parent_ est une partie de la clé ({{{Key}}}). Si une entité possède un parent, elle appartient au même groupe entité que son parent. Si une entité ne possède pas de parent, elle devient la "racine" (root) de son groupe entité, et peut être localisée n'importe où dans la grappe de machine.
 
-<wiki:comment>
-Within a transaction, you can only access data from a single entity group.  If you try to access data from multiple entity groups, you will get an Exception.  This means you must pick your entity groups carefully, usually to correspond to the data associated with a single user.  Yes, this severely limits the utility of transactions.
-</wiki:comment>
 Dans une transaction, vous pouvez accèder aux données qu'a partir d'un unique groupe entité. Si vous essayez d'accèder à de multipe groupes entité, vous obtiendrez une exception (Exception). Ceci impose un choix rigoureux de vos groupes entité, usuellement ils correspondent aux données d'un unique utilisateur. Certe, ceci limite grandement l'utilité des transactions.
 
-<wiki:comment>
-Why not store all your data with a common parent, putting it all in a single entity group?  You can, but it's a bad idea.  Google limits the number of requests per second that can be served by a particular entity group.
-</wiki:comment>
 Pourquoi ne pas stocker toutes vos données dans un parent commun, mettre tout cela dans un unique groupe entité ? Vous pouvez, mais cela est une mauvaise idée. Google limite le nombre de requêtes par seconde qui opérent sur un groupe entité particulier.
 
-<wiki:comment>
-It should be worth mentioning that the term _parent_ is somewhat misleading.  There is no "cascading delete" in the datastore; if you delete the parent entity it will NOT delete the child entities.  For that matter, you can create child entites with a parent {{{Key}}} (or any other key as a member field) that points to a nonexistant entity!  Parent is only important in that it defines entity groups; if you do not need transactions across several entities, you may wish to use a normal nonparent key relationship - even if the entities have a conceptual parent-child relationship.
-</wiki:comment>
 Il est important de mentionner que le terme _parent_ est trompeur. Il n'y a aucune "suppression en cascade" dans le datastore ; si vous supprimez une entité parent alors ceci ne supprimera pas les entités enfants. D'ailleurs, vous pouvez créer des entités enfants avec un parent {{{Key}}} (ou toute autre clé comme champ membre) qui pointe vers une entité inexistante ! Un parent est uniquement important lors de la définition de groupe entité ; si vous n'avez pas besoin de transaction aux travers de plusieurs entités, il vous est possible d'utiliser des relations non-parentées - même si les entités ont un concept de relation parent-enfant.
 
-<wiki:comment>
-== Execution transactions ==
-</wiki:comment>
 == Exécution des transactions ==
 
-<wiki:comment>
-When you execute a {{{get()}}}, {{{put()}}}, {{{delete()}}}, or {{{query()}}}, you will either be in a [http://code.google.com/appengine/docs/java/datastore/transactions.html transaction] or you will not.
-</wiki:comment>
 Lors de l'exécution des fonctions {{{get()}}}, {{{put()}}}, {{{delete()}}} ou {{{query()}}}, deux cas se présentent : [http://code.google.com/appengine/docs/java/datastore/transactions.html transactionnel] ou non-transactionnel.
 
-<wiki:comment>
-If you execute within a transaction:
-  * You must only get/put/delete/query objects within a single entity group.
-    * Queries must include an ancestor (like the root entity).
-  * All operations will either succeed completely or fail completely.
-  * get() and query operations will see the database as if it were frozen in time at the start of the transaction.  They will *not* reflect put()s and delete()s you perform _within the transaction_.
-  * If another process modifies your data before you commit, your datastore operations will fail with a {{{ConcurrentModificationException}}}
-</wiki:comment>
 Si l'exécution se passe dans une transaction (transactionnel) :
   * Vous devez demander/mettre/effacer/rechercher (get/put/delete/query) des objets dans un unique groupe entité.
     * Les recherches doivent inclure un ancêtre (comme une entité racine).
@@ -191,84 +93,37 @@ Si l'exécution se passe dans une transaction (transactionnel) :
   * Au départ des opérations get() et query(), la base de données sera vue comme gelé. Elles ne refléteront pas les opérations put() et delete() réalisées _dans la transaction_.
   * Si un processus différent modifie les données avant vos transactions (commit), les opérations datastore échoueront avec une exception {{{ConcurrentModificationException}}}.
 
-<wiki:comment>
-If you execute without a transaction:
-  * All individual datastore operations are treated separately.
-  * Any changes to the datastore made anywhere will have immediate effect - successive get() operations may return different values.
-  * If there is contention, operations will be automatically retried until the operation succeeds or the system gives up.
-</wiki:comment>
 Si vous exécutez en dehors d'une transaction:  
   * Toutes les opérations avec le datastore seront traitées séparement.
   * Tout changement vers le datastore aura un effet immédiat - des opérations successives get() pourront retourner des valeurs différentes.
   * Si un conflit survient, les opérations seront automatiquement recommencées ou abandonnées par le système.
 
-<wiki:comment>
-= Indexes =
-</wiki:comment>  
 = Les indexes =
 
-<wiki:comment>
-When using a  traditional RDBMS, you become accustomed to issuing any ad-hoc SQL query you want and letting the query planner figure out how to obtain the result.  It may take twelve hours to linear scan five tables in the database and sort the 8 gigabyte result set in RAM, but eventually you get your result!  The appengine datastore does NOT work this way.
-</wiki:comment>
 Lors de l'utilisation d'un RDBMS traditionnel, l'habitude est que vous utilisiez des requêtes SQL adhoc, laissant au planificateur de recherche le choix de la méthode d'obtention des résultats. Ceci peut prendre une douzaine d'heure pour le balayage des cinq tables de la base de données et des 8 gigaoctet de résultat en mémoire RAM, et tout cela pour éventuellement obtenir une réponse concrète ! Heureusement le datastore ne fonctionne pas de cette manière.  
 
-<wiki:comment>
-Appengine only allows you to run _efficient_ queries.  The exact meaning of this limitation is somewhat arbitrary and changes as Google rolls out more powerful versions of the query planner, but generally this means:
-</wiki:comment>
 Appengine permet d'exécuter uniquement des recherches efficaces. La signification exacte de cette limitation est quelque peu arbitraire et est soumise au changement futur du planificateur de requète de Google, mais généralement les limitations sont :
 
-<wiki:comment>
- * No table scans
- * No joins
- * No in-memory sorts
-</wiki:comment>
  * Aucun balayage (parcourt) de table.
  * Pas de jointure.
  * Pas de tri en mémoire.
  
- <wiki:comment>
- The datastore query planner really only likes one operation:  Find an index and walk it in-order.  This means that for any query you perform, the datastore must already contain properly ordered index on the field or fields you want to filter by!  And since appengine doesn't do joins, queries are limited to what you can stuff into a single index -- you can't filter by one property and then sort by a different one.
- </wiki:comment>
-Le planificateur de requète du datastore réalise qu'une unique opération :  trouver un index et le parcourir de façon ordonné. Ceci impose que pour toute recherche effectuée, le datastore devra contenir un index sur le ou les champs que vous désirez filtrer ! Et depuis qu'appengine ne supporte pas les jointures, les recherches sont limitées à ce que vous pouvez faire dans un unique index -- vous ne pouvez filtrer une propriété et alors la trier via une autre.
+Le planificateur de requète du datastore réalise qu'une unique opération : trouver un index et le parcourir de façon ordonné. Ceci impose que pour toute recherche effectuée, le datastore devra contenir un index sur le ou les champs que vous désirez filtrer ! Et depuis qu'appengine ne supporte pas les jointures, les recherches sont limitées à ce que vous pouvez faire dans un unique index - vous ne pouvez filtrer une propriété et alors la trier via une autre.
 
-<wiki:comment>
-Actually, it's not quite true that appengine won't do joins.  It will do one kind of join - a "zig-zag" merge join which lets you perform equality filters on multiple separate properties.  But this is still an efficient query - it walks each of the property indexes in order without buffering chunks of data in RAM.
-</wiki:comment>
 Actuellement, il n'est pas vrai qu'appengine ne supporte pas les jointures. Il réalise une certaine catégorie de jointure - la jointure "zigzag" fusionnelle laquelle permet la réalisation de filtrage sur plusieurs propriétés individuelles (séparées). Mais ceci est encore une recherche efficace - elle traverse en ordre les indexes de propriétés sans mémoriser les morceaux de données en mémoire RAM.
 
-<wiki:comment>
-What you should be getting out of this is that *if you want queries, you need indexes tailored to the queries you want to run*.
-</wiki:comment>
 Tout ce que vous devez retenir de cela est que *si vous désirez réaliser des recherches, vous aurez besoin d'indexes adaptés aux recherches que vous voudrez exécuter*.
 
-<wiki:comment>
-To make this easier, the datastore has an innate ability to store each and every (single) property as "indexed" or "unindexed" ({{{Entity.setProperty()}}} vs {{{Entity.setUnindexedProperty()}}}.  This allows you to easily issue a queries based on single properties.  By default, Objectify defaults to setting all properties as indexed unless you flag the field (or class) with an {{{@Unindexed}}} annotation.
-</wiki:comment>
 Pour simplifier cela, le datastore a l'aptitude de stocker chaque et toutes propriétés comme "indexées" ou "non-indexées" {{{Entity.setProperty()}}} versus {{{Entity.setUnindexedProperty()}}}. Ceci vous permet de réaliser facilement des recherches basées sur une unique proprité. Par défaut, Objectify fixe toutes les propriétés comme indexées jusqu'a ce que vous changiez le champ (ou la classe) avec l'annotation {{{@Unindexed}}}.
 
-<wiki:comment>
-To run queries by filtering or sorting against multiple properties (that is, if it can't be satisfied by a zigzag merge on single-property indexes), you must create a multi-value index in your {{{datastore-indexes.xml}}}.  There is a great deal written on this subject; we recommend [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] and [http://code.google.com/appengine/articles/index_building.html Index Building].
-</wiki:comment>
 Pour exécuter des recherches par filtrage ou triage sur de multiple propriété (si elles ne peuvent être satisfaite par une fusion zigzag sur un index mono-propriété), vous devez créer un index multi-valeur dans votre fichier {{{datastore-indexes.xml}}}. Il y a deux écrits à ce sujet ; nous vous recommendons  [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] et [http://code.google.com/appengine/articles/index_building.html Index Building].
 
-<wiki:comment>
-Note that there are some tricks to creating indexes:
-</wiki:comment>
 Notez qu'il y a plusieurs astuces pour créer des indexes:
 
-<wiki:comment>
-* Single property indexes are created/updated when you save an entity.  Let's say you have a {{{Car}}} with a {{{color}}} property.  If you save a {{{Car}}} with {{{color}}} unindexed, that entity instance will not appear in queries by color.  To index this entity instance, you must resave the entity.
-</wiki:comment>
  * Les indexes mono-propriété sont créés et mis à jour quand vous sauvegardez une entité. Par exemple, vous avez une entité {{{Car}}} avec la propriété {{{color}}}. Si vous sauvegardez l'entité {{{Car}}} avec {{{color}}} non-indexée, l'instance entité n'apparaitra pas dans les recherches color. Pour indexer cette instance entité, vous devez la resauvegarder. 
 
-<wiki:comment>
- * Multi-property indexes are built on-the-fly by appengine.  You can add new indexes to your {{{datastore-indexes.xml}}} and appengine will slowly build a brand-new index - possibly taking hours or days depending on total system load (index-building is a low-priority task).
-</wiki:comment> 
  * Les indexes multipropriété sont construits sur le tas par appengine. Vous pouvez ajouter de nouveaux indexes dans votre fichier {{{datastore-indexes.xml}}} et appengine fabriquera lentement le nouvel index - ceci pourra prendre des heures, des jours en fonction de la charge totale du système (la construction de l'index a une priorité faible pour les tâches).
- 
- <wiki:comment>
- * In order for an entity to be included in a multi-property index, *each of the relevant individual properties must have a single-property index*.  If your {{{Car}}} has a multi-property index on {{{color}}} and {{{brand}}}, an individual car will not appear in the multi-property index if it is saved with an unindexed {{{color}}}.
-</wiki:comment>
+
  * Pour qu'une entité soit incluse dans un index multipropriété, *chaque propriété pertinante devra avoir un index mono-propriété*. Si une entité {{{Car}}} a un index multipropriété sur les propriétés {{{color}}} et {{{brand}}}, une entité individuelle {{{Car}}} n'apparaitra pas dans un index multipropriété si elle est sauvegardée avec une propriété {{{color}}} non-indexée.
  
                                                                
