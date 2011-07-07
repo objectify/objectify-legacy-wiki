@@ -11,9 +11,9 @@ La première chose que vous devez faire est de mettre de côté toutes notions p
 
 = Les entités =
 
-Ce document parlera souvent des entités. Une _entité_ est un objet contenant des donnes stockée dans le datastore. En utilisant Objectify, une entité correspondra à une simple classe POJO que vous définirez. Dans le datastore, une entité sera une sorte d'objet HashMap de type Entity. Conceptuellement, c'est la même chose.
+Ce document parlera souvent des entités. Une _entité_ est un objet contenant des données stockée dans le datastore. En utilisant Objectify, une entité correspondra à une simple classe POJO que vous définirez. Dans le datastore, une entité sera une sorte d'objet HashMap de type Entity. Conceptuellement, c'est la même chose.
 
-Depuis que le datastore est un !HashMap conceptuel de clés vers des entités, et une entité est conceptuellement un !HashMap de pair nom/valeur, votre modêle mental devra être un !HashMap d'!HashMaps !
+Depuis que le datastore est un !HashMap conceptuel de clés vers des entités, et qu'une entité est conceptuellement un !HashMap de pair nom/valeur, votre modèle mental devra être un !HashMap d'!HashMaps !
 
 = Les opérations =
 
@@ -22,13 +22,13 @@ Il y a quatre opérations de base dans le datastore, et toute API persistante do
   * *get()* : obtenir une entité du datastore. Vous pouvez en obtenir plusieurs à tout instant.
   * *put()* : stocker une entité dans le datastore. Vous pouvez en stocker plusieurs à tout instant.
   * *delete()* : supprimer une entité du datastore. (Vous devinez cela) Vous pouvez en effacer à tout instant.
-  * *query()* : pour trouver des entités via des critères que vous définissez.
+  * *query()* : chercher des entités via des critères que vous définissez.
 
 = Les clés =
 
 Toutes les entités ont un identifiant Long (*id*) ou un nom String (*name*), mais ces valeurs n'individualise pas l'entité. Dans le datastore, les entités sont identifiées par un identifiant (ou un nom) et un genre (*kind*), lequel correspond au type de l'objet que vous stockez. Ainsi, si vous obtenez un objet Car #959 du datastore, vous aurez besoin d'appeler une fonction équivalente à {{{get_from_datastore("Car", 959)}}} (pour information, ce code n'est pas réel).
 
-De cette manière, j'ai mentis. Actuellement il y a une troisième valeur nécessaire pour identifier une entité unique, appelée *parent*. Le parent définit une relation d'un genre spécial, plaçant l'entité enfant dans le même [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html groupe entité] que le parent. Les groupes entité seront discutés dans la section Transactions, mais pour le moment vous devez savoir qu'un parent (lequel est souvent nul, création non-parenté, entité racine) est aussi requis pour identifier une entité. Ainsi, pour obtenir un objet Car #959 du datastore, vous appellerez une fonction équivalente à {{{get_from_datastore("Car", 959, null)}}} ou  {{{get_from_datastore("Car", 959, theOwner)}}}.
+De cette manière, j'ai menti. Actuellement il y a une troisième valeur nécessaire pour identifier une entité unique, appelée *parent*. Le parent définit une relation d'un genre spécial, plaçant l'entité enfant dans le même [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html groupe entité] que le parent. Les groupes entités seront discutés dans la section Transactions, mais pour le moment vous devez savoir qu'un parent (lequel est souvent nul, création non-parenté, entité racine) est aussi requis pour identifier une entité. Ainsi, pour obtenir un objet Car #959 du datastore, vous appellerez une fonction équivalente à {{{get_from_datastore("Car", 959, null)}}} ou  {{{get_from_datastore("Car", 959, theOwner)}}}.
 
 A défaut de passer les trois paramètres à tout moment, le datastore emballe ces valeurs dans un unique objet nommé clé - _Key_. Une clé n'est que cela, un conteneur pour ces trois valeurs qui identifie de manière unique une entité ; une clé individualise une entité.
 
@@ -68,69 +68,66 @@ Quand vous créez des relations vers d'autres entités dans votre système, le t
 
 = Les transactions =
 
-Le datastore possède de nombreux concepts facilitant la mise en oeuvre d'interface [http://fr.wikipedia.org/wiki/Java_Transaction_API JTA] - les processus de transactions, les politiques de transactions et les méthodes ont un comportement différent si vous utilisez une transaction ou pas. Oubliez tout cela. Souvenez-vous de ce qui va suivre :
+Le datastore possède de nombreux concepts facilitant la mise en œuvre d'interface [http://fr.wikipedia.org/wiki/Java_Transaction_API JTA] - les processus de transactions, les politiques de transactions et les méthodes ont un comportement différent si vous utilisez une transaction ou pas. Oubliez tout cela. Souvenez-vous de ce qui va suivre :
 
-== Les groupes d'entités ==
+== Les groupes entités ==
 
-Quand vous stockez une entité avec *put()*, elle le sera dans une ferme gigantesque consituée de millier de machines. Pour réaliser des transactions atomiques, inséparable, entière, le datastore (actuelle) requière que toutes les données faisant partie de la transaction vivent dans le même serveur. Pour vous donnez plus de contrôle vers où les données seront stockées, le datastore introduit le concept de groupe entité (*entity group*).
+Quand vous stockez une entité avec *put()*, elle le sera dans une ferme gigantesque constituée de millier de machines. Pour réaliser des transactions atomiques, inséparable, entière, le datastore (actuelle) requière que toutes les données faisant partie de la transaction vivent dans le même serveur. Pour vous donner plus de contrôle vers où les données seront stockées, le datastore introduit le concept de groupe entité (*entity group*).
 
 Souvenez-vous que le _parent_ est une partie de la clé ({{{Key}}}). Si une entité possède un parent, elle appartient au même groupe entité que son parent. Si une entité ne possède pas de parent, elle devient la "racine" (root) de son groupe entité, et peut être localisée n'importe où dans la grappe de machine.
 
-Dans une transaction, vous pouvez accèder aux données qu'a partir d'un unique groupe entité. Si vous essayez d'accèder à de multipe groupes entité, vous obtiendrez une exception (Exception). Ceci impose un choix rigoureux de vos groupes entité, usuellement ils correspondent aux données d'un unique utilisateur. Certe, ceci limite grandement l'utilité des transactions.
+Dans une transaction, vous pouvez accéder aux données qu’à partir d'un unique groupe entité. Si vous essayez d'accéder à de multiples groupes entités, vous obtiendrez une exception (Exception). Ceci impose un choix rigoureux de vos groupes entités, usuellement ils correspondent aux données d'un unique utilisateur. Certes, ceci limite grandement l'utilité des transactions.
 
-Pourquoi ne pas stocker toutes vos données dans un parent commun, mettre tout cela dans un unique groupe entité ? Vous pouvez, mais cela est une mauvaise idée. Google limite le nombre de requêtes par seconde qui opérent sur un groupe entité particulier.
+Pourquoi ne pas stocker toutes vos données avec un parent commun, mettre tout cela dans un unique groupe entité ? Vous pouvez, mais cela est une mauvaise idée. Google limite le nombre de requêtes par seconde qui opèrent sur un groupe entité particulier.
 
-Il est important de mentionner que le terme _parent_ est trompeur. Il n'y a aucune "suppression en cascade" dans le datastore ; si vous supprimez une entité parent alors ceci ne supprimera pas les entités enfants. D'ailleurs, vous pouvez créer des entités enfants avec un parent {{{Key}}} (ou toute autre clé comme champ membre) qui pointe vers une entité inexistante ! Un parent est uniquement important lors de la définition de groupe entité ; si vous n'avez pas besoin de transaction aux travers de plusieurs entités, il vous est possible d'utiliser des relations non-parentées - même si les entités ont un concept de relation parent-enfant.
+Il est important de mentionner que le terme _parent_ est trompeur. Il n'y a aucune "suppression en cascade" dans le datastore ; si vous supprimez une entité parent alors celui-ci ne supprimera pas les entités enfants. D'ailleurs, vous pouvez créer des entités enfants avec un parent {{{Key}}} (ou toute autre clé comme champ membre) qui pointe vers une entité inexistante ! Un parent est uniquement important lors de la définition de groupes entités ; si vous n'avez pas besoin de transaction aux travers de plusieurs entités, il vous est possible d'utiliser des relations non-parentés - même si les entités ont un concept de relation parent-enfant.
 
 == Exécution des transactions ==
 
 Lors de l'exécution des fonctions {{{get()}}}, {{{put()}}}, {{{delete()}}} ou {{{query()}}}, deux cas se présentent : [http://code.google.com/appengine/docs/java/datastore/transactions.html transactionnel] ou non-transactionnel.
 
-Si l'exécution se passe dans une transaction (transactionnel) :
+Si l'exécution se passe dans une transaction (cas transactionnel) :
   * Vous devez demander/mettre/effacer/rechercher (get/put/delete/query) des objets dans un unique groupe entité.
     * Les recherches doivent inclure un ancêtre (comme une entité racine).
   * Toutes les opérations devront être complètement réussies ou échouées.
   * Au départ des opérations get() et query(), la base de données sera vue comme gelé. Elles ne refléteront pas les opérations put() et delete() réalisées _dans la transaction_.
   * Si un processus différent modifie les données avant vos transactions (commit), les opérations datastore échoueront avec une exception {{{ConcurrentModificationException}}}.
 
-Si vous exécutez en dehors d'une transaction:  
-  * Toutes les opérations avec le datastore seront traitées séparement.
+Si vous exécutez en dehors d'une transaction (cas non-transactionnel) :  
+  * Toutes les opérations avec le datastore seront traitées séparément.
   * Tout changement vers le datastore aura un effet immédiat - des opérations successives get() pourront retourner des valeurs différentes.
   * Si un conflit survient, les opérations seront automatiquement recommencées ou abandonnées par le système.
 
 = Les indexes =
 
-Lors de l'utilisation d'un RDBMS traditionnel, l'habitude est que vous utilisiez des requêtes SQL adhoc, laissant au planificateur de recherche le choix de la méthode d'obtention des résultats. Ceci peut prendre une douzaine d'heure pour le balayage des cinq tables de la base de données et des 8 gigaoctet de résultat en mémoire RAM, et tout cela pour éventuellement obtenir une réponse concrète ! Heureusement le datastore ne fonctionne pas de cette manière.  
+Lors de l'utilisation d'un RDBMS traditionnel, l'habitude est que vous utilisiez des requêtes SQL ad hoc, laissant au planificateur de recherche le choix de la méthode d'obtention des résultats. Ceci peut prendre une douzaine d'heure pour le balayage des cinq tables de la base de données et des 8 gigaoctet de résultat en mémoire RAM, et tout cela pour éventuellement obtenir une réponse concrète ! Heureusement le datastore ne fonctionne pas de cette manière.  
 
-Appengine permet d'exécuter uniquement des recherches efficaces. La signification exacte de cette limitation est quelque peu arbitraire et est soumise au changement futur du planificateur de requète de Google, mais généralement les limitations sont :
+Appengine permet d'exécuter uniquement des recherches efficaces. La signification exacte de cette limitation est quelque peu arbitraire et est soumise au changement futur du planificateur de requête de Google, mais généralement les limitations sont :
 
  * Aucun balayage (parcourt) de table.
  * Pas de jointure.
  * Pas de tri en mémoire.
  
-Le planificateur de requète du datastore réalise qu'une unique opération : trouver un index et le parcourir de façon ordonné. Ceci impose que pour toute recherche effectuée, le datastore devra contenir un index sur le ou les champs que vous désirez filtrer ! Et depuis qu'appengine ne supporte pas les jointures, les recherches sont limitées à ce que vous pouvez faire dans un unique index - vous ne pouvez filtrer une propriété et alors la trier via une autre.
+Le planificateur de requête du datastore réalise qu'une unique opération : trouver un index et le parcourir de façon ordonné. Ceci impose que pour toute recherche effectuée, le datastore devra contenir un index sur le ou les champs que vous désirez filtrer ! Et depuis qu'appengine ne supporte pas les jointures, les recherches sont limitées à ce que vous pouvez faire dans un unique index - vous ne pouvez filtrer une propriété et alors la trier via une autre.
 
 Actuellement, il n'est pas vrai qu'appengine ne supporte pas les jointures. Il réalise une certaine catégorie de jointure - la jointure "zigzag" fusionnelle laquelle permet la réalisation de filtrage sur plusieurs propriétés individuelles (séparées). Mais ceci est encore une recherche efficace - elle traverse en ordre les indexes de propriétés sans mémoriser les morceaux de données en mémoire RAM.
 
 Tout ce que vous devez retenir de cela est que *si vous désirez réaliser des recherches, vous aurez besoin d'indexes adaptés aux recherches que vous voudrez exécuter*.
 
-Pour simplifier cela, le datastore a l'aptitude de stocker chaque et toutes propriétés comme "indexées" ou "non-indexées" {{{Entity.setProperty()}}} versus {{{Entity.setUnindexedProperty()}}}. Ceci vous permet de réaliser facilement des recherches basées sur une unique proprité. Par défaut, Objectify fixe toutes les propriétés comme indexées jusqu'a ce que vous changiez le champ (ou la classe) avec l'annotation {{{@Unindexed}}}.
+Pour simplifier cela, le datastore a l'aptitude de stocker chaque et toutes propriétés comme "indexées" ou "non indexées" {{{Entity.setProperty()}}} versus {{{Entity.setUnindexedProperty()}}}. Ceci vous permet de réaliser facilement des recherches basées sur une unique propriété. Par défaut, Objectify fixe toutes les propriétés comme indexées jusqu'à ce que vous changiez le champ (ou la classe) avec l'annotation {{{@Unindexed}}}.
 
-Pour exécuter des recherches par filtrage ou triage sur de multiple propriété (si elles ne peuvent être satisfaite par une fusion zigzag sur un index mono-propriété), vous devez créer un index multi-valeur dans votre fichier {{{datastore-indexes.xml}}}. Il y a deux écrits à ce sujet ; nous vous recommendons  [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] et [http://code.google.com/appengine/articles/index_building.html Index Building].
+Pour exécuter des recherches par filtrage ou triage sur de multiples propriétés (si elles ne peuvent être satisfaites par une fusion zigzag sur un index mono-propriété), vous devez créer un index multi-valeur dans votre fichier {{{datastore-indexes.xml}}}. Il y a deux écrits à ce sujet ; nous vous recommandons  [http://code.google.com/appengine/articles/storage_breakdown.html How Entities and Indexes are Stored] et [http://code.google.com/appengine/articles/index_building.html Index Building].
 
 Notez qu'il y a plusieurs astuces pour créer des indexes:
 
- * Les indexes mono-propriété sont créés et mis à jour quand vous sauvegardez une entité. Par exemple, vous avez une entité {{{Car}}} avec la propriété {{{color}}}. Si vous sauvegardez l'entité {{{Car}}} avec {{{color}}} non-indexée, l'instance entité n'apparaitra pas dans les recherches color. Pour indexer cette instance entité, vous devez la resauvegarder. 
+ * Les indexes mono-propriété sont créés et mis à jour quand vous sauvegardez une entité. Par exemple, vous avez une entité {{{Car}}} avec la propriété {{{color}}}. Si vous sauvegardez l'entité {{{Car}}} avec {{{color}}} non indexée, l'instance entité n'apparaitra pas dans les recherches color. Pour indexer cette instance entité, vous devez la sauvegarder de nouveau. 
 
  * Les indexes multipropriété sont construits sur le tas par appengine. Vous pouvez ajouter de nouveaux indexes dans votre fichier {{{datastore-indexes.xml}}} et appengine fabriquera lentement le nouvel index - ceci pourra prendre des heures, des jours en fonction de la charge totale du système (la construction de l'index a une priorité faible pour les tâches).
 
- * Pour qu'une entité soit incluse dans un index multipropriété, *chaque propriété pertinante devra avoir un index mono-propriété*. Si une entité {{{Car}}} a un index multipropriété sur les propriétés {{{color}}} et {{{brand}}}, une entité individuelle {{{Car}}} n'apparaitra pas dans un index multipropriété si elle est sauvegardée avec une propriété {{{color}}} non-indexée.
+ * Pour qu'une entité soit incluse dans un index multipropriété, *chaque propriété pertinente devra avoir un index mono-propriété*. Si une entité {{{Car}}} a un index multipropriété sur les propriétés {{{color}}} et {{{brand}}}, une entité individuelle {{{Car}}} n'apparaitra pas dans un index multipropriété si elle est sauvegardée avec une propriété {{{color}}} non indexée.
  
                                                                
  
 -----
 
-<wiki:comment>
-Now that you are familiar with the underlying concepts of the datastore, read the IntroductionToObjectify.
-</wiki:comment>
 Maintenant que vous êtes familier avec les concepts du datastore, lisez IntroductionToObjectify.
