@@ -1,0 +1,14 @@
+#summary Sidebar page - Tables des matières
+#sidebar TOC
+
+  * [Concepts Les concepts]
+  * [IntroductionToObjectify Introduction To Objectify]
+  * [BestPractices Best Practices]
+  * [AdvancedPatterns Advanced Patterns]
+  * [FrequentlyAskedQuestions Frequently Asked Questions]
+  * [AnnotationReference Annotation Reference]
+  * [ObjectifyWithGWT Objectify With GWT]
+  * [MavenRepository Maven Repository]
+  * [ReleaseNotes Release Notes]
+  * [Extensions Extensions]
+  * [ContributingToObjectify Contributing To Objectify]
