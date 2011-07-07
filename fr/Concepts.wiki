@@ -57,7 +57,7 @@ Il y a quatre opérations de base dans le datastore, et toute API persistante do
 <wiki:comment>
 = Keys =
 </wiki:comment>
-= Les cl�s =
+= Les clés =
 
 <wiki:comment>
 All entities have either a Long *id* or a String *name*, but those values are not unique by themselves.  In the datastore, entities are identified by the id (or name) and a *kind*, which corresponds to the type of object you are storing.  So, to get Car #959 from the datastore, you need to call something equivalent to {{{get_from_datastore("Car", 959)}}} (not real code yet).
@@ -67,7 +67,7 @@ Toutes les entités ont un identifiant Long (*id*) ou un nom String (*name*), ma
 <wiki:comment>
 By the way, I lied.  There is actually a third value which is necessary to uniquely identify an entity, called *parent*.  Parent defines a special kind of relationship, placing the child in the same [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html entity group] as the parent.  Entity groups will be discussed next in the section on Transactions, but for now what you need to know is that this parent (which is often simply null, creating an unparented, root entity) is also required to uniquely identify an entity.  So, to get Car #959 from the datastore, you actually need to call something equivalent to {{{get_from_datastore("Car", 959, null)}}} or {{{get_from_datastore("Car", 959, theOwner)}}}.  Yeech.
 </wiki:comment>
-De cette manière, j'ai mentis. Actuellement il y a une troisième valeur nécessaire pour identifier une entité unique, appelée *parent*. Le parent définit une relation d'un genre spécial, plaçant l'entité enfant dans le même [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html groupe entité] que le parent. Les groupes entité seront discutés dans la section Transactions, mais pour le moment vous devez savoir qu'un parent (lequel est souvent nul, cr�ation non-parent�, entité racine) est aussi requis pour identifier une entité. Ainsi, pour obtenir un objet Car #959 du datastore, vous appellerez une fonction équivalente à {{{get_from_datastore("Car", 959, null)}}} ou  {{{get_from_datastore("Car", 959, theOwner)}}}.
+De cette manière, j'ai mentis. Actuellement il y a une troisième valeur nécessaire pour identifier une entité unique, appelée *parent*. Le parent définit une relation d'un genre spécial, plaçant l'entité enfant dans le même [http://code.google.com/appengine/docs/python/datastore/keysandentitygroups.html groupe entité] que le parent. Les groupes entité seront discutés dans la section Transactions, mais pour le moment vous devez savoir qu'un parent (lequel est souvent nul, création non-parenté, entité racine) est aussi requis pour identifier une entité. Ainsi, pour obtenir un objet Car #959 du datastore, vous appellerez une fonction équivalente à {{{get_from_datastore("Car", 959, null)}}} ou  {{{get_from_datastore("Car", 959, theOwner)}}}.
 
 <wiki:comment>
 Instead of passing three parameters around all the time, the datastore wraps these values into a single object - a _Key_.  That's all a {{{Key}}} is, a holder for the three parts that uniquely identify an entity.
