@@ -121,7 +121,7 @@ Cependant, l'utilisation de {{{@Parent}}} a plusieurs effets indésirables :
   * Vous ne pouvez reparenter à nouveau une entité sans effacer celle-ci et la réécrire. Si l'entité que vous désirez reparenter à des enfants, ils devront tous être effacés et recréés.
   
   * L'utilisation de {{{@Parent}}} peut *diminuer* les performances de votre application quand il y a divergence.
-  
+
 Ce dernier point mérite d'être détaillé. Toutes les écritures dans le datastore sont transactionnelles - même si vous n'avez pas défini spécifiquement une transaction. Quand une entité est stockée (put()), un journal d'horodatage transactionnelle se situant à la racine du groupe entité est mis à jour, et si une collision est détectée, put() est retenté (sans transaction explicite) ou annulé (avec une transaction explicite). Cela signifie que les écritures de toutes les entités dans un groupe entité se disputent le même journal de transaction, causant potentiellement de nouvelles et nombreuses tentatives.
 
 Hormis si vous avez spécifiquement besoin d'un comportement transactionnel, vous devriez probablement éviter l'utilisation de {{{@Parent}}} même quand vos entités ont un concept relationnel parent/enfant (eg Blog/Comment).
