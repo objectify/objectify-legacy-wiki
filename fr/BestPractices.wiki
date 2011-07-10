@@ -1,0 +1,285 @@
+#summary Modèle et habitude convenable pour l'utilisation d'Objectify
+#labels Featured
+
+<wiki:toc max_depth="3" />
+
+= Inscrire vos entités =
+
+La première question que vous devrait avoir en tête est "quand et comment dois-je inscrire mes classes entités ?". La réponse évidente est de le faire à l'amorçage de l'application dans un _servlet context listener_ ou un _init servlet_ - où votre application démarre. Cependant, il y a un moyen plus simple :
+
+== Utilisez un DAO ==
+
+En accédant à Objectify par le biais de vos classes DAO, vous pouvez inscrire vos entités dans un initialiseur statique et aussi ajouter des méthodes d'aides spécifiques au domaine (domain-specific helper methods).
+
+Créer une classe DAO qui étend DAOBase :
+
+{{{
+public class DAO extends DAOBase
+{
+    static {
+        ObjectifyService.register(YourEntity.class);
+        ObjectifyService.register(YourOtherEntity.class);
+    }
+
+    /** Your DAO can have your own useful methods */
+    public MyThing getOrCreateMyThing(long id)
+    {
+        MyThing found = ofy().find(clazz, id);
+        if (found == null)
+            return new MyThing(id);
+        else
+            return found;
+    }
+}
+}}}
+
+Maintenant vous pouvez utiliser votre DAO et tout autre niveau supérieur, comme les méthodes spécifiques à l'application (applicaton-specific methods) :
+
+{{{
+DAO dao = new DAO();
+
+MyThing thing = dao.getOrCreateThing(123);
+thing.incrementUseCount();
+
+dao.ofy().put(thing);
+}}}
+
+Accédez à la fabrique (factory) en appelant {{{dao.fact()}}}.
+
+== Comment ne pas inscrire vos entités ==
+
+Vous pourriez penser qu'une entité peut être inscrite dans sa propre classe entité :
+
+{{{
+public class ThingA
+{
+    static { ObjectifyService.factory().register(ThingA.class); }
+    // ... the rest of the entity definition
+}
+}}}
+
+Cela est dangereux ! Parce que Java charge (et initialise) les classes à la demande, Objectify ne peut garantir que vos classes soient inscrite au moment de leur récupération dans la base de données. Par exemple, supposons que vous exécutiez une recherche qui pourrait retourner différents genres d'entités :
+
+{{{
+Query<Object> lotsOfThingsQuery = ObjectifyService.begin().query();
+lotsOfThingsQuery.ancestor(someParent);    // could find both ThingA and ThingB entities
+lotsOfThingsQuery.get();    // throws IllegalStateException!
+}}}
+
+Lorsque Objectify tente de reconstituer un objet de type ThingA, il ne sera pas en mesure de le faire parce que la classe ThingA n'a pas encore était chargée et que l'initialiseur statique n'a pas encore été appelé. Si votre application utilise un objet ThingA avant que cette recherche ne soit exécutée, ceci fonctionnera - et dans les faits, ceci pourra avoir un taux de réussite de 99,99%. Mais voulez-vous vraiment obtenir une mystérieuse exception IllegalStateExceptions les 0,01% du temps restant ?
+
+== Analyse automatique ==
+
+La plupart des frameworks J2EE-style, y compris les systèmes JDO/JPA d'Appengine, analysent (scanning) le _classpath_ et peuvent inscrire automatiquement les classes annotées avec @Entity ou toutes autres annotations équivalentes. Ceci est pratique et peut facilement être ajouté à Objectify sans changer une seule ligne de code. Il y a cependant plusieurs raisons pour que cela ne fasse partie du cœur d'Objectify :
+
+  # Cette fonctionnalité requière soit [http://scannotation.sourceforge.net/ Scannotations] ou [http://code.google.com/p/reflections/ Reflections], ajoutant cinq à six dépendances supplémentaires (jars). Objectify ne requière de dépendance (jars), et nous nous répugnions à changer cela.
+  # Les développeurs auraient besoin d'ajouter une section (hook) de démarrage dans leur fichier web.xml (un ServletContextListener) afin de déclencher une analyse.
+  # L'analyse du classpath est lente parce qu'elle ouvre chaque fichier .class et .jar de votre projet et traite chaque fichier class avec un manipulateur de bytecode. Pour les projets de taille modérée ceci ajoute facilement trois à cinq secondes au temps d'initialisation de votre application. Ces cinq à six secondes correspondant à l'amorçage de votre application font patienter l'utilisateur ; créant un sentiment d’impatience, donc de rejet.
+  
+Sur ces questions, la dernière est fatale. Si vous pensez que "Mon application reçoit beaucoup de trafique ! Je peux ignorer l'amorçage (cold start) !", vous négligez le fait qu’à tout instant, App Engine démarre et arrête les instances à la demande – quelque part, un utilisateur sera affecté sur chaque _spinup_. De plus cela adviendra à chaque fois que vous redéployerez votre application ! On ne peut échapper au temps perdu de l'amorçage.
+
+De plus, l'analyse du classpath à un coût supplémentaire. Si vous utilisez d'autres outils qui assurent l'analyse du classpath (Weld, Spring, JAX-RS, etc), chacun prendra trois à cinq secondes de temps supplémentaire pour analyser vos fichiers jars. Un temps considérable (plus d’une dizaine de seconde) peut être atteint pour l’amorçage ; une catastrophe !
+
+Ceci dit, un temps de trois à cinq secondes pourrait être raisonnable pour votre projet. Il devrait être facile d'ajouter à votre propre ServletContextListener l'appel à la réfection (Reflexions) et d'y inscrire les classes @Entity. Spring et d'autres frameworks devraient examiner les [Extensions]. 
+
+= Utilisez un Batch Gets au lieu d'une recherche =
+
+   _Batch Gets : Groupement d'une succession d'appel à la méthode get()._
+
+Avec SQL, toutes les données vivent dans des tableaux et sont accessibles aux travers de recherches. Il est préférable de ne pas imaginer le datastore Appengine de cette manière - conceptuellement il faut penser au datastore comme un magasin de clé-valeur (key-value), permettant d'indexer et de rechercher des valeurs.
+ 
+Ce changement de concept est important car l'outil le plus efficace est une succession d'appel aux méthodes get() et put() (batch get() and put()). Une succession d'appel à get() avec comme paramètre une clé retrouvera plus rapidement des milliers d'entités, l'exécution s'effectuant en parallèle ; à contrario, une recherche standard sur des milliers d'entités pourrait prendre une éternité. De plus, GAE fixe la limite à dix recherches concurrentes.
+
+De plus, une succession de get() peut être mis en cache efficacement. Utiliser l'annotation {{{@Cached}}} d'Objectify et votre méthode get() pourrait ne jamais à avoir parcourir le datastore.
+
+Bien sûr, les successions de get() et les recherches ne sont pas nécessairement des opérations fongibles - mais quand elles le sont, utilisez une succession d'appel à get().
+
+= Utilisez les indexes avec parcimonie =
+
+Si vous ne prenez pas de décision explicite, tous les champs de vos objets seront indexés. Ceci peut être pratique si vous n'êtes pas certain des recherches que vous effectuerez dans le futur, mais ceci à un cout de calcul. Chaque propriété indexée requière un écrit séparé dans un tableau BigTable. Les propriétés non indexées sont pratiquement "gratuites".
+
+Privilégiez l'utilisation de l'annotation @Unindexed sur vos entités et utilisez l'annotation @Indexed sur les champs spécifiques aux recherches.
+
+= Evitez l'annotation {{{@Parent}}} =
+
+Les nouveaux développeurs Appengine tendent à surutiliser l'annotation {{{@Parent}}} parce qu'elle est similaire à la relation parenté dans l'univers JPA. Cependant, il y a quelques différences de concept.
+
+Dans JPA, une relation "parenté" entité fournit des mécanismes d'intégrité et de suppression/sauvegarde en cascade. Le datatstore Appengine ne fait pas la même chose ! Toutes les entités sont simplement des valeurs dans un magasin clé/valeur. Les relations sont simplement des champs de type Key. 
+
+L'annotation {{{@Parent}}} définit quelque chose de diffèrent - une relation qui est embarqué dans une entité (en tant que membre de type Key). Cela signifie qu'une partie de ce qui identifie l'entité est la descendance parent. Pourquoi voudriez-vous faire cela ?
+
+  * Les transactions fonctionnent uniquement sur les groupes entités, et les groupes entités sont définis par le parent racine. Les transactions peuvent uniquement être utilisées avec un parent racine commun.
+  
+  * Les clés ancêtres peuvent réaliser plus facilement certains types de [AdvancedPatterns#Ancestor_Queries recherches (exotiques)]. 
+  
+Cependant, l'utilisation de {{{@Parent}}} a plusieurs effets indésirables :
+
+  * La création des objets Key est encombrant : {{{new Key<Comment>(Comment.class, 123)}}} est beaucoup plus simple à  écrire que {{{new Key<Comment>(new Key<Blog>(Blog.class, 456), Comment.class, 123)}}}
+  
+  * Les identifiants (Id) générés ne sont uniques qu'au sein d'un parent. Vos entités auront des identifiants dupliqués (mais leurs clés seront uniques !)
+  
+  * Vous ne pouvez reparenter à nouveau une entité sans effacer celle-ci et la réécrire. Si l'entité que vous désirez reparenter à des enfants, ils devront tous être effacés et recréés.
+  
+  * L'utilisation de {{{@Parent}}} peut *diminuer* les performances de votre application quand il y a divergence.
+  
+Ceci dernier point mérite d'être détaillé. Toutes les écritures dans le datastore sont transactionnelles - même si vous n'avez pas défini spécifiquement une transaction. Quand une entité est mise (put()), un journal d'horodatage transactionnelle se situant à la racine du groupe entité est mis à jour, et si une collision est détectée, put() est retenté (sans transaction explicite) ou annulé (avec une transaction explicite). Cela signifie que les écritures de toutes les entités dans un groupe entité se disputent le même journal de transaction, causant potentiellement de nouvelles et nombreuses tentatives.
+
+Hormis si vous avez spécifiquement besoin d'un comportement transactionnel, vous devriez probablement éviter l'utilisation de {{{@Parent}}} même quand vos entités ont un concept relationnel parent/enfant (eg Blog/Comment).
+
+= Utilisez les transactions Pythonique =
+
+Les transactions dans Appengine sont limitées à un unique groupe entité, mais cela ne les rends pas plus inutile. En fait, les transactions sont essentielles pour la mise à jour des entités quand il y a une possibilité de divergence.
+
+Prenons l'exemple d'un compteur. Par souci de simplicité, nous ignorerons le fait que vous avez besoin de [http://code.google.com/appengine/articles/sharding_counters.html partitionner (shard)] vos compteurs pour raison de performance. La logique pour un compteur est basiquement "lire une valeur, incrémenter d'une unité, écrire une valeur" -  laissant une section critique dans laquelle deux processus peuvent lire la même valeur, incrémenter d'une unité, et écrire la même valeur, ayant pour résultat de fausser le compteur.
+
+La solution est d'utiliser des transactions. Quand la transaction est envoyée, Appengine va vérifier l'horodatage (timestamp) du compteur entité et émettre une exception ConcurrentModificationException si la donnée est mise à jour par un processus différent. Tout cela est bien beau et évite les pertes de données, mais cette solution laisse notre application traiter les satanés exceptions durant une période discordante.
+
+La solution est de recommencer ces transactions. Cette solution aide à construire vos transactions comme de petits morceaux de logique entreprise (little chunks of business) qui peuvent être exécutés par le code. Avec Python vous utilisez une fonction lambda, avec Java vous utiliser une classe interne (_inner class_).
+
+{{{
+DAOT.repeatInTransaction(new Transactable() {
+	@Override
+	public void run(DAOT daot)
+	{
+		Counter count = daot.ofy().find(Counter.class, COUNTER_ID);
+		count.increment();
+		daot.ofy().put(count);
+	}
+});
+}}} 
+
+Simple, propre, sans d'interminable ligne de code passe-partout traitant la mise en œuvre (setup) et la retransmission des transactions.
+
+Tout le code passe-partout va dans la classe DAOT :
+
+{{{
+package com.similarity.queen;
+
+import java.util.ConcurrentModificationException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.googlecode.objectify.ObjectifyOpts;
+
+/**
+ * DAO that encapsulates a single transaction.  Create it and forget about it.
+ * Also provides very convenient static methods for making GAE/Python-like transactions.
+ * 
+ * @author Jeff Schnitzer
+ */
+public class DAOT extends DAO  // DAO is your class derived from DAOBase as described above
+{
+	/** */
+	private static final Logger log = LoggerFactory.getLogger(DAOT.class);
+	
+	/** Alternate interface to Runnable for executing transactions */
+	public static interface Transactable
+	{
+		void run(DAOT daot);
+	}
+	
+	/**
+	 * Provides a place to put the result too.  Note that the result
+	 * is only valid if the transaction completes successfully; otherwise
+	 * it should be ignored because it is not necessarily valid.
+	 */
+	abstract public static class Transact<T> implements Transactable
+	{
+		protected T result;
+		public T getResult() { return this.result; }
+	}
+	
+	/** Create a default DAOT and run the transaction through it */
+	public static void runInTransaction(Transactable t)
+	{
+		DAOT daot = new DAOT();
+		daot.doTransaction(t);
+	}
+	
+	/**
+	 * Run this task through transactions until it succeeds without an optimistic
+	 * concurrency failure.
+	 */
+	public static void repeatInTransaction(Transactable t)
+	{
+		while (true)
+		{
+			try
+			{
+				runInTransaction(t);
+				break;
+			}
+			catch (ConcurrentModificationException ex)
+			{
+				if (log.isWarnEnabled())
+					log.warn("Optimistic concurrency failure for " + t + ": " + ex);
+			}
+		}
+	}
+	
+	/** Starts out with a transaction and session cache */
+	public DAOT()
+	{
+		super(new ObjectifyOpts().setSessionCache(true).setBeginTransaction(true));
+	}
+	
+	/** Adds transaction to whatever you pass in */
+	public DAOT(ObjectifyOpts opts)
+	{
+		super(opts.setBeginTransaction(true));
+	}
+	
+	/**
+	 * Executes the task in the transactional context of this DAO/ofy.
+	 */
+	public void doTransaction(final Runnable task)
+	{
+		this.doTransaction(new Transactable() {
+			@Override
+			public void run(DAOT daot)
+			{
+				task.run();
+			}
+		});
+	}
+
+	/**
+	 * Executes the task in the transactional context of this DAO/ofy.
+	 */
+	public void doTransaction(Transactable task)
+	{
+		try
+		{
+			task.run(this);
+			ofy().getTxn().commit();
+		}
+		finally
+		{
+			if (ofy().getTxn().isActive())
+				ofy().getTxn().rollback();
+		}
+ 	}
+}
+}}}
+
+Ceci est le véritable code utilisé dans [http://www.similarity.com/ Similarity] pour exécuter toutes les transactions.
+
+= Discussions intéressantes relatives à Objectify =
+
+ * IBM developerWorks' _Twitter Mining with Objectify-Appengine_, [http://www.ibm.com/developerworks/java/library/j-javadev2-13/index.html part 1] and [http://www.ibm.com/developerworks/java/library/j-javadev2-14/index.html part 2]
+
+ * [http://borglin.net/gwt-project/?page_id=604 Review of Objectify/Twig/SimpleDS]
+ * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/4467986eaf01788b/d3a1678a44242c25 Original release  announcement on GAE-Java]
+ * [http://sites.google.com/site/io/under-the-covers-of-the-google-app-engine-datastore Google I/O 2008 - Under the Covers of the Google App Engine Datastore] (required watching for anyone that uses App Engine!)
+ * [http://www.youtube.com/watch?v=AgaL6NGpkB8 Google I/O 2009 - Scalable, Complex Apps on App Engine]
+ * [http://groups.google.com/group/google-appengine-java/browse_thread/thread/f20d922ffecb310c Differences between Twig and Objectify plus example of million user fanout]
+ * [http://www.answercow.com/2010/03/google-app-engine-cold-start-guide-for.html Reducing start-up time guide]
+ * [http://turbomanage.wordpress.com/2010/03/26/appengine-cold-starts-considered/ Recucing start-up time blog entry]
+ * [http://turbomanage.wordpress.com/2010/01/28/simplify-with-objectify/ David M. Chandler's blog posting about Objectify] and [http://turbomanage.wordpress.com/2010/02/09/generic-dao-for-objectify-2/ Objectify 2]
+ * [http://iqbalyusuf.wordpress.com/gwt-uibinder-with-jax-rs-jersey/ GWT Example App with Objectify]
+ * [http://groups.google.com/group/objectify-appengine/msg/14a326058a0870be Example of a Cursor based IteratingTask base class]
+ * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/afa0d43de5db483f Controlling user access to data with queries]
+ * [http://iqbalyusuf.wordpress.com/jersey-guice-on-google-app-engine-java/ Jersey + Guice on Google App Engine Java]
+ * [http://groups.google.com/group/objectify-appengine/browse_thread/thread/25a9abfc86f8be51 How to emulate @Unique] and [http://groups.google.com/group/objectify-appengine/browse_thread/thread/5edec724ca69719e/b7536d44d028ef02 a longer discussion] of enforcing uniqueness.
+ * [http://www.fishbonecloud.com/2010/11/use-objectify-to-store-data-in-google.html Simple tutorial for 'putting' data in the datastore using Objectify]
