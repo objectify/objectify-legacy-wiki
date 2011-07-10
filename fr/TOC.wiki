@@ -3,7 +3,7 @@
 
   * [Concepts Les concepts]
   * [IntroductionToObjectify Introduction To Objectify]
-  * [BestPractices Best Practices]
+  * [BestPractices Bonne habitude]
   * [AdvancedPatterns Advanced Patterns]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
