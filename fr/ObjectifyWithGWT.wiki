@@ -1,0 +1,56 @@
+#summary Utilisation d'Objectify avec Google Web Toolkit
+
+== Got CRUD ? ==
+
+Ceci devra être le design-pattern fréquent quand vous développerez des applications web :
+
+  # Charger des données du datastore
+  # Passer ces données vers une représentation tier via le RPC
+  # Afficher les données vers l'utilisateur
+
+Cependant, il y a souvent une différence entre les données tierce et la représentation tierce dans les outils de développement web. Car, par exemple, Hibernate ou les proxy JDO ne peuvent être passés au travers du protocole GWT RPC, et les développeurs sont souvent obligés de construire des objets de transfert de données (DTO). Quelques fois ceci est une bonne idée (par exemple, lorsque vous disposez de la logique application dans vos entités) mais parfois elle ne l'est pas.
+ 
+== Aucune utilisation de DTO ==
+
+Avec des soins, vos objets entité peut être envoyés au travers de la sérialisation GWT et utilisés tels quel dans la couche de présentation. Il vous suffit d'écrire vos entités comme si elles étaient des classes clientes GWT !
+
+  * Assurez-vous que les classes entités font partie de votre module GWT (généralement dans un package .client)
+  * N'appelez pas les méthodes hors émulation JRE.
+  * Toutes classes référencées devront être eux-mêmes GWT-safe.
+  
+Il vous suffit simplement d'ajouter ceci à votre module.gwt.xml :  
+  
+{{{
+    <inherits name="com.googlecode.objectify.Objectify" />
+}}}
+
+Vous pouvez désormais manipuler vos objets entité dans GWT, ces objets passeront de manière transparente via GWT-RPC. Objectify vous permet d'utiliser Key<?>, Key (la version datastore), et toutes types datastore basiques (Link, EMail, etc) dans votre code client.
+
+== Transient ==
+
+Une distinction nette devra être faite entre les champs {{{@Transient}}} (annotation javax.persistence) et les champs {{{transient}}} (mot clé Java) :
+
+  * Les champs {{{@Transient}}} sont ignorés pour des besoins de persistance. Ils sont toujours sérialisés dans GWT.
+  * Les champs {{{transient}}} *sont* stockés (persisted) normalement. Cependant, ils ne sont PAS sérialisés par GWT.
+
+== Les annotations ==
+
+En général GWT ignorera les annotations dans vos classes. Il ne sera pas nécessaire de les inclure dans votre module.gwt.xml.
+
+Les annotations comme {{{@Entity}}}, {{{@LoadAlso}}}, et toutes autres annotations seront ignorées lors de la sérialisation GWT.
+
+== Les accès côté client ==
+
+Les objets Objectify (Objectify, ObjectifyService, ObjectifyFactory, etc) ne peuvent être utilisés dans le code GWT client. Fondamentalement seules les entités (et les données) sont autorisées à traverser les frontières services GWT. 
+
+
+Comme Objectify 3.0, la construction d'objets {{{Key<?>}}} côté client est beaucoup plus difficile. Vous pouvez utiliser un unique constructeur, celui qui prend une clé native datastore {{{Key}}}. Les autres constructeurs n'existent pas dans la super-source {{{Key<?>}}}. Allez voir [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d6171c6a4956719/2d5004df1d7e20ee?hl=en_US&lnk=gst&q=polymorphism+gwt&pli=1#2d5004df1d7e20ee cette discussion].
+
+
+== Exemple ==
+
+Un exemple très simple peut être trouvé à [http://code.google.com/p/scratchmonkey/source/browse/#svn/appengine/objectify-gwt cet endroit].
+
+== Request Factory==
+
+David Chandler a écrit un article sur [http://turbomanage.wordpress.com/2011/03/25/using-gwt-requestfactory-with-objectify/ "Using Objectify with RequestFactory"].

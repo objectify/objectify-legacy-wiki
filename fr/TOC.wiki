@@ -7,7 +7,7 @@
   * [AdvancedPatterns Modèles avancés]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
-  * [ObjectifyWithGWT Objectify With GWT]
+  * [ObjectifyWithGWT Objectify et GWT]
   * [MavenRepository Maven Repository]
   * [ReleaseNotes Release Notes]
   * [Extensions Extensions]
