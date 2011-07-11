@@ -1,10 +1,10 @@
-#summary Sidebar page - Tables des matières
+#summary Sidebar page - Tables des matiï¿½res
 #sidebar TOC
 
   * [Concepts Les concepts]
   * [IntroductionToObjectify Introduction To Objectify]
   * [BestPractices Bonne habitude]
-  * [AdvancedPatterns Modèles avancés]
+  * [AdvancedPatterns ModÃ¨les avancÃ©s]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
   * [ObjectifyWithGWT Objectify With GWT]
