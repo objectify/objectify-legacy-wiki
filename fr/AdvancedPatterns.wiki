@@ -1,0 +1,94 @@
+#summary Modèles avancés pour Objectify
+
+<wiki:toc max_depth="3" />
+
+*Note: Cette section est cours d'achèvement et devra être considérée comme expérimental*
+
+  _Pattern : modèle__
+
+Ces modèles sont probables mais sont spécifiques, et ils doivent être utilisés avec prudence.
+
+= Les recherches Ancêtre =
+
+Utiliser l'annotation {{{@Parent}}} pour des recherches avancées. Cette annotation vous évite de créer des indexes personnalisés qui autrement auraient dû être nécessaire.
+
+{{{
+@Unidexed
+class Blog {
+  @Id Long id;
+  String description;
+  List<User> contributors;
+}
+
+@Unindexed
+class BlogEntry {
+  @Parent Key<Blog> blog;
+  @Id Long id;
+  String title;
+  String body;
+  @Indexed Date dateCreated = new Date();
+  @Indexed Date dateUpdated = new Date();
+}
+}}}
+
+J’utilise d'un assistant qui ressemble à ceci :
+
+{{{
+public static <T,V> QueryResultIterable<T> getChildren(V parent, Class<T> clazz, String filt, Object val){
+  if(parent == null) throw new IllegalArgumentException();
+  return begin().query(clazz).ancestor(getKey(parent)).filter(filt, val).fetch();
+}
+}}}
+
+Alors, quand je veux obtenir toutes les entrées de mon blog, pour certaines entrées blog, depuis une certaine date, je peux écrire : 
+
+{{{
+Date since = ...;
+Blog blog = ...;
+Iterable<BlogEntry> blogEntries = getChildren(blog, BlogEntry.class, "dateCreated >", since);
+}}}
+
+Si cela a été défini sans l'annotation {{{@Parent}}}, il aurait fallu un index personnalisé (sur dateCreated et blog). Cet index serait coûteux en terme de stockage et de performance (à la fois en écriture et en lecture). Cela signifie aussi que je peux obtenir toutes les entrées mises à jour par le blog sans créer un autre index. Toute propriété individuelle indexée sur {{{BlogEntry}}} est maintenant disponible pour n'importe quel blog.
+
+
+= {{{@PrePersist}}} =
+
+Il y a différentes raisons pour l'utilisation de l'annotation {{{@PrePersist}}} sur une entité.
+
+== Dernière mise à jour ==
+
+L'exemple ci-dessous montre qu'il pourrait être sensé de mettre à jour l'horodatage à chaque fois qu'un {{{BlogEntry}}} est mis à jour.
+
+{{{
+@Unindexed
+class BlogEntry {
+  ...
+  
+  @PrePersist
+  private void PrePersist() {
+    dateUpdated = new Date();
+  }
+}
+
+}}}
+
+== Historique des révisions ==
+
+Ceci est un exemple très simple, mais il montre la flexibilité d'utilisation de {{{@PrePersist}}}.
+
+{{{
+@Unindexed
+class BlogEntry {
+  ...
+  List<String> editHistory = new ArrayList<String>();
+  @Transient
+  User editor;
+
+  @PrePersist
+  private void PrePersist() {
+    dateUpdated = new Date();
+    if (editor != null) editHistory.add("Edited by " + editor.getName() + " on " + dateUpdated);
+  }
+}
+
+}}}

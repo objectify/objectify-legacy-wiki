@@ -4,7 +4,7 @@
   * [Concepts Les concepts]
   * [IntroductionToObjectify Introduction To Objectify]
   * [BestPractices Bonne habitude]
-  * [AdvancedPatterns Advanced Patterns]
+  * [AdvancedPatterns Modèles avancés]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
   * [ObjectifyWithGWT Objectify With GWT]
