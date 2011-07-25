@@ -686,6 +686,8 @@ class MyEntity extends MyEntityBase {
 }
 }}}
 
+*Caution*: You can't update @Id or @Parent fields in a @PrePersist callback; by this time, the low-level Entity has already been constructed with a complete Key so it can be passed in as an optional parameter.  You can, however, update any other fields and the new values will be persisted.
+
 = Migrating Schemas =
 
 It is a rare schema that remains unchanged through the life of an application.  BigTable's schemaless nature is both a blessing and a curse - you can easily change schemas object-by-object on the fly, but you can't easily do it in bulk with an ALTER TABLE.  Objectify provides some simple but powerful tools to help with common types of structure change.
