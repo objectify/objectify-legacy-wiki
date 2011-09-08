@@ -1,11 +1,20 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 3.0.1 =
+2011-09-08
+  * Requires Appengine SDK 1.4.0 or newer
+
+  * Added methods Query.chunkSize() and Query.prefetchSize()
+  * Experimental support for @Embedded Maps
+  * Added a TimeZoneConverter so you can have TimeZone fields
+  * Added a BigDecimalLongConverter which is not enabled by default
+
 = 3.0 =
 2011-04-22
   * Requires Appengine SDK 1.4.0 or newer
 
-  IMPORTANT!  Read the release notes for beta1 and beta2, in particular the note about breaking Key<?> serialization.  If you have serialized Key<?> objects into persistent stores, this will affect you.  Also, you will not be able to construct Key<?> objects from client-side GWT.
+  IMPORTANT!  Read the release notes for beta1 and beta2, in particular the note about breaking Key<?> serialization.  If you have *serialized* Key<?> objects into persistent stores, this will affect you.  Also, you will not be able to construct Key<?> objects from client-side GWT.
 
   * Fixed NPE when fetching polymorphic entities not in the database.
   * Fixed NPE when fetching collection field with raw type (missing generics).
