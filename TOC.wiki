@@ -12,3 +12,4 @@
   * [ReleaseNotes Release Notes]
   * [Extensions Extensions]
   * [ContributingToObjectify Contributing To Objectify]
+  * [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/index.html API Javadoc]
