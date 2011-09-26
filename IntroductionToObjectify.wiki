@@ -953,7 +953,7 @@ If you persist one of these EntityWithComplicatedIndexing objects, you will find
 
 Note that {{{one.two.delta}}} is *not* indexed; the annotation on {{{LevelOne.two}}} overrides {{{LevelTwo}}}'s class default.
 
-== Querying ==
+== Querying By Embedded Fields ==
 
 For any indexed field, you can query like this:
 
