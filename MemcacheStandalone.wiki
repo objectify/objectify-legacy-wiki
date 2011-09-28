@@ -1,0 +1,29 @@
+#summary Using memcache outside of Objectify
+
+Starting in v3.1, Objectify's write-through memcache can be used directly with the low level API, independent of the rest of Objectify.  You can use this to add caching behavior to apps built on the low level API or other datastore APIs that rely on the low level API.  You might even be able to use it with JDO/JPA.
+
+IntroductionToObjectify documents how to use memcache with Objectify; this document assumes you are not using Objectify.  It assumes you are familiar with the [http://code.google.com/appengine/docs/java/datastore/ low level API].
+
+= Introduction =
+
+Objectify's memcache integration provides the {{{DatastoreService}}} and {{{AsyncDatastoreService}}} interfaces by wrapping the Google-provided objects and adding cache behavior.  By providing these interfaces, memcaching behavior can be added to any code built on top of the low-level API.
+
+What you should know about the cache:
+
+  * get(), put(), and delete() are cached.  query() does not use or affect the cache in any way.
+  * Transactions work normally - get()s bypass the cache to appear "frozen in time", put()s and delete()s affect the cache only on successful commit().
+  * The cache is near-transactional.  Under normal operation, the cache will not go out of sync with the datastore, even under heavy contention.
+    * The exception to this is {{{DeadlineExceededException}}} at the 30s (10m for tasks) hard deadline.  If Google kills your process before the cache update occurs, there's nothing we can do.
+  * Heavy contention will significantly reduce cache effectiveness.  Please [http://code.google.com/p/googleappengine/issues/detail?id=5859 star this issue] so this problem can be addressed.
+  * You can control cache expiration on a per-kind basis.
+  * You can track hit/miss statistics.
+
+*Warnings* about the cache:
+
+  * Right now, large batch operations perform poorly.  Until Google adds batch compare-and-set (CAS) operations to the {{{MemcacheService}}} interface (please [http://code.google.com/p/googleappengine/issues/detail?id=4874 star this issue]), memcache fetch and put operations must be done one key at a time.  For a few items this is not a big deal (each memcache operation typically takes 4-6ms).  For large batches the back-to-back RPCs can take significantly longer than a request to the datastore would.
+  * If you use asynchronous operations, you must install the [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/com/googlecode/objectify/cache/AsyncCacheFilter.html AsyncCacheFilter].  Please [http://code.google.com/p/googleappengine/issues/detail?id=4271 star this issue].
+  * This code is "beta".  It passes tests.  It has not been load tested.
+
+= Setup =
+
+TODO
