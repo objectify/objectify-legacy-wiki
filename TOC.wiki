@@ -7,10 +7,12 @@
   * [AdvancedPatterns Advanced Patterns]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
-  * [ObjectifyWithGWT Objectify With GWT]
-  * [MemcacheStandalone Caching Entities Without Objectify]
-  * [MavenRepository Maven Repository]
+
   * [ReleaseNotes Release Notes]
+  * [MavenRepository Maven Repository]
+  * [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/index.html API Javadoc]
+
+  * [ObjectifyWithGWT Objectify With GWT]
+  * [MemcacheStandalone Caching Without Objectify]
   * [Extensions Extensions]
   * [ContributingToObjectify Contributing To Objectify]
-  * [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/index.html API Javadoc]
