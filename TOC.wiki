@@ -8,6 +8,7 @@
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
   * [ObjectifyWithGWT Objectify With GWT]
+  * [MemcacheStandalone Caching Entities Without Objectify]
   * [MavenRepository Maven Repository]
   * [ReleaseNotes Release Notes]
   * [Extensions Extensions]
