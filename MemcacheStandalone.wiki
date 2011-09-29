@@ -34,7 +34,7 @@ That's it.
 
 = Cache Expiration =
 
-You can control cache expiration for the DatastoreService instance by passing it in to the factory method:
+You can control cache expiration for the {{{DatastoreService}}} instance by passing it in to the factory method:
 
 {{{
 // Time is in seconds
