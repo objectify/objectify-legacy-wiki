@@ -28,7 +28,7 @@ What you should know about the cache:
 = Setup =
 
   # Add objectify-X.X.X.jar to your project.  No other jars are necessary.
-  # Instead of {{{DatastoreServiceFactory.getDatastoreService()}}}, use {{{CachingDatastoreServiceFactory.getDatastoreService()}}}
+  # Instead of {{{DatastoreServiceFactory.getDatastoreService()}}}, use *Caching*{{{DatastoreServiceFactory.getDatastoreService()}}}
 
 That's it.
 
