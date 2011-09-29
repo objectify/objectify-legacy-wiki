@@ -7,11 +7,9 @@
   * [AdvancedPatterns Advanced Patterns]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
-
   * [ReleaseNotes Release Notes]
   * [MavenRepository Maven Repository]
   * [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/index.html API Javadoc]
-
   * [ObjectifyWithGWT Objectify With GWT]
   * [MemcacheStandalone Caching Without Objectify]
   * [Extensions Extensions]
