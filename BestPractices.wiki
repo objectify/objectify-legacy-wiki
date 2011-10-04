@@ -98,6 +98,8 @@ Consider using @Unindexed on your entities and then only @Indexed the fields you
 
 = Avoid {{{@Parent}}} =
 
+*Note:* This was written before the advent of the high-replication datastore.  @Parent is important now to ensure strongly consistent queries, and so this section needs to be revised.  The general advice is still good but there are lots of places you will now need @Parent.  TBD.
+
 New appengine developers tend to overuse the {{{@Parent}}} annotation feature because at first it seems conceptually similar to owned relationships in the world of JPA.  However, they are quite different concepts.
 
 In JPA, an "owned" entity relationship provides referential integrity checking and cascading deletes/saves.  The appengine datastore does neither of these things!  All entities are simply values in a key/value store.  Relationships are simply fields of type Key. 
