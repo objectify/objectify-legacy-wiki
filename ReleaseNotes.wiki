@@ -1,6 +1,18 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 3.1 beta 1 =
+2011-10-13
+  * Requires Appengine SDK 1.5.5 or newer
+
+*Note*:  The big change in 3.1 is that the memcache integration has been rewritten from scratch.  On the plus side, the new cache will not go out of sync with the datastore, even under severe contention.  On the down side, batch fetches are prohibitively slow.  This will be resolved in a future version by the addition of [http://code.google.com/p/googleappengine/issues/detail?id=4874 batch CAS operations] to the GAE SDK.
+
+  * Added API for XG transactions
+  * Completely rewritten cache code
+  * Added Key<?>.toWebSafeString() and a constructor to reconstitute the Key<?>
+  * Added ObjectifyFactory.allocateId() convenience method
+  * Several internal API changes.
+
 = 3.0.1 =
 2011-09-08
   * Requires Appengine SDK 1.4.0 or newer
