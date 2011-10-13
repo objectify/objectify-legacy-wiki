@@ -1152,7 +1152,11 @@ What you should know about the global cache:
   * The global cache can work in concert with the session cache.
     * Remember:  The session cache caches entity Java object instances, the global cache caches entity data.
 
-*Warning*:  There is no transactional link between memcache and the datastore.  Highly contended entities can go out of sync.  DeadlineExceededExceptions can cause the cache to go out of sync.  It is possible that datastore hiccups could cause the cache to go out of sync.  Consider placing a short timeout on your @Cached entities or eschewing @Cached for entities which require rigorous data integrity.
+*Warning*:  Objectify's global cache support prior to v3.1 suffered from synchronization problems under contention.  Do not use it for entities which require transactional integrity, and you are strongly advised to apply an expiration period to all cache values.
+
+The cache in 3.1 has been rewritten from scratch to provide near-transactional consistency with the datastore.  Only DeadlineExceededException should be able to produce synchronization problems.  However, because Check-And-Set operations are used to enforce this consistency, and GAE currently lacks batch CAS operations, Objectify will be *very* slow performing large batch get()s.  If you use large batches, do not enable the cache for those fetches.  And star [http://code.google.com/p/googleappengine/issues/detail?id=4874 this issue].
+
+For more commentary about the new v3.1 cache, see MemcacheStandalone.
 
 = Example =
 
