@@ -686,7 +686,7 @@ class MyEntity extends MyEntityBase {
 }
 }}}
 
-*Caution*: You can't update @Id or @Parent fields in a @PrePersist callback; by this time, the low-level Entity has already been constructed with a complete Key so it can be passed in as an optional parameter.  You can, however, update any other fields and the new values will be persisted.
+*Caution*: You can't update @Id or @Parent fields in a @PrePersist callback; by this time, the low-level Entity has already been constructed with a Key so it can be passed in to the callback as an optional parameter.  You can, however, update any other fields and the new values will be persisted.
 
 = Migrating Schemas =
 
