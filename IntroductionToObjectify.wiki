@@ -1055,6 +1055,31 @@ class NextEntity {
 
 {{{@AlsoLoad}}} methods work as well, however you cannot use {{{@Embedded}}} on method parameters.
 
+== Embedded Maps ==
+
+There is one additional special behavior of {{{@Embedded}}}:  If you put it on a {{{Map}}} keyed by String, this will allow you to create [http://code.google.com/appengine/docs/python/datastore/datamodeling.html#The_Expando_Class "expando"] dynamic properties.  For example:
+
+{{{
+class MyEntity {
+    @Id Long id;
+    @Embedded Map<String, String> stuff = new HashMap<String, String>();
+}
+
+MyEntity ent = new MyEntity();
+ent.stuff.put("foo", "fooValue");
+ent.stuff.put("bar", "barValue");
+ofy.put(ent);
+}}}
+
+...will produce this entity structure:
+
+|| stuff.foo || "fooValue" ||
+|| stuff.bar || "barValue" ||
+
+If the Map field is indexed, you can filter by "stuff.foo" or "stuff.bar".
+
+Note that while the Map value can be of any type, the Map key *must* be String.
+
 = @Serialized =
 
 An alternative to {{{@Embedded}}} is to use {{{@Serialized}}}, which will let you store nearly any Java object graph.
