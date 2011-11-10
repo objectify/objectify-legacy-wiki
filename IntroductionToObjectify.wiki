@@ -147,6 +147,8 @@ Iterable<Key<Car>> allKeys = ofy.query(Car.class).fetchKeys();
 ofy.delete(allKeys);
 }}}
 
+Note that queries are closely related to indexes.  See [http://code.google.com/appengine/docs/java/datastore/queries.html#Introduction_to_Indexes the appengine documentation for indexes] for detail about what you can and cannot filter by.
+
 == Cursors ==
 
 Cursors let you take a "checkpoint" in a query result set, store the checkpoint elsewhere, and then resume from where you left off later.  This is often used in combination with the Task Queue API to iterate through large datasets that cannot be processed in the 30s limit of a single request.  The algorithm for this is roughly:
