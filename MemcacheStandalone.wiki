@@ -14,14 +14,12 @@ What you should know about the cache:
   * Explicit transactions work normally - get()s bypass the cache to appear "frozen in time", put()s and delete()s affect the cache only on successful commit().
   * The cache is near-transactional.  Under normal operation, the cache will not go out of sync with the datastore, even under heavy contention.
     * The exception to this is {{{DeadlineExceededException}}} at the 30s (10m for tasks) hard deadline.  If Google kills your process before the cache update occurs, there's nothing we can do.
-  * Heavy contention will significantly reduce cache effectiveness.  Please [http://code.google.com/p/googleappengine/issues/detail?id=5859 star this issue] so this problem can be addressed.
   * You can control cache expiration on a per-kind basis.
   * You can track hit/miss statistics.
 
 *Warnings* about the cache:
 
   * Implicit (thread-local) transactions are not supported.  If you start a transaction, you must pass it explicitly into put(), get(), etc.  You can only use the methods without txn parameter outside of all transactions.
-  * Right now, large batch operations perform poorly.  Until Google adds batch compare-and-set (CAS) operations to the {{{MemcacheService}}} interface (please [http://code.google.com/p/googleappengine/issues/detail?id=4874 star this issue]), memcache fetch and put operations must be done one key at a time.  For a few items this is not a big deal (each memcache operation typically takes 4-6ms).  For large batches the back-to-back RPCs can take significantly longer than a request to the datastore would.
   * If you use asynchronous operations, you must install the [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/com/googlecode/objectify/cache/AsyncCacheFilter.html AsyncCacheFilter].  Please [http://code.google.com/p/googleappengine/issues/detail?id=4271 star this issue].
 
 = Setup =
