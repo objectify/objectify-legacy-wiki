@@ -1,6 +1,20 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 3.1 =
+2011-11-10
+  * Requires Appengine SDK 1.6.0 or newer
+ 
+Please read the release notes for 3.1 beta 1.  In addition:
+
+  * Always enables XG when starting a transaction on HRD
+  * Memcache integration now uses SDK 1.6.0 batch CAS operations for efficiency
+  * Added ObjectifyFactory.allocateIdRange()
+  * Changed Key<?>.toWebSafeString() (introduced in 3.1b1) to getString()
+  * Added a Key<?> constructor (and create() method) that takes a web safe string (ie getString())
+  * Added optional converters for joda time and money classes
+  * Added a varargs overload of Objectify.get(Key...)
+
 = 3.1 beta 1 =
 2011-10-13
   * Requires Appengine SDK 1.5.5 or newer
