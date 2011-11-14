@@ -6,6 +6,25 @@
   * Consistent interface for batch get vs filtering
   * Consistent interface for fetch groups
   * All intermediate command objects are immutable
+  * Fix poor initial design decisions
+
+= Cleanup =
+  * Stop using JPA annotations
+  * Convert all annotations to imperative form (eg @Index instead of @Indexed)
+  * All fields default to not indexed
+
+= Example of class with fetching =
+{{{
+class Beastie {
+   @Fetch @Parent ParentThing parent;
+   @Id Long id;
+
+   @Fetch({"bigGroup", "smallGroup"}) SomeThing some;
+   @Fetch("bigGroup") List<OtherThing> others;
+   @Fetch Ref<OtherThing> refToOtherThing;
+   Ref<OtherThing> anotherRef;  // this one is never fetched automatically
+}
+}}}
 
 = The Ref class =
 {{{
