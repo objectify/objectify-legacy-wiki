@@ -1,11 +1,25 @@
 #summary API design for Objectify 4.0
 
+= What's wrong with the old API? =
+  * Putting Key<?> in the data model is a PITA sometimes
+    * Hard to create tidy data models for jsonification or serialization to clients; tends to require ugly @Transient fields
+    * Manually populating @Transient fields is errorprone and can be inefficient
+  * Asynchrony shoehorned in
+    * Most operations already have interfaces that can hide asynchrony, for example:
+      * {{{Map<Key<Thing>, Thing> map = ofy.get(k1, k2)}}} can be async
+      * {{{Result<Map<Key<Thing>, Thing>> map = ofy.async().get(k1, k2)}}} is unnecessary
+  * As get() methods for refs and unfetched entities added, API on Objectify is exploding
+  * Reliance on JPA annotations is problem for some
+  * Defaulting fields to indexed was a bad idea
+
 = Design goals =
+  * Make Key<?> optional in the data model
+  * Automatic fetching of object graphs
+    * Fine tuning with easy-to-use fetch groups (not JDO fetch groups!)
   * Use interfaces to hide asynchrony from client
     * *Everything* should be asynchronous!
   * Use Ref<?> when asynchrony cannot be hidden (ie, returning concrete classes)
   * Consistent interface for batch get vs filtering
-  * Consistent interface for fetch groups
   * All core config/command objects are immutable
   * Fix poor initial design decisions
 
