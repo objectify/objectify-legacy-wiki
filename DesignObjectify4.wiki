@@ -2,6 +2,7 @@
 
 = Design goals =
   * Use interfaces to hide asynchrony from client
+    * *Everything* should be asynchronous!
   * Use Ref<?> when asynchrony cannot be hidden (ie, returning concrete classes)
   * Consistent interface for batch get vs filtering
   * Consistent interface for fetch groups
