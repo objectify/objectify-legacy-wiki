@@ -98,10 +98,10 @@ Thing th =      ofy.find().type(Thing.class).filter("foo", foo).entity().getSafe
 Iterable<Thing> ths = ofy.find().fetch("group").type(Thing.class).filter("foo", foo).entities();
 
 // Put
-ofy.put().entities(e1, e2, e3);            // asynchronous
-ofy.put().entities(e1, e2, e3).now();   // synchronous
+ofy.put().entities(e1, e2, e3);		// asynchronous
+ofy.put().entities(e1, e2, e3).now();	// synchronous
 
 // Delete
-ofy.delete().entities(e1, e2, e3);            // asynchronous
-ofy.delete().entities(e1, e2, e3).now();   // synchronous
+ofy.delete().entities(e1, e2, e3);		// asynchronous
+ofy.delete().entities(e1, e2, e3).now();	// synchronous
 }}}
