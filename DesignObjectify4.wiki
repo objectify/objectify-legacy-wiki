@@ -36,12 +36,21 @@
 = Example of class with fetching =
 {{{
 class Beastie {
-   @Fetch @Parent ParentThing parent;
+   @Parent
+   @Fetch
+   ParentThing parent;
+
    @Id Long id;
 
-   @Fetch({"bigGroup", "smallGroup"}) SomeThing some;
-   @Fetch("bigGroup") List<OtherThing> others;
-   @Fetch Ref<OtherThing> refToOtherThing;
+   @Fetch({"bigGroup", "smallGroup"})
+   SomeThing some;
+
+   @Fetch("bigGroup")
+   List<OtherThing> others;
+
+   @Fetch
+   Ref<OtherThing> refToOtherThing;
+
    Ref<OtherThing> anotherRef;  // this one is never fetched automatically
 }
 }}}
