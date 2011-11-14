@@ -6,13 +6,18 @@
   * Use Ref<?> when asynchrony cannot be hidden (ie, returning concrete classes)
   * Consistent interface for batch get vs filtering
   * Consistent interface for fetch groups
-  * All intermediate command objects are immutable
+  * All core config/command objects are immutable
   * Fix poor initial design decisions
 
 = Cleanup =
   * Stop using JPA annotations
   * Convert all annotations to imperative form (eg @Index instead of @Indexed)
   * All fields default to not indexed
+  * Use builder pattern for ObjectifyOpts
+  * Session cache enabled by default
+  * More control of Objectify instance; switch read consistency, disable/enable caches, etc
+    * Objectify instance remains immutable, however
+      * Well not exactly, because the session cache is shared among an instance chain
 
 = Example of class with fetching =
 {{{
