@@ -103,6 +103,7 @@ Thing th =      ofy.find().type(Thing.class).filter("foo", foo).first().get();
 Thing th =      ofy.find().type(Thing.class).filter("foo", foo).first().getSafe();	// throws NotFoundException
 
 // Get first item but only the key; the entity will have id/parent but otherwise be unintialized
+Ref<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first();
 Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first().key();
 Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first().keySafe();	// throws NotFoundException
 Thing th =      ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first().get();
