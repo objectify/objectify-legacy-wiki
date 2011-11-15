@@ -91,17 +91,22 @@ Ref<Thing> th = ofy.find().type(Thing.class).parent(par).id(123L);
 Map<Key<Thing>, Thing> ths = ofy.find().type(Thing.class).ids(123L, 456L);
 
 // Queries (asynchrony hidden of course)
-Iterable<Key<Thing>> ths =  ofy.find().type(Thing.class).filter("foo", foo).keys();
+Iterable<Key<Thing>> ths =  ofy.find().type(Thing.class).filter("foo", foo).keys();  // implicit keyOnly()
 Iterable<Thing> ths =       ofy.find().type(Thing.class).filter("foo", foo).entities();
+Iterable<Thing> ths =       ofy.find().type(Thing.class).filter("foo", foo).keyOnly().entities();  // unfetched entities
 
-// Get first item
-Ref<Key<Thing>> th = ofy.find().type(Thing.class).filter("foo", foo).key();
-Key<Thing> th =      ofy.find().type(Thing.class).filter("foo", foo).key().get();
-Key<Thing> th =      ofy.find().type(Thing.class).filter("foo", foo).key().getSafe();	// throws NotFoundException
+// Get first item whole
+Ref<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).first();
+Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).first().key();
+Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).first().keySafe();	// throws NotFoundException
+Thing th =      ofy.find().type(Thing.class).filter("foo", foo).first().get();
+Thing th =      ofy.find().type(Thing.class).filter("foo", foo).first().getSafe();	// throws NotFoundException
 
-Ref<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).entity();
-Thing th =      ofy.find().type(Thing.class).filter("foo", foo).entity().get();
-Thing th =      ofy.find().type(Thing.class).filter("foo", foo).entity().getSafe();	// throws NotFoundException
+// Get first item but only the key; the entity will have id/parent but otherwise be unintialized
+Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first().key();
+Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first().keySafe();	// throws NotFoundException
+Thing th =      ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first().get();
+Thing th =      ofy.find().type(Thing.class).filter("foo", foo).keyOnly().first().getSafe();	// throws NotFoundException
 
 // Query with fetch group
 Iterable<Thing> ths = ofy.find().fetch("group").type(Thing.class).filter("foo", foo).entities();
