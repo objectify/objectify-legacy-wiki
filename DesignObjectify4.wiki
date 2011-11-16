@@ -33,22 +33,55 @@
     * Objectify instance remains immutable, however
       * Well not exactly, because the session cache is shared among an instance chain
 
+= Annotation changes =
+All annotations live in com.googlecode.objectify.annotation.  JPA annotations are not used at all.
+
+|| Old || New || Notes ||
+|| @Entity || @Entity || unchanged ||
+|| @Indexed || @Index || ||
+|| @Unindexed || @Unindex || ||
+|| @Transient || @Ignore || now accepts conditions ||
+|| @NotSaved || @IgnoreSave || or maybe @IgnoreOnSave? ||
+|| @PostLoad || @OnLoad ||
+|| @PrePersist || @OnSave ||
+|| @Cached || @Cache ||
+|| @Embedded || @Embed ||
+|| || @Load || instead of proposed @Fetch ||
+|| || @OnLoadDelegate || see below ||
+|| || @OnSaveDelegate || see below ||
+
+New annotations which can be put at Class level:
+  * @OnSaveDelegate(SomeClass.class)
+  * @OnLoadDelegate(SomeClass.class)
+
+In this case, SomeClass implements standard interfaces, something like:
+{{{
+interface LoadLifecycle<T> {
+   void onLoad(T entity, Objectify ofy);
+}
+interface SaveLifecycle<T> {
+   void onSave(T entity, Objectify ofy);
+}
+}}}
+
+Since all such objects are created with the overridable method ObjectFactory.create(), it's easy to pull these from Guice.
+
 = Example of class with fetching =
 {{{
 class Beastie {
    @Parent
-   @Fetch
+   @Load
    ParentThing parent;
 
    @Id Long id;
 
-   @Fetch({"bigGroup", "smallGroup"})
+   @Load({"bigGroup", "smallGroup"})
    SomeThing some;
 
-   @Fetch("bigGroup")
+   @Load("bigGroup")
    List<OtherThing> others;
 
-   @Fetch
+   @Load
    Ref<OtherThing> refToOtherThing;
 
    Ref<OtherThing> anotherRef;  // this one is never fetched automatically
@@ -58,8 +91,8 @@ class Beastie {
 = The Ref class =
 {{{
 class Ref<T> {
-    Key<T> getKey();
-    T get();
+    Key<T> key();	// also aliased to getKey() for javabeans-compliance
+    T get();	// also aliased to getValue() for javabeans-compliance
     T getSafe() throws NotFoundException;
 }
 }}}
@@ -78,7 +111,7 @@ Ref<Thing> th = ofy.find().entity(rawKey);	// Raw datastore key looks the same
 Ref<Thing> th = ofy.find().entity(entity);	// So does fetching "unfetched" entities
 
 // With a fetch group
-Thing th = ofy.find().fetch("group").entity(thingKey).get();
+Thing th = ofy.find().load("group").entity(thingKey).get();
 
 // Multi get is async, hides asynchrony behind Map interface
 Map<Key<Thing>, Thing> ths = ofy.find().entities(thingKey, rawKey, entity);	// takes anything key-ish
@@ -113,7 +146,7 @@ Thing th =      ofy.find().type(Thing.class).filter("foo", foo).keysOnly().first
 Thing th =      ofy.find().type(Thing.class).filter("foo", foo).keysOnly().first().getSafe();	// throws NotFoundException
 
 // Query with fetch group
-Iterable<Thing> ths = ofy.find().fetch("group").type(Thing.class).filter("foo", foo).entities();
+Iterable<Thing> ths = ofy.find().load("group").type(Thing.class).filter("foo", foo).entities();
 
 // Put
 ofy.put().entities(e1, e2, e3);		// asynchronous
