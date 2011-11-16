@@ -75,13 +75,13 @@ Thing th =      ofy.find().entity(thingKey).get();
 Thing th =      ofy.find().entity(thingKey).getSafe();	// throws NotFoundException
 
 Ref<Thing> th = ofy.find().entity(rawKey);	// Raw datastore key looks the same
-Ref<Thing> th = ofy.find().entity(entity);	// For fetching "unfetched" entities
+Ref<Thing> th = ofy.find().entity(entity);	// So does fetching "unfetched" entities
 
 // With a fetch group
 Thing th = ofy.find().fetch("group").entity(thingKey).get();
 
 // Multi get is async, hides asynchrony behind Map interface
-Map<Key<Thing>, Thing> ths = ofy.find().entities(thingKey1, thingKey2);
+Map<Key<Thing>, Thing> ths = ofy.find().entities(thingKey, rawKey, entity);	// takes anything key-ish
 
 // Fetching by id
 Ref<Thing> th = ofy.find().type(Thing.class).id(123L);
