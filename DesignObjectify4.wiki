@@ -101,53 +101,53 @@ class Ref<T> {
 = API examples =
 {{{
 // Simple fetch of refs
-ofy.find().refs(ref1, ref2);	// void
+ofy.load().refs(ref1, ref2);	// void
 
 // Simple key fetch, always async
-Ref<Thing> th = ofy.find().entity(thingKey);
-Thing th =      ofy.find().entity(thingKey).get();
-Thing th =      ofy.find().entity(thingKey).getSafe();	// throws NotFoundException
+Ref<Thing> th = ofy.load().entity(thingKey);
+Thing th =      ofy.load().entity(thingKey).get();
+Thing th =      ofy.load().entity(thingKey).getSafe();	// throws NotFoundException
 
-Ref<Thing> th = ofy.find().entity(rawKey);	// Raw datastore key looks the same
-Ref<Thing> th = ofy.find().entity(entity);	// So does fetching "unfetched" entities
+Ref<Thing> th = ofy.load().entity(rawKey);	// Raw datastore key looks the same
+Ref<Thing> th = ofy.load().entity(entity);	// So does fetching "unfetched" entities
 
 // With a fetch group
-Thing th = ofy.find().load("group").entity(thingKey).get();
+Thing th = ofy.load().group("group").entity(thingKey).get();
 
 // Multi get is async, hides asynchrony behind Map interface
-Map<Key<Thing>, Thing> ths = ofy.find().entities(thingKey, rawKey, entity);	// takes anything key-ish
+Map<Key<Thing>, Thing> ths = ofy.load().entities(thingKey, rawKey, entity);	// takes anything key-ish
 
 // Fetching by id
-Ref<Thing> th = ofy.find().type(Thing.class).id(123L);
-Thing th =      ofy.find().type(Thing.class).id(123L).get();
+Ref<Thing> th = ofy.load().type(Thing.class).id(123L);
+Thing th =      ofy.load().type(Thing.class).id(123L).get();
 
 // With a parent
-Ref<Thing> th = ofy.find().type(Thing.class).parent(par).id(123L);
+Ref<Thing> th = ofy.load().type(Thing.class).parent(par).id(123L);
 
 // Batch get, asynchrony is hidden behind Map
-Map<Key<Thing>, Thing> ths = ofy.find().type(Thing.class).ids(123L, 456L);
+Map<Key<Thing>, Thing> ths = ofy.load().type(Thing.class).ids(123L, 456L);
 
 // Queries (asynchrony hidden of course)
-Iterable<Key<Thing>> ths =  ofy.find().type(Thing.class).filter("foo", foo).keys();  // implicit keyOnly()
-Iterable<Thing> ths =       ofy.find().type(Thing.class).filter("foo", foo).entities();
-Iterable<Thing> ths =       ofy.find().type(Thing.class).filter("foo", foo).keyOnly().entities();  // unfetched entities
+Iterable<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys();  // implicit keyOnly()
+Iterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).entities();
+Iterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keyOnly().entities();  // unfetched entities
 
 // Get first item whole
-Ref<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).first();
-Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).first().key();
-Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).first().keySafe();	// throws NotFoundException
-Thing th =      ofy.find().type(Thing.class).filter("foo", foo).first().get();
-Thing th =      ofy.find().type(Thing.class).filter("foo", foo).first().getSafe();	// throws NotFoundException
+Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
+Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().key();
+Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().keySafe();	// throws NotFoundException
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().get();
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().getSafe();	// throws NotFoundException
 
 // Get first item but only the key; the entity will have id/parent but otherwise be unintialized
-Ref<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keysOnly().first();
-Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keysOnly().first().key();
-Key<Thing> th = ofy.find().type(Thing.class).filter("foo", foo).keysOnly().first().keySafe();	// throws NotFoundException
-Thing th =      ofy.find().type(Thing.class).filter("foo", foo).keysOnly().first().get();
-Thing th =      ofy.find().type(Thing.class).filter("foo", foo).keysOnly().first().getSafe();	// throws NotFoundException
+Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keysOnly().first();
+Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keysOnly().first().key();
+Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keysOnly().first().keySafe();	// throws NotFoundException
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keysOnly().first().get();
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keysOnly().first().getSafe();	// throws NotFoundException
 
 // Query with fetch group
-Iterable<Thing> ths = ofy.find().load("group").type(Thing.class).filter("foo", foo).entities();
+Iterable<Thing> ths = ofy.load().group("group").type(Thing.class).filter("foo", foo).entities();
 
 // Put
 ofy.put().entities(e1, e2, e3);		// asynchronous
