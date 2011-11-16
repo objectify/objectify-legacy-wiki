@@ -46,6 +46,7 @@ All annotations live in com.googlecode.objectify.annotation.  JPA annotations ar
 || @PrePersist || @OnSave ||
 || @Cached || @Cache ||
 || @Embedded || @Embed ||
+|| @Serialized || @Serialize ||
 || || @Load || instead of proposed @Fetch ||
 || || @OnLoadDelegate || see below ||
 || || @OnSaveDelegate || see below ||
