@@ -163,10 +163,10 @@ ofy.delete().entities(e1, e2, e3).now();	// synchronous
 Is it worth adding convenience aliases for commonly-used methods?
 
 {{{
-Thing th = ofy.get(thingKey);	// synchronous
-Map<Key<Thing>, Thing> ths = ofy.get(thingKey1, thingKey2);
-ofy.put(thing1, thing2);	// synchronous
-ofy.delete(thingKey1, thingKey2);	// synchronous
+Thing th = ofy.get(thingKey);	// same as ofy.load().entity(thingKey).get();
+Map<Key<Thing>, Thing> ths = ofy.get(thingKey1, thingKey2);	// same as ofy.load().entities(thingKey1, thingKey2);
+ofy.put(thing1, thing2);	// same as ofy.put().entities(thing1, thing2).now();
+ofy.delete(thingKey1, thingKey2);	// same as ofy.delete().entities(thing1, thing2).now();
 }}}
 
 If so, which aliases?
