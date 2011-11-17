@@ -157,3 +157,16 @@ ofy.put().entities(e1, e2, e3).now();	// synchronous
 ofy.delete().entities(e1, e2, e3);		// asynchronous
 ofy.delete().entities(e1, e2, e3).now();	// synchronous
 }}}
+
+== Convenience Aliases ==
+
+Is it worth adding convenience aliases for commonly-used methods?
+
+{{{
+Thing th = ofy.get(thingKey);	// synchronous
+Map<Key<Thing>, Thing> ths = ofy.get(thingKey1, thingKey2);
+ofy.put(thing1, thing2);	// synchronous
+ofy.delete(thingKey1, thingKey2);	// synchronous
+}}}
+
+If so, which aliases?
