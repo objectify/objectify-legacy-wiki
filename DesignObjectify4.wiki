@@ -132,6 +132,11 @@ QueryResultIterable<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo"
 QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).iterable();
 QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().entities();  // unfetched entities
 
+// Getting query results as a List
+List<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys().list();
+List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).list();
+List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().list().entities();  // unfetched entities
+
 // Get first item whole
 Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
 Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().key();
