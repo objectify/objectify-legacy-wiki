@@ -130,12 +130,12 @@ Map<Key<Thing>, Thing> ths = ofy.load().type(Thing.class).ids(123L, 456L);
 // Queries (asynchrony hidden of course)
 QueryResultIterable<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys().iterable();
 QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).iterable();
-QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().entities();  // unfetched entities
+QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().asEntities();  // unfetched entities
 
 // Getting query results as a List
 List<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys().list();
 List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).list();
-List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().list().entities();  // unfetched entities
+List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().list().asEntities();  // unfetched entities
 
 // Get first item whole
 Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
