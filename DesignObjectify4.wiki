@@ -42,6 +42,7 @@ All annotations live in com.googlecode.objectify.annotation.  JPA annotations ar
 || @Unindexed || @Unindex || ||
 || @Transient || @Ignore || ||
 || @NotSaved || @IgnoreSave || ||
+||  || @IgnoreLoad || Needed because @AlsoLoad doesn't "steal" anymore ||
 || @PostLoad || @OnLoad || ||
 || @PrePersist || @OnSave || ||
 || @Cached || @Cache || ||
@@ -130,12 +131,12 @@ Map<Key<Thing>, Thing> ths = ofy.load().type(Thing.class).ids(123L, 456L);
 // Queries (asynchrony hidden of course)
 QueryResultIterable<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys().iterable();
 QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).iterable();
-QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().asEntities();  // unfetched entities
+QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().asEntities().iterable();  // unfetched entities
 
 // Getting query results as a List
 List<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys().list();
 List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).list();
-List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().list().asEntities();  // unfetched entities
+List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().asEntities().list();  // unfetched entities
 
 // Get first item whole
 Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
