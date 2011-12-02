@@ -155,13 +155,13 @@ Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().g
 // Query with fetch group
 QueryResultIterable<Thing> ths = ofy.load().group("group").type(Thing.class).filter("foo", foo).iterable();
 
-// Put
-ofy.put().entities(e1, e2, e3);		// asynchronous
-ofy.put().entities(e1, e2, e3).now();	// synchronous
+// Save
+ofy.save().entities(e1, e2, e3);		// asynchronous
+ofy.save().entities(e1, e2, e3).now();	// synchronous
 
 // Delete
-ofy.delete().entities(e1, e2, e3);		// asynchronous
-ofy.delete().entities(e1, e2, e3).now();	// synchronous
+ofy.delete().keys(e1, e2, e3);		// asynchronous
+ofy.delete().keys(e1, e2, e3).now();	// synchronous
 }}}
 
 == Convenience Aliases ==
@@ -176,3 +176,5 @@ ofy.delete(thingKey1, thingKey2);	// same as ofy.delete().entities(thing1, thing
 }}}
 
 If so, which aliases?
+
+Maybe not... instead, Best Practices will have a section explaining how you can add these methods to your own Objectify interface by subclassing ObjectifyWrapper.
