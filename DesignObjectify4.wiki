@@ -94,8 +94,9 @@ class Beastie {
 {{{
 class Ref<T> {
     Key<T> key();	// also aliased to getKey() for javabeans-compliance
+    Key<T> keySafe() throws NotFoundException;
     T get();	// also aliased to getValue() for javabeans-compliance
-    T getSafe() throws NotFoundException;
+    T safe() throws NotFoundException;
 }
 }}}
 
@@ -109,8 +110,8 @@ Ref<Thing> th = ofy.load().key(thingKey);
 Thing th =      ofy.load().key(thingKey).get();
 Thing th =      ofy.load().key(thingKey).getSafe();	// throws NotFoundException
 
-Ref<Thing> th = ofy.load().key(rawKey);	// Raw datastore key looks the same
-Ref<Thing> th = ofy.load().key(entity);	// So does fetching "unfetched" entities
+Ref<Thing> th = ofy.load().entity(entity);	// Fetching "unfetched" entities
+Ref<Thing> th = ofy.load().value(rawKey);	// "anything" including raw datastore keys, Key<?>s, Ref<?>s, entities, etc
 
 // With a fetch group
 Thing th = ofy.load().group("group").key(thingKey).get();
@@ -143,14 +144,14 @@ Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
 Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().key();
 Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().keySafe();	// throws NotFoundException
 Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().get();
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().getSafe();	// throws NotFoundException
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().safe();	// throws NotFoundException
 
 // Get first item but only the key; the entity will have id/parent but otherwise be unintialized
 Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first();
 Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().key();
 Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().keySafe();	// throws NotFoundException
 Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().get();
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().getSafe();	// throws NotFoundException
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().safe();	// throws NotFoundException
 
 // Query with fetch group
 QueryResultIterable<Thing> ths = ofy.load().group("group").type(Thing.class).filter("foo", foo).iterable();
@@ -169,10 +170,9 @@ ofy.delete().keys(e1, e2, e3).now();	// synchronous
 Is it worth adding convenience aliases for commonly-used methods?
 
 {{{
-Thing th = ofy.get(thingKey);	// same as ofy.load().key(thingKey).get();
-Map<Key<Thing>, Thing> ths = ofy.get(thingKey1, thingKey2);	// same as ofy.load().keys(thingKey1, thingKey2);
-ofy.put(thing1, thing2);	// same as ofy.put().entities(thing1, thing2).now();
-ofy.delete(thingKey1, thingKey2);	// same as ofy.delete().entities(thing1, thing2).now();
+Thing th = ofy.load(thingKey);	// same as ofy.load().key(thingKey).get();
+ofy.save(thing1, thing2);	// same as ofy.save().entities(thing1, thing2).now();
+ofy.delete(thingKey1, thingKey2);	// same as ofy.delete().keys(thing1, thing2).now();
 }}}
 
 If so, which aliases?
