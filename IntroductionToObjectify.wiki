@@ -874,7 +874,7 @@ If you have an especially difficult transformation, post to the objectify-appeng
 
 = @Embedded =
 
-Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
+Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
 
 == Embedded Classes ==
 
