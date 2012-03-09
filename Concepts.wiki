@@ -108,7 +108,7 @@ Appengine only allows you to run _efficient_ queries.  The exact meaning of this
  * No joins
  * No in-memory sorts
 
-The datastore query planner really only likes one operation:  Find an index and walk it in-order.  This means that for any query you perform, the datastore must already contain properly ordered index on the field or fields you want to filter by!  And since appengine doesn't do joins, queries are limited to what you can stuff into a single index -- you can't filter by one property and then sort by a different one.
+The datastore query planner really only likes one operation:  Find an index and walk it in-order.  This means that for any query you perform, the datastore must already contain properly ordered index on the field or fields you want to filter by!  And since appengine doesn't do joins, queries are limited to what you can stuff into a single index -- you can't, for example, filter by X > 5 and then sort by Y.
 
 Actually, it's not quite true that appengine won't do joins.  It will do one kind of join - a "zig-zag" merge join which lets you perform equality filters on multiple separate properties.  But this is still an efficient query - it walks each of the property indexes in order without buffering chunks of data in RAM.
 
