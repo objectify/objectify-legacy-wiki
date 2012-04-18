@@ -27,8 +27,8 @@
   * Stop using JPA annotations
   * Convert all annotations to imperative form (eg @Index instead of @Indexed)
   * All fields default to not indexed
-  * Use builder pattern for ObjectifyOpts
   * Session cache enabled by default
+  * Eliminate ObjectifyOpts, provide a fluent way to define options
   * More control of Objectify instance; switch read consistency, disable/enable caches, etc
     * Objectify instance remains immutable, however
       * Well not exactly, because the session cache is shared among an instance chain
@@ -71,16 +71,19 @@ Since all such objects are created with the overridable method ObjectFactory.cre
 = Example of class with fetching =
 {{{
 class Beastie {
+    public static class BigGroup {}
+    public static class SmallGroup{}
+
    @Parent
    @Load
    ParentThing parent;
 
    @Id Long id;
 
-   @Load({"bigGroup", "smallGroup"})
+   @Load({BigGroup.class, SmallGroup.class})
    SomeThing some;
 
-   @Load("bigGroup")
+   @Load(BigGroup.class)
    List<OtherThing> others;
 
    @Load
@@ -94,9 +97,9 @@ class Beastie {
 {{{
 class Ref<T> {
     Key<T> key();	// also aliased to getKey() for javabeans-compliance
-    Key<T> keySafe() throws NotFoundException;
+    Key<T> safeKey() throws NotFoundException;
     T get();	// also aliased to getValue() for javabeans-compliance
-    T safe() throws NotFoundException;
+    T safeGet() throws NotFoundException;
 }
 }}}
 
@@ -108,16 +111,16 @@ ofy.load().refs(ref1, ref2);	// void
 // Simple key fetch, always async
 Ref<Thing> th = ofy.load().key(thingKey);
 Thing th =      ofy.load().key(thingKey).get();
-Thing th =      ofy.load().key(thingKey).getSafe();	// throws NotFoundException
+Thing th =      ofy.load().key(thingKey).safeGet();	// throws NotFoundException
 
 Ref<Thing> th = ofy.load().entity(entity);	// Fetching "unfetched" entities
 Ref<Thing> th = ofy.load().value(rawKey);	// "anything" including raw datastore keys, Key<?>s, Ref<?>s, entities, etc
 
-// With a fetch group
-Thing th = ofy.load().group("group").key(thingKey).get();
+// With a fetch group - fetch groups are arbitrary marker classes
+Thing th = ofy.load().group(SomeGroup.class).key(thingKey).get();
 
 // Multi get is async, hides asynchrony behind Map interface
-Map<Key<Thing>, Thing> ths = ofy.load().keys(thingKey, rawKey, entity);	// takes anything key-ish
+Map<Key<Thing>, Thing> ths = ofy.load().keys(thingKey1, thingKey2, thingKey3);	
 
 // Fetching by id
 Ref<Thing> th = ofy.load().type(Thing.class).id(123L);
@@ -149,12 +152,12 @@ Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().safe();	
 // Get first item but only the key; the entity will have id/parent but otherwise be unintialized
 Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first();
 Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().key();
-Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().keySafe();	// throws NotFoundException
+Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().safeKey();	// throws NotFoundException
 Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().get();
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().safe();	// throws NotFoundException
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().safeGet();	// throws NotFoundException
 
 // Query with fetch group
-QueryResultIterable<Thing> ths = ofy.load().group("group").type(Thing.class).filter("foo", foo).iterable();
+QueryResultIterable<Thing> ths = ofy.load().group(SomeGroup.class).type(Thing.class).filter("foo", foo).iterable();
 
 // Save
 ofy.save().entities(e1, e2, e3);		// asynchronous
