@@ -4,7 +4,6 @@
   * [Concepts Concepts]
   * [IntroductionToObjectify Introduction To Objectify]
   * [BestPractices Best Practices]
-  * [AdvancedPatterns Advanced Patterns]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [AnnotationReference Annotation Reference]
   * [ReleaseNotes Release Notes]
