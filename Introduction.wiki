@@ -5,7 +5,7 @@ Objectify is a Java data access API specifically designed for the Google App Eng
   * Be easy to learn and understand.
   * Support all native datastore features in an intuitive, human-friendly way.
   * Model sophisticated, strongly-typed, polymorphic data structures.
-  * Enable convenient, almost EJB-like transactional logic.
+  * Enable modular, EJB-like transactional logic.
   * Increase performance and decrease cost through smart, transaction-aware caching.
   * Allow major schema migrations "in-place" with zero downtime.
   * Seamlessly coexist with other datastore tools: the Java Low-Level API, JDO/JPA, Twig, Go, Python DB and NDB.
