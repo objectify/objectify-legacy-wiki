@@ -84,5 +84,5 @@ porsche.color = BLUE;
 ofy().save().entity(porsche).now();    // async without the now()
 
 // Delete it
-ofy.delete().entity(porsche).now();    // async without the now()
+ofy().delete().entity(porsche).now();    // async without the now()
 }}}
