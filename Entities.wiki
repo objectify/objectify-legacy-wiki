@@ -56,6 +56,82 @@ Observe:
 
   * {{{byte[]}}} fields are automatically converted to {{{Blob}}} internally.  However, {{{Byte[]}}} is persisted "normally" as an array of (potentially indexed) {{{Byte}}} objects.  Note that GAE natively stores all integer values as a 64-bit long.
 
+== Polymorphism ==
+
+Objectify lets you define a polymorphic hierarchy of related entity classes, and then load and query them without knowing the specific subtype.  Here are some examples:
+
+{{{
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.EntitySubclass;
+import com.googlecode.objectify.annotation.Id;
+
+@Entity
+public class Animal {
+    @Id Long id;
+    String name;
+}
+	
+@EntitySubclass
+public class Mammal extends Animal {
+    boolean longHair;
+}
+	
+@EntitySubclass
+public class Cat extends Mammal {
+    boolean hypoallergenic;
+}
+}}}
+
+Things to note:
+
+  * The root of your polymorphic hierarchy *must* be annotated with {{{@Entity}}}.
+  * All polymorphic subclasses must be annotated with {{{@EntitySubclass}}}.
+  * You can skip {{{@EntitySubclass}}} on intermediate classes which will never be materialized or queried for.
+  * You should register all classes in the hierarchy separately, but order is not important.
+  * Polymorphism applies only to entities, not to @Embed classes.
+
+In a polymorphic hierarchy, you can {{{load()}}} without knowing the actual type:
+
+{{{
+Animal annie = new Animal();
+annie.name = "Annie";
+ofy().save().entity(annie).now();
+
+Mammal mam = new Mammal();
+mam.name = "Mam";
+m.longHair = true;
+ofy().save().entity(mam).now();
+
+Cat nyan = new Cat();
+nyan.name = "Nyan";
+nyan.longHair = true;
+nyan.hypoallergenic = true;
+ofy().save().entity(nyan).now();
+
+// This will return the Cat
+Animal fetched = ofy().load().type(Animal.class).id(nyan.id).get();
+
+// This query will produce three objects, the Animal, Mammal, and Cat
+Query<Animal> all = ofy().load().type(Animal.class);
+
+// This query will produce the Mammal and Cat
+Query<Mammal> mammals = ofy().load().type(Mammal.class);
+}}}
+
+=== Native Representation ===
+
+When you store a polymorphic entity subclass your entity is stored with two additional, hidden synthetic properties:
+
+  * _^d_ holds a discriminator value for the concrete class type.  This defaults to the class shortname but can be modified with the {{{@EntitySubclass(name="alternate")}}} annotation.
+  * _^i_ holds an indexed list of all the discriminators relavant to a class; for example a Cat would have [["Mammal", "Cat]].  Note that *subclasses are not indexed by default*.  See below.
+
+The indexed property is what allows polymorphic queries to work.  It also means that you cannot simply change your hierarchy arbitrarily and expect queries to continue to work as expected - you may need to re-save() all affected entities to rewrite the indexed field.
+
+There are two ways you can affect this:
+
+  # You can control indexing of subclasses by specifying {{{@EntitySubclass(index=true)}}}.  *Subclasses are not indexed by default*, you must explicitly enable this for each subclass.  Note that this only affects queries; you can always get-by-key or get-by-id and receive the proper typed object irrespective of indexing.
+  # You can use {{{@EntitySubclass(alsoLoad="OldDiscriminator")}}} to "reclaim" old discriminator values when changing class names.  Note that this will not help with query indexes, which must be re-saved().
+
 == Embedding ==
 
 Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
@@ -154,81 +230,5 @@ This is what the entity would look like if the second and third values in the {{
 || ones.two.bar || {{{ ["bar1", "bar4"] }}} ||
 
 The synthetic ^null property only exists if the collection contains nulls.  It is never indexed.
-
-== Polymorphism ==
-
-Objectify lets you define a polymorphic hierarchy of related entity classes, and then load and query them without knowing the specific subtype.  Here are some examples:
-
-{{{
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.EntitySubclass;
-import com.googlecode.objectify.annotation.Id;
-
-@Entity
-public class Animal {
-    @Id Long id;
-    String name;
-}
-	
-@EntitySubclass
-public class Mammal extends Animal {
-    boolean longHair;
-}
-	
-@EntitySubclass
-public class Cat extends Mammal {
-    boolean hypoallergenic;
-}
-}}}
-
-Things to note:
-
-  * The root of your polymorphic hierarchy *must* be annotated with {{{@Entity}}}.
-  * All polymorphic subclasses must be annotated with {{{@EntitySubclass}}}.
-  * You can skip {{{@EntitySubclass}}} on intermediate classes which will never be materialized or queried for.
-  * You should register all classes in the hierarchy separately, but order is not important.
-  * Polymorphism applies only to entities, not to @Embed classes.
-
-In a polymorphic hierarchy, you can {{{load()}}} without knowing the actual type:
-
-{{{
-Animal annie = new Animal();
-annie.name = "Annie";
-ofy().save().entity(annie).now();
-
-Mammal mam = new Mammal();
-mam.name = "Mam";
-m.longHair = true;
-ofy().save().entity(mam).now();
-
-Cat nyan = new Cat();
-nyan.name = "Nyan";
-nyan.longHair = true;
-nyan.hypoallergenic = true;
-ofy().save().entity(nyan).now();
-
-// This will return the Cat
-Animal fetched = ofy().load().type(Animal.class).id(nyan.id).get();
-
-// This query will produce three objects, the Animal, Mammal, and Cat
-Query<Animal> all = ofy().load().type(Animal.class);
-
-// This query will produce the Mammal and Cat
-Query<Mammal> mammals = ofy().load().type(Mammal.class);
-}}}
-
-=== Native Representation ===
-
-When you store a polymorphic entity subclass your entity is stored with two additional, hidden synthetic properties:
-
-  * _^d_ holds a discriminator value for the concrete class type.  This defaults to the class shortname but can be modified with the {{{@EntitySubclass(name="alternate")}}} annotation.
-  * _^i_ holds an indexed list of all the discriminators relavant to a class; for example a Cat would have [["Mammal", "Cat]].  Note that *subclasses are not indexed by default*.  See below.
-
-The indexed property is what allows polymorphic queries to work.  It also means that you cannot simply change your hierarchy arbitrarily and expect queries to continue to work as expected - you may need to re-save() all affected entities to rewrite the indexed field.
-
-There are two ways you can affect this:
-
-  # You can control indexing of subclasses by specifying {{{@EntitySubclass(index=true)}}}.  *Subclasses are not indexed by default*, you must explicitly enable this for each subclass.  Note that this only affects queries; you can always get-by-key or get-by-id and receive the proper typed object irrespective of indexing.
-  # You can use {{{@EntitySubclass(alsoLoad="OldDiscriminator")}}} to "reclaim" old discriminator values when changing class names.  Note that this will not help with query indexes, which must be re-saved().
 
 = Registering Entities =
