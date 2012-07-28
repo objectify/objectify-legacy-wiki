@@ -2,6 +2,8 @@
 
 First define your domain model in Java using Objectify's annotations, then register these classes with the {{{ObjectifyFactory}}}.
 
+<wiki:toc max_depth="2" />
+
 = Defining Entities =
 
 Entities are simple Java POJOs with a handful of special annotations.  Objectify has its own annotations and *does NOT use JPA or JDO annotations*.
