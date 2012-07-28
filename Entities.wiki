@@ -1,6 +1,6 @@
 #summary Defining and registering entities
 
-Objectify is similar to ORM systems like Hibernate - it maps between the datastore and your typed, Java POJOs.  There are two steps:  First define your domain model in Java using Objectify's annotations, then register these classes with the {{{ObjectifyFactory}}}.
+First define your domain model in Java using Objectify's annotations, then register these classes with the {{{ObjectifyFactory}}}.
 
 = Defining Entities =
 
@@ -54,5 +54,104 @@ Observe:
   * {{{String}}} fields which store more than 500 characters (the GAE limit) are automatically converted to {{{Text}}} internally.  Note that {{{Text}}} fields, like {{{Blob}}} fields, are never indexed (see [Queries]).
 
   * {{{byte[]}}} fields are automatically converted to {{{Blob}}} internally.  However, {{{Byte[]}}} is persisted "normally" as an array of (potentially indexed) {{{Byte}}} objects.  Note that GAE natively stores all integer values as a 64-bit long.
+
+== Embedding ==
+
+Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
+
+== Embedded Classes ==
+
+You can nest objects to any arbitrary level.
+
+{{{
+import com.googlecode.objectify.annotation.Embed;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+
+@Embed
+class LevelTwo {
+    String bar;
+}
+
+@Embed
+class LevelOne {
+    String foo;
+    LevelTwo two
+}
+
+@Entity
+class EntityWithEmbedded {
+    @Id Long id;
+    LevelOne one;
+}
+}}}
+
+=== Embedded Collections and Arrays ===
+
+You can place {{{@Embed}}} objects in collections and arrays:
+
+{{{
+@Entity
+class EntityWithEmbeddedCollection {
+    @Id Long id;
+    List<LevelOne> ones = new ArrayList<LevelOne>();
+}
+}}}
+
+Some things to keep in mind:
+
+  * This does not support two-dimensional structures of any kind.
+    * You cannot nest {{{@Embed}}} arrays/collections inside other {{{@Embed}}} arrays/collections.
+    * You cannot put arrays/collections of native types inside {{{@Embed}}} arrays/collections.
+  * You can, however, nest {{{@Embed}}} arrays/collections inside any number of {{{@Embed}}} classes.
+  * You should initialize collections.  Null or empty collections are not written to the datastore and therefore get ignored during load.  Furthermore, the concrete instance will be used as-is, allowing you to initialize collections with Comparators or other state.
+ 
+=== Entity Representation ===
+
+You may wish to know how {{{@Embed}}} classes are persisted so that you an access them through the Low-Level API.  Here is an example, given the example data structures specified above.
+
+{{{
+EntityWithEmbedded ent = new EntityWithEmbedded();
+ent.one = new LevelOne();
+ent.one.foo = "Foo Value";
+ent.one.two = new LevelTwo();
+ent.one.two.bar = "Bar Value";
+
+ofy().save().entity(ent);
+}}}
+
+This will produce an entity that contains:
+
+|| one.foo || "Foo Value" ||
+|| one.two.bar || "Bar Value" ||
+
+For collections and arrays of {{{@Embed}}} classes, the storage mechanism is more complicated:
+
+{{{
+EntityWithEmbeddedCollection ent = new EntityWithEmbeddedCollection();
+for (int i=1; i<=4; i++) {
+    LevelOne one = new LevelOne();
+    one.foo = "foo" + i;
+    one.two = new LevelTwo();
+    one.two.bar = "bar" + i;
+
+    ent.ones.add(one);
+}
+
+ofy().save().entity(ent);
+}}}
+
+This will produce an entity that contains:
+
+|| ones.foo || {{{ ["foo1", "foo2", "foo3", "foo4"] }}} ||
+|| ones.two.bar || {{{ ["bar1", "bar2", "bar3", "bar4"] }}} ||
+
+This is what the entity would look like if the second and third values in the {{{ones}}} collection were {{{null}}}:
+
+|| ones.foo^null || {{{ [1, 2] }}} ||
+|| ones.foo || {{{ ["foo1", "foo4"] }}} ||
+|| ones.two.bar || {{{ ["bar1", "bar4"] }}} ||
+
+The synthetic ^null property only exists if the collection contains nulls.  It is never indexed.
 
 = Registering Entities =
