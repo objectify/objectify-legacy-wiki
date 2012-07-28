@@ -2,7 +2,7 @@
 
 First define your domain model in Java using Objectify's annotations, then register these classes with the {{{ObjectifyFactory}}}.
 
-<wiki:toc max_depth="2" />
+<wiki:toc max_depth="3" />
 
 = Defining Entities =
 
@@ -61,7 +61,7 @@ Observe:
 
 Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
 
-== Embedded Classes ==
+=== Embedded Classes ===
 
 You can nest objects to any arbitrary level.
 
