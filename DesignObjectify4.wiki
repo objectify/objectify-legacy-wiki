@@ -80,13 +80,11 @@ class Beastie {
 
    @Id Long id;
 
+   SomeThing some;    // implies @Load
+
+   List<OtherThing> others;    // implies @Load
+
    @Load({BigGroup.class, SmallGroup.class})
-   SomeThing some;
-
-   @Load(BigGroup.class)
-   List<OtherThing> others;
-
-   @Load
    Ref<OtherThing> refToOtherThing;
 
    Ref<OtherThing> anotherRef;  // no @Load means never fetched automatically
@@ -145,9 +143,9 @@ List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().a
 // Get first item whole
 Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
 Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().key();
-Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().keySafe();	// throws NotFoundException
+Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().safeKey();	// throws NotFoundException
 Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().get();
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().safe();	// throws NotFoundException
+Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().safeGet();	// throws NotFoundException
 
 // Get first item but only the key; the entity will have id/parent but otherwise be unintialized
 Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first();
