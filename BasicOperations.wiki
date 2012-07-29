@@ -1,0 +1,69 @@
+#summary Loading, Saving, and Deleting Data
+
+= The {{{Objectify}}} Instance =
+
+All datastore operations begin with an instance of {{{Objectify}}} ([http://objectify-appengine.googlecode.com/git/javadoc/com/googlecode/objectify/Objectify.html javadoc]).  An {{{Objectify}}} instance holds the complete state of your persistence session:
+
+  * A transaction context, if present
+  * A cache of entity objects loaded in the current session
+  * Parameters for deadline, consistency setting, and caching
+
+*An {{{Objectify}}} instance should be used from a single thread only.*  It is a cheap throwaway object that represents a session of activity.  Typically you will re-use a single instance through a request, except when you begin transactions.
+
+== Obtaining an {{{Objectify}}} Instance ==
+
+The preferred way to obtain an {{{Objectify}}} instance is to call a static method:
+
+{{{
+Thing th = ObjectifyService.ofy().load().key(thingKey).get();
+}}}
+
+To keep the typing to a minimum, we recommend a [http://code.google.com/p/objectify-appengine/wiki/Setup#Enable_static_imports_in_Eclipse static import]:
+
+{{{
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
+Thing th = ofy().load().key(thingKey).get();
+}}}
+
+{{{ObjectifyService.ofy()}}} will always return the correct instance for your thread and transaction context and provides you with an "always available" persistence context without having to pass extra parameters to your business methods.  This instance will change when you enter and exit transactions.  Be sure to install the {{{ObjectifyFilter}}} so that the last instance is cleaned up at the end of a request.
+
+As a general practice, we recommend *_not_* holding on to {{{Objectify}}} instance variables like this:
+
+{{{
+Objectify o = ofy();
+// ...working with 'o' is a generally bad practice
+}}}
+
+When you have multiple layers of transaction depth, it's very easy to confuse what {{{Objectify}}} instance is the correct one to use.  This will become more clear in the section on [Transactions].
+
+== Altering Parameters ==
+
+{{{Objectify}}} instances maintain immutable parameter state:
+
+  * The deadline at which datastore requests are timed out and aborted
+  * The consistency level for fetches
+  * Whether or not to use a global (memcache) cache
+ 
+Any given {{{Objectify}}} instance has immutable state, but methods can be called to create new {{{Objectify}}} instances with different parameters:
+
+{{{
+th = ofy().deadline(2).load().key(thingKey);
+th = ofy().cache(false).load().key(thingKey);
+th = ofy().deadline(2).cache(false).load().key(thingKey);
+th = ofy().load().key(thingKey);    // still has default deadline and cache policy
+
+// You can hold on to these immutable objects
+Objectify shortDeadline = ofy().deadline(2);
+th = shortDeadline.consistency(Consistency.EVENTUAL).load().key(thingKey);
+th = shortDeadline.load().key(thingKey);    // still has default of STRONG
+}}} 
+
+= Loading =
+
+{{{Objectify}}} provides a variety of ways to load entities from the datastore.  They all begin with a command chain started by {{{load()}}}:
+
+
+= Saving =
+
+= Deleting =
