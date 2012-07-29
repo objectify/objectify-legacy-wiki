@@ -8,7 +8,6 @@
   * [AnnotationReference Annotation Reference]
   * [ReleaseNotes Release Notes]
   * [MavenRepository Maven Repository]
-  * [http://objectify-appengine.googlecode.com/svn/trunk/javadoc/index.html API Javadoc]
   * [ObjectifyWithGWT Objectify With GWT]
   * [MemcacheStandalone Caching Without Objectify]
   * [Extensions Extensions]
@@ -23,3 +22,4 @@
     * [SchemaMigration Schema Migration]
     * [Caching]
     * [DesignObjectify4 Design of Objectify 4]
+    * [http://objectify-appengine.googlecode.com/git/javadoc/index.html API Javadoc]
