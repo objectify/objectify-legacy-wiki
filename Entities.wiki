@@ -449,3 +449,30 @@ Iterable<Employee> subordinates = ofy().load().type(Employee.class).filter("mana
 The decision of which approach to take will depend heavily on the shape of your data and what queries you need to perform.
 
 = Registering Entities =
+
+Before you use Objectify to load or save data, you must register all entity classes for your application.  Objectify will introspect these classes and their annotations to build a metamodel which is used to efficiently manipulate entities at runtime.
+
+{{{
+ObjectifyService.register(Car.class);
+ObjectifyService.register(Motorcycle.class);
+}}}
+
+  * Registration must be done at application startup, before Objectify is used.
+  * Registration must be single-threaded.  Do not register() from multiple threads.
+  * All entity classes must be registered, including polymorphic subclasses.
+  * {{{@Embed}}} classes do not need to be registered.
+
+We recommend that you register classes in a static initializer for something that is used at application startup.  For example:
+
+{{{
+public class MyStartupServlet {
+    static {
+        ObjectifyService.register(Car.class);
+        ObjectifyService.register(Motorcycle.class);
+    }
+
+    ...the rest of your servlet
+}
+}}}
+
+Because this registration process requires loading and introspecting classes, it adds a small delay to your application start time which is directly proportional to the number of classes you register.  While Objectify tries to minimize this delay by eschewing classpath-scanning, the delay is not entirely avoidable (classloading on appengine is very slow).  The best that can be said is that this delay is significantly shorter than the equivalent JDO/JPA delay.
