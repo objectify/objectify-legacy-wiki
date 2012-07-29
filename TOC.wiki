@@ -16,6 +16,7 @@
     * [Introduction]
     * [Setup]
     * [Entities]
+    * [BasicOperations Basic Operations]
     * [Queries Queries And Indexes]
     * [Transactions]
     * [LifecycleCallbacks Lifecycle Callbacks]
