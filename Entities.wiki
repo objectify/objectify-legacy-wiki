@@ -231,4 +231,221 @@ This is what the entity would look like if the second and third values in the {{
 
 The synthetic ^null property only exists if the collection contains nulls.  It is never indexed.
 
+== Relationships ==
+
+A relationship is simply a key stored as a field in an entity.  Objectify provides several facilities to make it easier to manage relationships using keys.
+
+=== Keys ===
+
+There are two different Key classes in Objectify:
+
+  # {{{com.google.appengine.api.datastore.Key}}}, usually referred to as {{{Key}}}
+  # {{{com.googlecode.objectify.Key}}}, usually referred to as {{{Key<?>}}}
+
+#1 is the native datastore {{{Key}}} class used by the low-level API.  It is the "one true Key" because all datastore operations use this type; Objectify always converts to (or from) the native {{{Key}}}.  However, because this structure lacks generic type information, it should almost never appear in your code.
+
+#2 is Objectify's generified version of {{{Key}}}.  It's much less errorprone to use {{{Key<Person>}}} or {{{Key<Car>}}}, so you should always use {{{Key<?>}}} when you use keys directly.
+
+For all intents and purposes, these structures are equivalent.  For example, these two classes are *identical* in the datastore:
+
+{{{
+import com.google.appengine.api.datastore.Key;
+
+@Entity
+class Thing {
+    @Id Long id;
+    Key other;
+}
+}}}
+
+{{{
+import com.googlecode.objectify.Key;
+
+@Entity
+class Thing {
+    @Id Long id;
+    Key<Other> other;
+}
+}}}
+
+You can change the type of the {{{other}}} field at any time, even after data is stored.  Remember, the datastore contains the native {{{Key}}}.
+
+=== {{{Ref<?>}}}s ===
+
+Even {{{Key<?>}}}s are not very convenient when you are working with graphs of entities.  Objectify provides {{{Ref<?>}}}, which works just like a {{{Key<?>}}} but can reference the actual entity as well:
+
+{{{
+import com.googlecode.objectify.Ref;
+
+@Entity
+class Car {
+    @Id Long id;
+    Ref<Person> driver;    // Person is an @Entity
+}
+
+Car car = new Car();
+car.driver = Ref.create(driverKey);
+ofy().save().entity(car).now();
+
+Car fetched = ofy().load().entity(car).get();
+ofy().load().ref(fetched.driver);
+Person driver = fetched.driver.get();
+}}}
+
+{{{Ref<?>}}} fields are stored as native {{{Key}}} fields in the datastore.  You can freely swap between {{{Key}}}, {{{Key<?>}}}, and {{{Ref<?>}}} in your Java data model without modifying stored data.
+
+This provides a nice consistent structure for your object graph, but it's still clunky.  {{{Ref<?>}}} works best in concert with the {{{@Load}}} annotation.
+
+==== {{{@Load}}} ====
+
+{{{
+import com.googlecode.objectify.annotation.Load;
+
+@Entity
+class Car {
+    @Id Long id;
+    @Load Ref<Person> driver;    // Person is an @Entity
+}
+
+Car car = new Car();
+car.driver = Ref.create(driverKey);
+ofy().save().entity(car).now();
+
+Car fetched = ofy().load().entity(car).get();
+Person driver = fetched.driver.get();
+}}}
+
+Objectify will translate this into an _optimal_ number of batch fetches.  For example:
+
+{{{
+ofy().load().keys(car1, car2, car3);
+}}}
+
+This will produce one round of batch fetching for the cars, plus one round of batch fetching for all the drivers, plus one round of fetching for any {{{@Load}}} fields in all the drivers... and on.  Objectify is also smart about not re-fetching anything that has already been fetched in an earlier cycle.  This optimized behavior is very hard to write by hand.
+
+Often you will not wish to {{{@Load}}} every entity relationship every time.  {{{@Load}}} provides the ability to specify conditional _load groups_.  See <insert reference to load group section> for more.
+
+=== Concrete Entity References ===
+
+{{{Ref<?>s}}} let you define a flexible object graph that Objectify will load for you.  Sometimes you would like to simplify your object graph and eliminate the extra {{{Ref<?>}}}; perhaps you wish to serialize it to a client without the extra Objectify-specific class.  With some limitations, you can do this:
+
+{{{
+@Entity
+class Car {
+    @Id Long id;
+    Person driver;    // Person is an @Entity
+}
+
+Car car = new Car();
+car.driver = someDriver
+ofy().save().entity(car).now();
+
+Car fetched = ofy().load().entity(car).get();
+Person driver = fetched.driver;
+}}}
+
+There are significant limitations to this facility:
+
+  * {{{@Load}}} is implied.  You cannot use conditional {{{@Load}}} groups; the entity is always loaded.
+  * *There is no cascading save or delete.*  If you wish to save the driver in the example above, it must be saved explicitly.
+  * If the referenced driver does not exist (say, he/she was deleted), the driver field will still contain a Person - but only the key fields will be initialized.  Unlike with {{{Ref<?>s}}}, there is no built-in way to determine that there is no foreign entity for the foreign key reference.
+
+Generally, it is safer and more flexible to use a {{{Ref<?>}}} and hide it behind getter and setter methods:
+
+{{{
+@Entity
+class Car {
+    @Id Long id;
+    @Load Ref<Person> driver;    // Person is an @Entity
+
+    public Person getDriver() { return driver.get(); }
+    public void setDriver(Person value) { driver = Ref.create(value.getKey(), value); }
+}
+}}}
+
+Like {{{Key<?>}}}s and {{{Ref<?>}}}s, concrete entity references are stored as native datastore {{{Key}}} in the datastore.  You can freely switch between all four forms of keys in your Java domain model without altering stored data.
+
+=== @Parent Relationships ===
+
+Parent relationships are described in [Concepts].  Objectify models them with the {{{@Parent}}} annotation:
+
+{{{
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Parent;
+
+@Entity
+public class Person {
+    @Id Long id;
+    String name;
+}
+
+@Entity
+public class Car {
+    @Parent Key<Person> owner;
+    @Id Long id;
+    String color;
+}
+}}}
+
+Each Car entity is part of the parent owner's entity group.  Important things to note:
+
+  * There can only be one {{{@Parent}}} field in a class!
+  * Along with the {{{@Id}}} and kind, the {{{@Parent}}} field defines the key (identity) of the entity.
+    * Construct a key to the car like this:  {{{Key.create(ownerKey, Car.class, carId)}}}
+  * The name of the field is irrelevant and can be changed at any time without modifying stored data.
+  * The {{{@Parent}}} field can be {{{Key}}}, {{{Key<?>}}}, {{{Ref<?>}}}, or concrete entity reference.
+  * @Load annotations work with {{{Ref<?>}}}s.  As a bonus, the parent will be loaded in the same batch as the initial load.
+
+Note that this example is an inappropriate use of the @Parent entity; if a car were to be sold to a new owner, you would need to delete the Car and create a new one.  It is often better to use simple nonparent key references even when there is a conceptual parent-child or owner-object relationship; in that case you could simply change the owner.
+
+*VERY IMPORTANT*: *If you load() an entity, change the {{{@Parent}}} field, and save() the entity, you will create a new entity*.  The old entity (with the old parent) will still exist.  You cannot simply change the value of a {{{@Parent}}} field.  This is a fundamental aspect of the appengine datastore; {{{@Parent}}} values form part of an entity's identity.
+
+=== One-To-Many Relationships ===
+
+The datastore can natively persist collections of simple types, including keys.  This creates one approach for defining one-to-many (and many-to-many) relationships.
+
+{{{
+@Entity
+public class Employee {
+    @Id String name;
+    List<Key<Employee>> subordinates = new ArrayList<Employee>();
+}
+}}}
+
+This works with {{{Key}}}s, {{{Key<?>}}}s, {{{Ref<?>}}}s, and concrete entity references.  You can use {{{@Load}}} annotations.
+
+There are some considerations:
+
+  * Every time you {{{load()}}} or {{{save()}}} an Employee, it will fetch and store the entire list of _subordinates_ keys.  Large numbers of subordinates will bloat the entity and impact performance.
+  * App Engine limits you to 5,000 entries in a multi-valued property.
+  * Because fetches are performed by key, you have a strongly-consistent view of the a manager and subordinates.
+
+If you put {{{@Index}}} on _subordinates_, you can issue a query like this:
+
+{{{
+Iterable<Employee> managers = ofy().load().type(Employee.class).filter("subordinates", fred);
+}}}
+
+
+==== One-To-Many Alternative ====
+
+Storing keys in a collection field is a very "appenginey" way of modeling data, and faithfully works with the key/value nature of the datastore.  However, this is not the traditional way of modeling one-to-many relationships in a relational database.  You can still use the RDBMS approach, but there are caveats:
+
+{{{
+@Entity
+public class Employee {
+    @Id String name;
+    @Index Key<Employee> manager;
+}
+
+Iterable<Employee> subordinates = ofy().load().type(Employee.class).filter("manager", fred);
+}}}
+
+  * This is a query and therefore weakly consistent.
+  * You cannot use this query inside of a transaction.
+  * Queries are less cache-friendly than direct key references.
+
+The decision of which approach to take will depend heavily on the shape of your data and what queries you need to perform.
+
 = Registering Entities =
