@@ -22,5 +22,7 @@
     * [LifecycleCallbacks Lifecycle Callbacks]
     * [SchemaMigration Schema Migration]
     * [Caching]
+    * [Wrappers Using Wrappers]
+    * [ObjectifyWithGuice Using Objectify With Guice]
     * [DesignObjectify4 Design of Objectify 4]
     * [http://objectify-appengine.googlecode.com/git/javadoc/index.html API Javadoc]
