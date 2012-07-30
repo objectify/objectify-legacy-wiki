@@ -30,14 +30,20 @@ Thing th = ofy().load().key(thingKey).get();
 
 {{{ObjectifyService.ofy()}}} will always return the correct instance for your thread and transaction context and provides you with an "always available" persistence context without having to pass extra parameters to your business methods.  The instance returned by {{{ofy()}}} will change when you enter and exit transactions.  Be sure to install the {{{ObjectifyFilter}}} so that the last instance is cleaned up at the end of a request.
 
-As a general practice, we recommend *_not_* holding on to {{{Objectify}}} instance variables like this:
+As a general practice, we recommend *_not_* holding on to {{{Objectify}}} instance variables:
 
 {{{
-Objectify o = ofy();
-// ...working with 'o' is a generally (but not always) bad practice
+// This is generally a bad practice:
+Objectify ofy = ofy();
+ofy.load()... 
+ofy.save()...
+
+// This is safer:
+ofy().load()...
+ofy().save()...
 }}}
 
-When you have multiple layers of transaction depth, it's very easy to confuse what {{{Objectify}}} instance is the correct one to use.  This will become more clear in the section on [Transactions].
+Consistently using {{{ofy()}}} eliminates potential confusion when working with multiple layers of transaction depth.  This will be discussed in more detail in the section on [Transactions].
 
 == Altering Parameters ==
 
