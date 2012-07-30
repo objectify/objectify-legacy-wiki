@@ -1,0 +1,141 @@
+#summary Queries and Indexes
+
+The Google App Engine datastore is, fundamentally, a key/value store.  However, by defining indexes on arbitrary fields, you can query for entities in a way almost reminiscent of an RDBMS.  There are some limitations:
+
+  * Queries only return values in an index.  If an entity field is not indexed, queries on that field will return  no results.
+  * Queries without an ancestor() restriction are always weakly consistent.  Queries with an ancestor() restriction follow the {{{Objectify.consistency()}}} setting, which defaults to STRONG.
+  * Queries without an ancestor() restriction cannot be used within a transaction.
+
+This document is not intended to be a comprehensive explanation of queries and indexes; only what you need to know to use Objectify.  You should read and understand the [https://developers.google.com/appengine/docs/java/datastore/queries GAE Documentation For Queries and Indexes].
+
+= Defining Indexes =
+
+Objectify does *not* index properties by default.  You must explicitly define single-property indexes with the {{{@Index}}} annotation:
+
+{{{
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+
+@Entity
+public class Car {
+    @Id Long id;
+    @Index String vin;
+}
+}}}
+
+The index will be created *when the entity is saved*.  Changing the {{{@Index}}} annotation in your Java class does *not* affect data already stored in the datastore; you must re-save individual entities to add or remove the index.
+
+You can change the default index state for fields of a class by putting {{{@Index}}} on the class:
+
+{{{
+@Entity
+@Index
+public class Car {
+    @Id Long id;
+    String vin;
+    String license;
+    @Unindex int color;
+}
+}}}
+
+= Partial Indexes =
+
+Indexes are expensive to create and maintain.  Writing a new single-property index consumes two datastore write operations (one for the ascending index, one for the descending index).  _Changing_ an index value requires _four_ write operations:  two to delete the old value, and two to write the new one.  With several indexed properties per entity, this adds up fast.
+
+Often you only need to query on a particular subset of values for a field.  If these represent a small percentage of your entities, why index all the rest?  Some examples:
+
+  * You might have a boolean "admin" field and only ever need to query for a list of the (very few) admins.
+  * You might have a "status" field and never need to query for inactive values.
+  * Your queries might not include null values.
+
+Objectify gives developers the ability to define arbitrary conditions for any field.  You can create your own {{{If}}} classes or use one of the provided ones:
+
+{{{
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.condition.IfTrue;
+import com.googlecode.objectify.condition.IfNotNull;
+import com.googlecode.objectify.condition.IfNotZero;
+
+@Entity
+public class Person {
+    @Id Long id;
+    String name;
+
+    // The admin field is only indexed when it is true
+    @Index(IfTrue.class) boolean admin;
+
+    // You can provide multiple conditions, any of which will satisfy
+    @Index({IfNotNull.class, IfNotZero.class}) Long serialNumber;
+}
+}}}
+
+These {{{If}}} conditions work with both {{{@Index}}} and {{{@Unindex}}} on fields.  You cannot specify {{{If}}} conditions on class-level annotations.
+
+Check the [http://objectify-appengine.googlecode.com/git/javadoc/com/googlecode/objectify/condition/package-summary.html javadocs] for available classes.  Here are some basics to start:  {{{IfNull.class, IfFalse.class, IfTrue.class, IfZero.class, IfEmpty.class, IfDefault.class}}}
+
+=== {{{IfDefault.class}}} ===
+
+{{{IfDefault.class}}} is special.  It tests true when the field value is whatever the default value is when you construct an object of your class.  Here is an example of using the inverse, {{{@IfNotDefault}}}:
+
+{{{
+@Entity
+public class Account {
+    @Id Long id;
+
+    // Only indexed when status is something other than INACTIVE
+    @Index(IfNotDefault.class) StatusType status = StatusType.INACTIVE;
+}
+}}}
+
+Note that you can initialize field values inline (as above) or in your no-arg constructor; either will work.
+
+=== Custom Conditions ===
+
+You can easily create your own custom conditions by extending {{{ValueIf}}} or {{{PojoIf}}}.  {{{ValueIf}}} is a simple test of a field value.  For example:
+
+{{{
+public static class IfGREEN extends ValueIf<Color> {
+    @Override
+    public boolean matches(Color value) {
+        return color == Color.GREEN;
+    }
+}
+
+@Entity
+public class Car {
+    @Id Long id;
+    @Index(IfGREEN.class) Color color;
+}
+}}}
+
+You can use {{{PojoIf}}} to examine other fields to determine whether or not to index!  This example is inspired by the example in the [http://en.wikipedia.org/wiki/Partial_index Partial Index] Wikipedia page, and will use a static inner class for convenience:
+
+{{{
+// We are modeling:  create index partial_salary on employee(age) where salary > 2100;
+@Entity
+public class Employee {
+    static class SalaryCheck extends PojoIf<Employee> {
+        @Override
+        public boolean matches(Employee pojo) {
+            return pojo.salary > 2100;
+        }
+    }
+
+    @Id Long id;
+    @Index(SalaryCheck.class) int age;
+    int salary;
+}
+}}}
+
+Examine the [http://code.google.com/p/objectify-appengine/source/browse/#git%2Fsrc%2Fcom%2Fgooglecode%2Fobjectify%2Fcondition source code] of the {{{If}}} classes to see how to construct your own.  Most are one or two lines of code.
+
+{{{If}}} conditions can be used with {{{@IgnoreSave}}} as well.
+
+= Executing Queries =
+
+== Keys-Only Queries ==
+
+= Queries and Embedded Classes =
