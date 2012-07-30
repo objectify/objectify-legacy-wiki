@@ -1,5 +1,7 @@
 #summary Loading, Saving, and Deleting Data
 
+<wiki:toc max_depth="3" />
+
 = The {{{Objectify}}} Instance =
 
 All datastore operations begin with an instance of {{{Objectify}}} ([http://objectify-appengine.googlecode.com/git/javadoc/com/googlecode/objectify/Objectify.html javadoc]).  An {{{Objectify}}} instance holds the complete state of your persistence session:
@@ -142,13 +144,12 @@ Thing th = ofy().load().group(Everything.class).key(thingKey).get();
 Thing th = ofy().load().group(Everything.class, Stopper.class).key(thingKey).get();
 }}}
 
-You can combine required and 'unless':
+You can combine required and 'unless', and also specify multiple groups:
 
 {{{
+// Loaded if Green or Yellow is activated, unless Red is also activated.
 @Load(value={Green.class, Yellow.class}, unless=Red.class) Ref<Other> other;
 }}}
-
-...this will be loaded if Green or Yellow is activated, unless Red is also activated.
 
 = Saving =
 
