@@ -26,13 +26,13 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 Thing th = ofy().load().key(thingKey).get();
 }}}
 
-{{{ObjectifyService.ofy()}}} will always return the correct instance for your thread and transaction context and provides you with an "always available" persistence context without having to pass extra parameters to your business methods.  This instance will change when you enter and exit transactions.  Be sure to install the {{{ObjectifyFilter}}} so that the last instance is cleaned up at the end of a request.
+{{{ObjectifyService.ofy()}}} will always return the correct instance for your thread and transaction context and provides you with an "always available" persistence context without having to pass extra parameters to your business methods.  The instance returned by {{{ofy()}}} will change when you enter and exit transactions.  Be sure to install the {{{ObjectifyFilter}}} so that the last instance is cleaned up at the end of a request.
 
 As a general practice, we recommend *_not_* holding on to {{{Objectify}}} instance variables like this:
 
 {{{
 Objectify o = ofy();
-// ...working with 'o' is a generally bad practice
+// ...working with 'o' is a generally (but not always) bad practice
 }}}
 
 When you have multiple layers of transaction depth, it's very easy to confuse what {{{Objectify}}} instance is the correct one to use.  This will become more clear in the section on [Transactions].
@@ -94,11 +94,61 @@ Map<Key<Thing>, Thing> ths = ofy().load().type(Thing.class).ids(123L, 456L, 789L
 
 == Load Groups ==
 
-{{{
-// With a fetch group - fetch groups are arbitrary marker classes
-Thing th = ofy.load().group(SomeGroup.class).key(thingKey).get();
+When you use [http://code.google.com/p/objectify-appengine/wiki/Entities#Ref<?>_s Ref<?>] fields to establish relationships between entities, you can use the {{{@Load}}} annotation to automatically retrieve an object graph using the optimal number of batch fetches.  However, you do not always want to load an entire graph.
 
+Objectify provides _load groups_, inspired by Jackson's [http://wiki.fasterxml.com/JacksonJsonViews Json Views].  Here is the simplest usage:
+
+{{{
+@Entity
+public class Thing {
+    public static class Everything {}
+
+    @Id Long id;
+    @Load(Everything.class) Ref<Other> other;
+}
+
+// Doesn't load other
+Thing th = ofy().load().key(thingKey).get();
+
+// Does load other
+Thing th = ofy().load().group(Everything.class).key(thingKey).get();
 }}}
+
+Here is a more complicated example:
+
+{{{
+@Entity
+public class Thing {
+    public static class Partial {}
+    public static class Everything extends Partial {}
+    public static class Stopper {}
+
+    @Id Long id;
+    @Load(Partial.class) Ref<Other> withPartial;
+    @Load(Everything.class) Ref<Other> withEveryhthing;
+    @Load(unless=Stopper.class) Ref<Other> unlessStopper;
+}
+
+// Loads 'unlessStopper' but not 'withPartial' or 'withEveryhthing'
+Thing th = ofy().load().key(thingKey).get();
+
+// Loads 'withPartial' and 'unlessStopper' but not 'withEveryhthing'
+Thing th = ofy().load().group(Partial.class).key(thingKey).get();
+
+// Loads all three because Everything extends Partial
+Thing th = ofy().load().group(Everything.class).key(thingKey).get();
+
+// Loads 'withPartial' and 'withEveryhthing' but not 'unlessStopper'
+Thing th = ofy().load().group(Everything.class, Stopper.class).key(thingKey).get();
+}}}
+
+You can combine required and 'unless':
+
+{{{
+@Load(value={Green.class, Yellow.class}, unless=Red.class) Ref<Other> other;
+}}}
+
+...this will be loaded if Green or Yellow is activated, unless Red is also activated.
 
 = Saving =
 
