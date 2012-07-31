@@ -1,6 +1,6 @@
 #summary Queries and Indexes
 
-The Google App Engine datastore is, fundamentally, a key/value store.  However, by defining indexes on arbitrary fields, you can query for entities in a way almost reminiscent of an RDBMS.  There are some limitations:
+The Google App Engine datastore is fundamentally a key/value store.  However, by defining indexes on arbitrary fields, you can query for entities in a way almost reminiscent of an RDBMS.  There are some limitations:
 
   * Queries only return values in an index.  If an entity field is not indexed, queries on that field will return  no results.
   * Queries without an ancestor() restriction are always weakly consistent.  Queries with an ancestor() restriction follow the {{{Objectify.consistency()}}} setting, which defaults to STRONG.
@@ -78,7 +78,7 @@ Check the [http://objectify-appengine.googlecode.com/git/javadoc/com/googlecode/
 
 === {{{IfDefault.class}}} ===
 
-{{{IfDefault.class}}} is special.  It tests true when the field value is whatever the default value is when you construct an object of your class.  Here is an example of using the inverse, {{{@IfNotDefault}}}:
+{{{IfDefault}}} is special.  It tests true when the field value is whatever the default value is when you construct an object of your class.  Here is an example of using the inverse, {{{@IfNotDefault}}}:
 
 {{{
 @Entity
