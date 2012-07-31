@@ -8,6 +8,8 @@ The Google App Engine datastore is fundamentally a key/value store.  However, by
 
 This document is not intended to be a comprehensive explanation of queries and indexes; only what you need to know to use Objectify.  You should read and understand the [https://developers.google.com/appengine/docs/java/datastore/queries GAE Documentation For Queries and Indexes].
 
+<wiki:toc max_depth="3" />
+
 = Defining Indexes =
 
 Objectify does *not* index properties by default.  You must explicitly define single-property indexes with the {{{@Index}}} annotation:
@@ -136,6 +138,95 @@ Examine the [http://code.google.com/p/objectify-appengine/source/browse/#git%2Fs
 
 = Executing Queries =
 
-== Keys-Only Queries ==
+Queries are a type of load() operation:
+
+{{{
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
+// Operators are >, >=, <, <=, in, !=, <>, =, ==
+List<Car> cars = ofy().load().type(Car.class).filter("year >", 1999).list();
+List<Car> cars = ofy().load().type(Car.class).filter("year >=", 1999).list();
+List<Car> cars = ofy().load().type(Car.class).filter("year !=", 1999).list();
+List<Car> cars = ofy().load().type(Car.class).filter("year in", yearList).list();
+
+// No operator means ==
+Car car = ofy().load().type(Car.class).filter("vin", "123456789").first().get();
+
+// The Query itself is Iterable
+Query<Car> q = ofy().load().type(Car.class).filter("vin >", "123456789");
+for (Car car: q) {
+    System.out.println(car.toString());
+}
+
+// Queries within transactions require ancestor()
+List<Car> cars = ofy().load().type(Car.class).ancestor(parent).list();
+
+// You can filter keys as well
+List<Car> range = ofy().load().filterKey(">=", startKey).filterKey("<", endKey).list();
+
+// You can query for just keys, which will return Key objects much more efficiently than fetching whole objects
+Iterable<Key<Car>> allKeys = ofy().load().type(Car.class).keys();
+
+// Useful for deleting items
+ofy().delete(allKeys);
+}}}
+
+{{{Query}}} objects are immutable.  You can build them up:
+
+{{{
+Query<Car> q = ofy().load().type(Car.class);
+q = q.filter("vin >", "123456789");
+q = q.filter("color", RED);
+}}}
+
+Query result objects ({{{Iterable<?>}}}, {{{List<?>}}}, {{{Ref<?>}}}) are inherently asynchronous.  The {{{Query}}} itself does not start execution:
+
+{{{
+// Query implements Iterable, but this does not start an actual query
+Iterable<Car> query = ofy().load().type(Car.class).filter("vin >", "123456789");
+
+// This starts executing an asynchronous query
+Iterable<Car> cars = ofy().load().type(Car.class).filter("vin >", "123456789").iterable();
+}}}
+
+== Cursors ==
+
+Cursors let you take a "checkpoint" in a query result set, store the checkpoint elsewhere, and then resume from where you left off later.  This is often used in combination with the Task Queue API to iterate through large datasets that cannot be processed in the 60s limit of a single request.
+
+=== Cursor Example ===
+
+The {{{Iterable}}}s provided by Objectify (including the {{{Query}}} object) are actually {{{QueryResultIterable}}}.  This will produce a {{{QueryResultIterator}}}, which allows you to obtain a {{{Cursor}}}.
+
+This is an example of a servlet that will iterate through *all* the Car entities, 1000 at a time:
+
+{{{
+public static final long COUNT = 1000;
+
+@Override
+protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    Query<Car> query = ofy().load().type(Car.class).limit(1000);
+
+    String cursorStr = request.getParameter("cursor");
+    if (cursorStr != null)
+        query = query.startCursor(Cursor.fromWebSafeString(cursorStr));
+
+    boolean continue = false;
+    QueryResultIterator<Car> iterator = query.iterator();
+    while (iterator.hasNext()) {
+        Car car = iterator.next();
+
+        ... // process car
+
+        continue = true;
+    }
+
+    if (continue) {
+        Cursor cursor = iterator.getStartCursor();
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(url("/pathToThisServlet").param("cursor", cursor.toWebSafeString()));
+    }
+}
+}}}
+
 
 = Queries and Embedded Classes =
