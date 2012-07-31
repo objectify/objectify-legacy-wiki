@@ -200,8 +200,6 @@ The {{{Iterable}}}s provided by Objectify (including the {{{Query}}} object) are
 This is an example of a servlet that will iterate through *all* the Car entities, 1000 at a time:
 
 {{{
-public static final long COUNT = 1000;
-
 @Override
 protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     Query<Car> query = ofy().load().type(Car.class).limit(1000);
