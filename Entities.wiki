@@ -71,12 +71,12 @@ public class Animal {
     String name;
 }
 	
-@EntitySubclass
+@EntitySubclass(index=true)
 public class Mammal extends Animal {
     boolean longHair;
 }
 	
-@EntitySubclass
+@EntitySubclass(index=true)
 public class Cat extends Mammal {
     boolean hypoallergenic;
 }
