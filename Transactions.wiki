@@ -1,0 +1,73 @@
+#summary Transactions
+
+Transactions are where Objectify departs most significantly from the patterns set by the Low-Level API and JDO/JPA.  Objectify's transactions are inspired by [http://en.wikipedia.org/wiki/Enterprise_JavaBeans EJB] and [https://developers.google.com/appengine/docs/python/ndb/transactions NDB] transactions: Designed to allow modular, convenient transactional logic with a minimum of boilerplate.
+
+You should familiarize yourself with the [https://developers.google.com/appengine/docs/java/datastore/transactions GAE Transactions] documentation.
+
+= Basic Transactions =
+
+A basic transaction looks like this:
+
+{{{
+import static com.googlecode.objectify.ObjectifyService.ofy;
+import com.googlecode.objectify.Work;
+
+// If you don't need to return a value, you can use VoidWork
+Thing th = ofy().transact(new Work<Thing>() {
+    public Thing run() {
+        Thing thing = ofy().load().key(thingKey);
+        thing.modify();
+        ofy().save().entity(thing);
+        return thing;
+    }
+});
+}}}
+
+== Idempotence ==
+
+*Work MUST be idempotent.*  A variety of conditions, including {{{ConcurrentModificationException}}}, can cause a transaction to retry.  If you need to limit the number of times a transaction can be tried, use {{{transactNew(int, Work)}}}.
+
+== Cross-Group Transactions ==
+
+Objectify requires no special flags to enable cross-group transactions.  If you access more than one entity group in a transaction, the transaction with be an XG transaction.  If you do access only one, it is not.  The standard limit of 5 EGs applies to all transactions.
+
+== Transaction Inheritance ==
+
+Transaction contexts are inherited.  In this example, the inner {{{transact()}}} does *not* start a new transaction:
+
+{{{
+public void doSomeWork() {
+    ofy().transact(new VoidWork() {
+        public void vrun() {
+            doSomeMoreWork();
+        }
+    }
+}
+
+public void doSomeMoreWork() {
+    ofy().transact(new VoidWork() {
+        public void vrun() {
+            // When called from doSomeWork(), executes in the original transaction context
+            // When called from outside a transaction, executes in a new transaction
+        }
+    }
+}
+}}}
+
+This makes it easy to create modular bits of transactional logic that can be used from a variety of contexts without having to pass around {{{Objectify}}} instances as parameters.
+
+If you need to suspend a transaction and begin a new one, use the {{{transactNew()}}} method:
+
+{{{
+ofy().transactNew(new VoidWork() {
+    public void vrun() {
+        Thing thing = ofy().load().key(thingKey);
+        thing.modify();
+        ofy().save().entity(thing);
+    }
+});
+}}}
+
+The old transaction (if present) is suspended for the duration of the new transaction.  After the transaction commits (or rolls back), the original transaction will resume.
+
+= Transactions with Guice =
