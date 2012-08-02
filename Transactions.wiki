@@ -70,4 +70,149 @@ ofy().transactNew(new VoidWork() {
 
 The old transaction (if present) is suspended for the duration of the new transaction.  After the transaction commits (or rolls back), the original transaction will resume.
 
+== Escaping Transactions ==
+
+There are often times in the middle of a transaction when you would like to make a datastore request outside of a transaction.  Perhaps you wish to make a query without an ancestor(), or perhaps you wish to load an entity without enlisting it in a XG transaction.
+
+Objectify makes it easy to run operations outside of a transaction:
+
+{{{
+ofy().transact(new VoidWork() {
+    public void vrun() {
+        Thing thing = ofy().load().key(thingKey);
+        Other other = ofy().transactionless().load().key(thing.otherKey).get();
+        if (other.specialState) {
+            thing.modify();
+            ofy().save().entity(thing);
+        }
+    }
+});
+}}}
+
+This circumstance doesn't come up often but it does come up.
+
+== Transactions and Caching ==
+
+Starting a transaction creates a new {{{Objectify}}} instance with a fresh, empty session cache.  Loads and saves will populate this new instance cache; because of this, entities modified will appear modified after being loaded again within the same transaction.  Unlike the low-level API, the datastore will not appear "frozen in time", although transaction isolation is maintained.
+
+When a transaction successfully commits, its session cache will be copied into the parent {{{Objectify}}} instance's session cache.
+
+Transactions integrate correctly with Objectify's global memcache.  Reads and writes bypass the memcache, but a successful commit will reset the memcache value for changed entities.
+
+= execute() =
+
+Objectify provides a method designed to facilitate EJB-like behavior:
+
+{{{
+ofy().execute(TxnType.REQUIRED, new VoidWork() {
+    public void vrun() {
+        Thing thing = ofy().load().key(thingKey);
+        thing.modify();
+        ofy().save().entity(thing);
+        }
+    }
+});
+}}}
+
+The {{{TxnType}}} enum provides the common [http://en.wikipedia.org/wiki/Enterprise_JavaBeans#Transactions EJB transaction attributes]:
+
+|| MANDATORY || If not already in a transaction, throw an exception.  Otherwise, use the transaction. ||
+|| REQUIRED || If there is already a transaction in progress, use it.  If not, start a new transaction. ||
+|| REQUIRES_NEW || If there is already a transaction in progress, suspend it.  Always start a new transaction. ||
+|| SUPPORTS || If there is a transaction in progress, use it.  Otherwise, execute without a transaction. ||
+|| NOT_SUPPORTED || If there is a transaction in progress, suspend it.  Execute without a transaction. ||
+|| NEVER || If there is a transaction in progress, throw an exception.  Otherwise, execute without a transaction. ||
+
+You will probably not use this method directly.  However, you can easily use it to build AOP interceptors for Guice and Spring.
+
 = Transactions with Guice =
+
+Using Guice AOP you can place EJB-like annotations on methods and eliminate all the {{{new Work<Blah>() {...}}}} boilerplate:
+
+{{{
+/** This is a guice-instantiated object */
+public class Worker {
+    @Transact(TxnType.REQUIRED)
+    public void doSomeWork() {
+        ofy().load()...    // do some work
+        doSomeMoreWork();
+    }
+
+    @Transaction(TxnType.REQUIRED)
+    public void doSomeWork() {
+        ofy().load()...   // do some more work
+    }
+}
+
+Worker worker = injector.getInstance(Worker.class);
+worker.doSomeWork();   // all work done in a single transaction!
+}}}
+
+These methods are automatically wrapped in {{{Work}}} classes and executed with {{{Objectify.execute()}}}.
+
+This requires two classes:
+
+{{{
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface Transact {
+    TxnType value();
+}
+}}}
+{{{
+public class TransactInterceptor implements MethodInterceptor {
+
+    /** Work around java's annoying checked exceptions */
+    private static class ExceptionWrapper extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+            public ExceptionWrapper(Throwable cause) {
+                super(cause);
+            }
+		
+            /** This makes the cost of using the ExceptionWrapper negligible */
+            @Override
+            public synchronized Throwable fillInStackTrace() {
+                return this;
+            }
+        }
+
+    /** The only trick here is that we need to wrap & unwrap checked exceptions that go through the Work interface */
+    @Override
+    public Object invoke(final MethodInvocation inv) throws Throwable {
+        Transact attr = inv.getStaticPart().getAnnotation(Transact.class);
+        TxnType type = attr.value();
+
+        try {
+            return ofy().execute(type, new Work<Object>() {
+                @Override
+                public Object run() {
+                    try {
+                        return inv.proceed();
+                    }
+                    catch (RuntimeException ex) { throw ex; }
+                    catch (Throwable th) { throw new ExceptionWrapper(th); }
+                }
+            });
+        } catch (ExceptionWrapper ex) { throw ex.getCause(); }
+    }
+}
+}}}
+
+Now, to enable this interceptor, add this to your Guice module configuration:
+
+{{{
+public static class YourModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transact.class), new TransactInterceptor());
+        // continue with your guice configuration
+    }
+}
+}}}
+
+You can find a working example of this in the [http://www.motomapia.com/ Motomapia] sample application.
+
+= Transactions with Spring =
+
+TODO:  How to integrate Spring's transaction system, or link to a project that does.
