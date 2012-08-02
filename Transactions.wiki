@@ -143,7 +143,8 @@ public class Worker {
         ofy().load()...   // do some more work
     }
 }
-
+}}}
+{{{
 Worker worker = injector.getInstance(Worker.class);
 worker.doSomeWork();   // all work done in a single transaction!
 }}}
