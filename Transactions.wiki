@@ -129,7 +129,6 @@ You will probably not use this method directly.  However, you can easily use it 
 Using Guice AOP you can place EJB-like annotations on methods and eliminate all the {{{new Work<Blah>() {...}}}} boilerplate:
 
 {{{
-/** This is a guice-instantiated object */
 public class Worker {
     @Transact(TxnType.REQUIRED)
     public void doSomeWork() {
