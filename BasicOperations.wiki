@@ -67,6 +67,18 @@ th = shortDeadline.consistency(Consistency.EVENTUAL).load().key(thingKey);
 th = shortDeadline.load().key(thingKey);    // still has default of STRONG
 }}} 
 
+== The Session Cache ==
+
+Each {{{Objectify}}} instance holds a cache of entities which have been loaded in that session.  This prevents subsequent loads within that session from needing to go out to the datastore.  The cache holds entity instances and (with the exception of transactions) will consistently return the same actual object instance.
+
+This cache is separate from the global memcache enabled/disabled with the {{{@Cache}}} annotation and the {{{Objectify.cache()}}} parameter.
+
+The session cache is always enabled.  If you iterate through large numbers of entities, this session cache may cause memory issues.  You can clear the cache at intervals by calling:
+
+{{{
+ofy().clear();
+}}}
+
 = Loading =
 
 {{{Objectify}}} provides a variety of ways to load entities from the datastore.  They all begin with a command chain started by {{{load()}}}.  Note that all operations are asynchronous until you manifest an actual entity POJO; all the {{{Map}}}, {{{List}}}, and {{{Ref}}} interfaces hide the asynchrony.
