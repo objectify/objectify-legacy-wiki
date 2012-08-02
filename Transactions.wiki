@@ -109,7 +109,6 @@ ofy().execute(TxnType.REQUIRED, new VoidWork() {
         Thing thing = ofy().load().key(thingKey);
         thing.modify();
         ofy().save().entity(thing);
-        }
     }
 });
 }}}
