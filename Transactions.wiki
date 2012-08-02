@@ -134,12 +134,14 @@ public class Worker {
     @Transact(TxnType.REQUIRED)
     public void doSomeWork() {
         ofy().load()...    // do some work
-        doSomeMoreWork();
+        Thing th = doSomeMoreWork();
+        ofy().save()...    // do some work
     }
 
     @Transaction(TxnType.REQUIRED)
-    public void doSomeWork() {
+    public Thing doSomeMoreWork() {
         ofy().load()...   // do some more work
+        return someThing;
     }
 }
 }}}
