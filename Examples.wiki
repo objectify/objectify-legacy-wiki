@@ -1,0 +1,7 @@
+#summary Example projects for Objectify
+
+= Examples =
+
+Some opensource examples of how to use Objectify:
+
+  * [https://github.com/stickfigure/motomapia Motomapia] is maintained by the Objectify developers and reflects the leading-edge version of Objectify.
