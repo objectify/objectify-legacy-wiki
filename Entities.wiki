@@ -393,7 +393,7 @@ Often you will not wish to {{{@Load}}} every entity relationship every time.  {{
 @Entity
 class Car {
     @Id Long id;
-    Person driver;    // Person is an @Entity
+    @Load Person driver;    // Person is an @Entity
 }
 
 Car car = new Car();
@@ -406,7 +406,7 @@ Person driver = fetched.driver;
 
 There are significant limitations to this facility:
 
-  * {{{@Load}}} is implied.  You cannot use conditional {{{@Load}}} groups; the entity is always loaded.
+  * {{{@Load}}} is required.  You cannot use conditional {{{@Load}}} groups; the entity is always loaded.
   * *There is no cascading save or delete.*  If you wish to save the driver in the example above, it must be saved explicitly.
   * If the referenced driver does not exist (say, he/she was deleted), the driver field will still contain a Person - but only the key fields will be initialized.  Unlike with {{{Ref<?>s}}}, there is no built-in way to determine that there is no foreign entity for the foreign key reference.
 
