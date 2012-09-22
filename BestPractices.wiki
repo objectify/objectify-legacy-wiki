@@ -28,7 +28,8 @@ public class OfyService {
     public static ObjectifyFactory factory() {
         return ObjectifyService.factory();
     }
-}}}}
+}
+}}}
 
 Now in your code, import your own static {{{ofy()}}}:
 
