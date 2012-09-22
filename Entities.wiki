@@ -231,6 +231,66 @@ This is what the entity would look like if the second and third values in the {{
 
 The synthetic ^null property only exists if the collection contains nulls.  It is never indexed.
 
+== Serializing ==
+
+An alternative to {{{@Embed}}} is to {{{@Serialize}}}, which will let you store nearly any Java object graph.
+
+{{{
+@Entity
+class EntityWithSerialized {
+    @Id Long id;
+    @Serialize Map<Object, Object> stuff;
+}
+}}}
+
+There are some limitations:
+
+  * All objects stored in the graph must follow Java serialization rules, including implement {{{java.io.Serializable}}}.
+  * The total size of an entity cannot exceed 1 megabyte.  If your serialized data exceeds this size, you will get an exception when you try to {{{save()}}} it.
+  * You will not be able to use the field or any child fields in queries.
+  * As per serializaton rules, {{{transient}}} (the java keyword) fields will not be stored.
+  * All Objectify annotations will be ignored within your serialized data structure.  This means {{{@Ignore}}} fields within your serialized structure will be stored!
+  * Java serialization data is opaque to the datastore viewer and other languages (ie GAE/Python).  You will only be able to retrieve your data from Java.
+
+However, there are significant benefits to storing data this way:
+
+  * You can store nearly any object graph - nested collections, circular object references, etc.  If Java can serialize it, you can store it.
+  * Your field need not be statically typed.  Declare {{{Object}}} if you want.
+  * Collections can be stored in their full state; for example, a SortedSet will remember its Comparator implementation.
+  * {{{@Serializ}}} collections can be nested inside {{{@Embed}}} collections.
+
+You are *strongly* advised to place {{{serialVersionUID}}} on all classes that you intend to store as {{{@Serialize}}}.  Without this, *any* change to your classes will prevent stored objects from being deserialized on fetch.  Example:
+
+{{{
+class SomeStuff implements Serializable {
+    /** start with 1 for all classes */
+    private static final long serialVersionUID = 1L;
+
+    String foo;
+    Object bar;
+}
+
+@Entity
+class EntityWithSerialized {
+    @Id Long id;
+    @Serialize SomeStuff stuff;
+}
+}}}
+
+=== Compression ===
+
+You can automatically zip the serialized blob:
+
+{{{
+@Entity
+class EntityWithSerialized {
+    @Id Long id;
+    @Serialize(zip=true) Map<Object, Object> stuff;
+}
+}}}
+
+You can add or remove zipping at any time.  Irrespective of the {{{zip}}} value, Objectify will read the field correctly whether it was zipped or not in the datastore.  Of course, when the entity is saved, the {{{zip}}} value will determine whether or not the data in that instance is compressed.
+
 == Relationships ==
 
 A relationship is simply a key stored as a field in an entity.  Objectify provides several facilities to make it easier to manage relationships using keys.
