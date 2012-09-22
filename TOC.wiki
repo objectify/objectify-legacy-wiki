@@ -26,4 +26,5 @@
     * [ObjectifyWithGuice Using Objectify With Guice]
     * [DesignObjectify4 Design of Objectify 4]
     * [Examples]
+    * [UpgradeVersion3ToVersion4]
     * [http://objectify-appengine.googlecode.com/git/javadoc/index.html API Javadoc]
