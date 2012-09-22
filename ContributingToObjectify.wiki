@@ -2,6 +2,12 @@
 
 Interested in helping out with this project?  GREAT!  Here's some advice to get you started.
 
+Discussions on the [http://groups.google.com/group/objectify-appengine Objectify Google Group] are often helpful.
+
+= The Repository =
+
+Google Code holds the "official" git repository for Objectify, but githubbers can use https://github.com/stickfigure/objectify
+
 = Build Environment =
 
 Objectify developers use Eclipse and ant.
@@ -12,7 +18,7 @@ Ant is used to build the distribution.  You will need to edit `edit-this-to-buil
 
 = Code Standards =
 
-Objectify code uses 4-space HARD tabs.  It uses Pascal-style bracing conventions.  Look at existing source code for an example and follow the pattern.
+Objectify code uses 4-space HARD tabs.  It used to use Pascal-style bracing conventions, but is being slowly converted to K&R style.  Look at existing source code for an example and follow the pattern.
 
 All code submissions should be well-commented and include TestNG unit tests.
 
@@ -27,12 +33,12 @@ Note that there are a few tests that fail "out of the box".  These expose broken
 
 = Submitting Code =
 
-All patches should be submitted as an attachment to an issue in the issue tracker.  If there is no pre-existing issue, create one.  Discussions on the [http://groups.google.com/group/objectify-appengine objectify-appengine google group] are often helpful.
+Submit pull requests to https://github.com/stickfigure/objectify
 
 = Welcome Aboard! =
 
-The Objectify team is very interested your ideas and submissions.  That said, we are also very picky about what features we include in the core - Objectify is intended to be a thin, convenient layer on top of the low-level datastore API rather than a "kitchen sink" framework.  We are happy to link to related projects from the [Extensions Extensions] page.
+The Objectify team is very interested your ideas and submissions.  That said, we are also very picky about what features we include in the core - Objectify is intended to be a thin, convenient layer on top of the low-level datastore API rather than a "kitchen sink" framework.  We are happy to link to related projects from the [Extensions] page.
 
-If you are wondering where to start, look through the issue tracker.  Start a discussion early on the [http://groups.google.com/group/objectify-appengine objectify-appengine google group] - we will take the time to offer API advice and architectural guidance as well as to evaluate the proposal.
+If you are wondering where to start, look through the issue tracker.  Start a discussion early on the [http://groups.google.com/group/objectify-appengine Objectify Google Group] - we will take the time to offer API advice and architectural guidance as well as to evaluate the proposal.
 
 The absolute best way to start is to submit a patch with some unit tests - even (especially!) if they fail.
