@@ -1,5 +1,7 @@
-#summary Beginner's guide to Objectify-Appengine
+#summary Guide to Objectify-Appengine v3
 #labels Featured
+
+*NOTE:  This is the documentation for (now obsolete) Objectify v3.*
 
 If you haven't read the [Concepts] yet, please do so first.
 
