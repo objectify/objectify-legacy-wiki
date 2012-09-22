@@ -1,7 +1,7 @@
 #summary Fundamental Concepts of the Datastore
 #labels Featured
 
-This is a combined introduction to Objectify and to the Appengine datastore.
+This is a combined introduction to Objectify and to the App Engine datastore.
 
 <wiki:toc max_depth="1" />
 
