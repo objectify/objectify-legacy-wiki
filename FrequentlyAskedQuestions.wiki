@@ -9,38 +9,33 @@
 You probably are running an old version of the Google App Engine SDK; check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
 
 == Can I use Dependency Injection (Spring, Guice, Weld) with Objectify? ==
-Yes!  Objectify was designed with this in mind.
-  # Ignore the {{{ObjectifyService}}} class and its static methods.  It is merely a static proxy for a single instance of {{{ObjectifyFactory}}}.  Instead you will use {{{ObjectifyFactory}}} directly.
-  # Create an application-scoped {{{ObjectifyFactory}}} instance, register your classes, and inject it!
-  # Alternatively, use the DAO pattern (see BestPractices) and inject your DAO.
+Yes!  Objectify is designed to integrate with DI systems and can even use injectors to create entities and internal classes.  See ObjectifyWithGuice for an overview, even if you aren't using Guice.
+
+However, we do *not* recommend using DI to inject {{{Objectify}}} instances.  As you enter and exit transaction contexts, your code will use different {{{Objectify}}} instances; a single injected instance creates a significant risk that you will mix up transaction contexts.  Always use the static {{{ofy()}}} method.
 
 == How do I shut off the datanucleus byte code enhancer? ==
-  * In Eclipse, go to the Project Properties -> Builders and disable the Enhancer.
+  * In Eclipse, go to the Project Properties -> Google -> App Engine and *uncheck* "Use Datanucleus JDO/JPA to access the datastore"
 
 == Can I change data after it is loaded or before it is stored? ==
-Absolutely:
-  * See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Lifecycle_Callbacks Lifecycle Callbacks]
+Absolutely, see the LifecycleCallbacks
 
 == Should I Use a String (Name) Id? ==
 If it is a natural key, sure; Objectify allows this no problem. Here is a little more of a discussion [http://groups.google.com/group/google-appengine-java/browse_thread/thread/998289f853f5a688/c50446d98eb90017?#c50446d98eb90017 about it.]
 
-== How can I integrate with memcached? ==
-See the [http://code.google.com/p/objectify-appengine/wiki/IntroductionToObjectify#Caching Caching] documentation. Hint, add @Cached to your (entity) class.
-
 == How do I do a like query (LIKE "foo%") ==
-You can do something like a startWith, or endWith if you reverse the order when stored and searched. You do a range query with the starting value you want, and a value just above the one you want.
+You can do something like a startWith (or endWith if you reverse the order when stored and searched). You do a range query with the starting value you want, and a value just above the one you want.
 
 {{{
 String start = "foo";
-... = ofy.query(MyEntity.class).filter("field >=", start).filter("field <", start + "\uFFFD"); 
+... = ofy().load().type(MyEntity.class).filter("field >=", start).filter("field <", start + "\uFFFD"); 
 }}}
 
 See this discussion for [http://groups.google.com/group/objectify-appengine/browse_thread/thread/51cebf7fdf13b9aa/895ddc627ed639cc more background and details]
  
 == How do I migrate from JDO to Objectify? ==
-You should have no trouble using Objectify side-by-side with JDO.  Just don't use the {{{javax.persistence.Entity}}} annotation on Objectify entities, it will likely make the JDO bytecode enhancer try to enhance it. You can either leave the annotation absent or use the {{{com.googlecode.objectify.annotation.Entity}}} substitute annotation instead.
+You should have no trouble using Objectify side-by-side with JDO.
 
-For the most part, migrating JDO classes to Objectify classes should be pretty straightforward.  The only trick will be mapping the relationships.  Look at the raw Entity objects to see what structure JDO created - relationships are just a Key on one end or both.  If you make this field a Key<?> (or Collection<Key<?>>) in your Objectify entities, it will map just fine.
+For the most part, migrating JDO classes to Objectify classes should be pretty straightforward.  The only trick will be mapping the relationships.  Look in the datastore viewer to see what entity structure JDO created - relationships are just a Key on one end or both.  If you make this field a Key<?>, Ref<?>, or concrete entity reference (or collection thereof if appropriate) in your Objectify entities, it will map just fine.
 
 == Does Objectify support JDO Fetch Groups? ==
 There is no such thing as a fetch group in the GAE datastore; entities are fetched in their entirety or not at all.  Objectify reflects the underlying nature of the datastore so it does not require this JDO-ism.
@@ -52,23 +47,18 @@ There is no need for this JDO-ism either.  Objectify entities are exactly as you
 Example...
 
 {{{
-Objectify ofy = ObjectifyService.beginTransaction();
-
-ofy.put(makeSomeObject());
-ofy.getDatastore().put(makeSomeLowLevelEntity());
-
-ofy.getTxn().commit();
+ofy().save().entity(makeSomeObject()).now();
+ofy().getDatastore().put(makeSomeLowLevelEntity());
 }}}
 
 Yes you can! With a few caveats...
 
-  * You're still limited by GAE's restrictions on transactions (namely, all objects must be part of the same entity group).
-  * If you have session caching enabled, the direct-datastore put() will bypass the session cache.  If the session cache already held a value for that key, subsequent a get() from the Objectify instance will produce the (now incorrect) cached value.
-  * The global cache will remain consistent as long as you obtain the DatastoreService from ofy.getDatastore(); if you get it directly from DatastoreServiceFactory it will bypass Objectify's global (memcache) cache.
+  * The direct-datastore put() will bypass the session cache.  If the session cache already held a value for that key, subsequent a load() from the Objectify instance will produce the (now incorrect) cached value.
+  * The global cache will remain consistent as long as you obtain the DatastoreService from ofy().getDatastore(); if you get it directly from DatastoreServiceFactory it will bypass Objectify's global (memcache) cache.
 
-But yeah, you're free to interleave Objectify and Low-Level API calls.
+You're free to interleave Objectify and Low-Level API calls.
 
-== Why can't I use @Embedded on {{{List<String>}}}? ==
-@Embedded tells Objectify to break classes down to their component parts based on their fields and store each field separately.  Therefore, this annotation must not be used on primitive types or types that are stored natively by the datastore (eg {{{String}}}, {{{Integer}}}, {{{GeoPt}}}, {{{User}}}, {{{Email}}}, etc).
+== Why can't I use @Embed on {{{List<String>}}}? ==
+@Embed tells Objectify to break classes down to their component parts based on their fields and store each field separately.  Therefore, this annotation must not be used on primitive types or types that are stored natively by the datastore (eg {{{String}}}, {{{Integer}}}, {{{GeoPt}}}, {{{User}}}, {{{Email}}}, etc).
 
-The datastore knows how to persist these native types as-is.  You do not need the @Embedded annotation to persist a {{{List<String>}}} - just declare the field normally.
+The datastore knows how to persist these native types as-is.  You do not need the @Embed annotation to persist a {{{List<String>}}} - just declare the field normally.
