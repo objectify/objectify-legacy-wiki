@@ -2,7 +2,6 @@
 #sidebar TOC
 
   * [Concepts Concepts]
-
   * User's Guide
     * [Introduction]
     * [Setup]
@@ -22,13 +21,11 @@
     * [UpgradeVersion3ToVersion4]
   * [Examples]
   * [http://objectify-appengine.googlecode.com/git/javadoc/index.html API Javadoc]
-
   * [ReleaseNotes Release Notes]
   * [BestPractices Best Practices]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
   * [MavenRepository Maven Repository]
   * [Extensions Extensions]
   * [ContributingToObjectify Contributing To Objectify]
-
   * Objectify3 (obsolete)
     * [IntroductionToObjectify Introduction To Objectify]
