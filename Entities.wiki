@@ -469,7 +469,7 @@ The datastore can natively persist collections of simple types, including keys. 
 @Entity
 public class Employee {
     @Id String name;
-    List<Key<Employee>> subordinates = new ArrayList<Employee>();
+    List<Key<Employee>> subordinates = new ArrayList<Key<Employee>>();
 }
 }}}
 
