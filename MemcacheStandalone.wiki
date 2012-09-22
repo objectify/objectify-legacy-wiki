@@ -1,6 +1,6 @@
 #summary Using memcache outside of Objectify
 
-Starting in v3.1, Objectify's write-through memcache can be used directly with the low level API, independent of the rest of Objectify.  You can use this to add caching behavior to apps built on the low level API or other datastore APIs that rely on the low level API.
+Objectify's write-through memcache can be used directly with the low level API, independent of the rest of Objectify.  You can use this to add caching behavior to apps built on the low level API or other datastore APIs that rely on the low level API.
 
 IntroductionToObjectify documents how to use memcache with Objectify; this document assumes you are not using Objectify.  It assumes you are familiar with the [http://code.google.com/appengine/docs/java/datastore/ low level API].
 
