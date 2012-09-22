@@ -55,3 +55,35 @@ What you should know about the global cache:
 Objectify's global cache provides near-transactional consistency with the datastore, even under heavy contention.  There is still, however, one circumstance in which the cache could go out of synchronization with the datastore: If your requests are cut off by DeadlineExceededException.
 
 You can also use this cache with the Low Level API directly; see MemcacheStandalone.
+
+== Hybrid Queries ==
+
+Even though the datastore can run queries, it's actually a key-value store.  When you execute a query, GAE under-the-covers performs the rough equivalent of a keys-only fetch followed by a get-by-key for the keys.  Aside from cost, these two operations are almost identical, and perform about the same:
+
+{{{
+// This will cost 6 read ops
+ofy().load().type(Thing.class).limit(5);
+
+// This will cost 6 read ops + 5 small ops
+ofy().consistency(Consistency.EVENTUAL).load().keys(ofy().load().type(Thing.class).limit(5).keys());
+}}}
+
+Note that queries in GAE are always eventually consistent, so the direct equivalent of a query is to explicitly make the get-by-key step eventually consistent.
+
+Why is this useful?  Because if we perform keys-only queries followed by get-by-key, we might pull the entity out of memcache instead of the datastore.  With a warm cache, this kind of "hybrid query" will cost 1 read op (all queries cost one read op) + 5 small ops (one for each key) and execute _much_ faster than the standard full query.
+
+Objectify is smart enough to take care of this for you.  It will automatically convert queries to hybrid queries when:
+
+  * There is an explicit type() defined, and the type has a {{{@Cache}}} annotation
+  * Caching is not disabled for the query (ie {{{ofy().cache(false)}}}
+  * The consistency level is set to STRONG (the default)
+
+You can explicitly enable or disable this behavior like this:
+
+{{{
+// If Thing has @Cache, this disables the hybrid query:
+ofy().load().type(Thing.class).hybrid(false);
+
+// Typeless queries are not hybridized by default since we don't know if they are cacheable:
+ofy().load().ancestor(parent).hybrid(true);
+}}}
