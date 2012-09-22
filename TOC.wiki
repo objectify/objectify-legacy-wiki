@@ -2,17 +2,8 @@
 #sidebar TOC
 
   * [Concepts Concepts]
-  * [IntroductionToObjectify Introduction To Objectify]
-  * [BestPractices Best Practices]
-  * [FrequentlyAskedQuestions Frequently Asked Questions]
-  * [AnnotationReference Annotation Reference]
-  * [ReleaseNotes Release Notes]
-  * [MavenRepository Maven Repository]
-  * [ObjectifyWithGWT Objectify With GWT]
-  * [MemcacheStandalone Caching Without Objectify]
-  * [Extensions Extensions]
-  * [ContributingToObjectify Contributing To Objectify]
-  * Objectify4 (work in progress)
+
+  * User's Guide
     * [Introduction]
     * [Setup]
     * [Entities]
@@ -24,7 +15,20 @@
     * [Caching]
     * [Wrappers Using Wrappers]
     * [ObjectifyWithGuice Using Objectify With Guice]
+    * [ObjectifyWithGWT Objectify With GWT]
+    * [MemcacheStandalone Caching Without Objectify]
+    * [AnnotationReference Annotation Reference]
     * [DesignObjectify4 Design of Objectify 4]
-    * [Examples]
     * [UpgradeVersion3ToVersion4]
-    * [http://objectify-appengine.googlecode.com/git/javadoc/index.html API Javadoc]
+  * [Examples]
+  * [http://objectify-appengine.googlecode.com/git/javadoc/index.html API Javadoc]
+
+  * [ReleaseNotes Release Notes]
+  * [BestPractices Best Practices]
+  * [FrequentlyAskedQuestions Frequently Asked Questions]
+  * [MavenRepository Maven Repository]
+  * [Extensions Extensions]
+  * [ContributingToObjectify Contributing To Objectify]
+
+  * Objectify3 (obsolete)
+    * [IntroductionToObjectify Introduction To Objectify]
