@@ -26,24 +26,17 @@ Simply add this to your module.gwt.xml:
 
 You can now manipulate your entity objects in GWT and seamlessly pass them back and forth to the server through GWT-RPC.  Objectify enables you to use Key<?>, Key (the datastore version), and all the datastore basic types (Link, Email, GeoPt, etc) in your client code.
 
-== Transience ==
-
-A careful distinction must be made between {{{@Transient}}} (the javax.persistence annotation) fields and {{{transient}}} (the Java keyword) fields:
-
-  * {{{@Transient}}} fields are ignored for the purposes of persistence.  They are still serialized in GWT.
-  * {{{transient}}} fields *are* persisted as normal.  However, they will NOT be serialized by GWT.
-
 == Annotations ==
 
 In general GWT will ignore annotation on your classes. It is not necessary to include them in your gwt include modules.
  
-Annotations like {{{@Entity}}}, {{{@LoadAlso}}}, and the like will be ignored during GWT serialization. 
+Annotations like {{{@Entity}}}, {{{@AlsoLoad}}}, and the like will be ignored during GWT serialization. 
 
 == Client-Side Access ==
 
-None of the Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, DAO) can be used from GWT client code. Basically only entities (and their associated data (types) are allowed to cross the GWT Service boundaries).
+None of the Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, etc) can be used from GWT client code. Basically only entities and their associated data (types) are allowed to cross the GWT service boundaries.
 
-As of Objectify 3.0, constructing {{{Key<?>}}} objects client-side is now considerably more difficult.  You can only use one constructor, the one which takes a native datastore {{{Key}}}.  The other constructors do not exist in the {{{Key<?>}}} super-source.  See [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d6171c6a4956719/2d5004df1d7e20ee?hl=en_US&lnk=gst&q=polymorphism+gwt&pli=1#2d5004df1d7e20ee this discussion].
+Note:  Creating {{{Key<?>}}} objects client-side is difficult.  You can only use one constructor, the one which takes a native datastore {{{Key}}}.  The other constructors do not exist in the {{{Key<?>}}} super-source.  See [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d6171c6a4956719/2d5004df1d7e20ee?hl=en_US&lnk=gst&q=polymorphism+gwt&pli=1#2d5004df1d7e20ee this discussion].
 
 == Example ==
 
