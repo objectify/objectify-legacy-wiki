@@ -13,7 +13,6 @@
     * [SchemaMigration Schema Migration]
     * [Caching]
     * [Wrappers Using Wrappers]
-    * [ObjectifyWithGuice Using Objectify With Guice]
     * [ObjectifyWithGWT Objectify With GWT]
     * [MemcacheStandalone Caching Without Objectify]
     * [AnnotationReference Annotation Reference]
