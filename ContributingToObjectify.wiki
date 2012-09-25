@@ -10,11 +10,7 @@ Google Code holds the "official" git repository for Objectify, but githubbers ca
 
 = Build Environment =
 
-Objectify developers use Eclipse and ant.
-
-Eclipse is used to edit the code and run the unit tests.  You will need to install the Google Plugin and the latest version of the Google App Engine SDK.  Note that Objectify is not a "Google App Engine Project" with a `war/` directory, but it does use the Google App Engine SDK library configured automatically by the Eclipse plugin.
-
-Ant is used to build the distribution.  You will need to edit `edit-this-to-build.properties` and point it at the correct path to the GAE SDK.  Running "ant" alone will build the Objectify jar and "ant dist" will build the whole distribution zipfile including documentation.
+Objectify developers use Eclipse and Gradle.  Install Gradle IDE into Eclipse and open the project; all dependencies (including the appropriate GAE SDK) will download automatically.
 
 = Code Standards =
 
@@ -24,10 +20,7 @@ All code submissions should be well-commented and include TestNG unit tests.
 
 = Running Unit Tests =
 
-To run the unit tests you will need to do two things:
-
-  # Install the TestNG plugin for Eclipse
-  # Create an Eclipse User Library called "App Engine Unit Testing X.X.X" with the correct SDK version number.  The user library should contain [http://code.google.com/appengine/docs/java/tools/localunittesting.html#Introducing_App_Engine_Utilities these four appengine jars]:  `appengine-api.jar, appengine-api-labs.jar, appengine-api-stubs.jar, appengine-testing.jar`.
+To run the unit tests , install the TestNG plugin for Eclipse.
 
 Note that there are a few tests that fail "out of the box".  These expose broken behavior in the GAE SDK itself and are documented as such.  If in doubt, look at the test code - if it it doesn't say "this is expected to fail", it shouldn't fail.
 
@@ -41,4 +34,4 @@ The Objectify team is very interested your ideas and submissions.  That said, we
 
 If you are wondering where to start, look through the issue tracker.  Start a discussion early on the [http://groups.google.com/group/objectify-appengine Objectify Google Group] - we will take the time to offer API advice and architectural guidance as well as to evaluate the proposal.
 
-The absolute best way to start is to submit a patch with some unit tests - even (especially!) if they fail.
+The absolute best way to start is to submit a pull request with some unit tests - even (especially!) if they fail.
