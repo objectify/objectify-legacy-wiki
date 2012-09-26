@@ -2,7 +2,7 @@
 #sidebar TOC
 
   * [Concepts Concepts]
-  * User's Guide
+  * User's Guide (Objectify v4)
     * [Introduction]
     * [Setup]
     * [Entities]
@@ -26,5 +26,5 @@
   * [MavenRepository Maven Repository]
   * [Extensions Extensions]
   * [ContributingToObjectify Contributing To Objectify]
-  * Objectify3 (obsolete)
+  * Objectify v3 (obsolete)
     * [IntroductionToObjectify Introduction To Objectify]
