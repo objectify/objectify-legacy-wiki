@@ -332,7 +332,7 @@ You can change the type of the {{{other}}} field at any time, even after data is
 
 === {{{Ref<?>}}}s ===
 
-Even {{{Key<?>}}}s are not very convenient when you are working with graphs of entities.  Objectify provides {{{Ref<?>}}}, which works just like a {{{Key<?>}}} but can reference the actual entity as well:
+Even {{{Key<?>}}}s are not very convenient when you are working with graphs of entities.  Objectify provides {{{Ref<?>}}}, which works just like a {{{Key<?>}}} but can hold a reference to the actual entity object as well:
 
 {{{
 import com.googlecode.objectify.Ref;
