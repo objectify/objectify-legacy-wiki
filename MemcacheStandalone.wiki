@@ -41,9 +41,7 @@ DatastoreService ds = CachingDatastoreServiceFactory.getDatastoreService(600);
 You can control cache expiration on a key-by-key basis:
 
 {{{
-MemcacheService mem = CachingDatastoreServiceFactory.getDefaultMemcacheService();
-
-EntityMemcache em = new EntityMemcache(mem, new CacheControl() {
+EntityMemcache em = new EntityMemcache("yournamespace", new CacheControl() {
     @Override
     public Integer getExpirySeconds(Key key) {
         if ("SomeEntity".equals(key.getKind()))
@@ -65,10 +63,9 @@ DatastoreService ds = CachingDatastoreServiceFactory.getDatastoreService(em);
 You can construct an {{{EntityMemcache}}} which records cache statistics.
 
 {{{
-MemcacheService mem = ...
 CacheControl cc = ...
 
-EntityMemcache em = new EntityMemcache(mem, cc, new MemcacheStats() {
+EntityMemcache em = new EntityMemcache("yournamespace", cc, new MemcacheStats() {
     @Override public void recordHit(Key key) { /* do something with the hit */ }
     @Override public void recordMiss(Key key) { /* do something with the miss */ }
 });
