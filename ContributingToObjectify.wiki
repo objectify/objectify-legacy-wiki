@@ -12,6 +12,14 @@ Google Code holds the "official" git repository for Objectify, but githubbers ca
 
 Objectify developers use Eclipse and Gradle.  Install Gradle IDE into Eclipse and open the project; all dependencies (including the appropriate GAE SDK) will download automatically.
 
+= Check Out And Build =
+
+{{{
+git clone git://github.com/stickfigure/objectify.git
+cd objectify
+gradle build
+}}}
+
 = Code Standards =
 
 Objectify code uses 4-space HARD tabs.  It used to use Pascal-style bracing conventions, but is being slowly converted to K&R style.  Look at existing source code for an example and follow the pattern.
