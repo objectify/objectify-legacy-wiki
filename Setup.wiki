@@ -52,3 +52,7 @@ com.googlecode.objectify.ObjectifyService.ofy
 Now, when you type _{{{ofy}}}[cmd-space]_, Eclipse will add a static import for you.
 
 More details can be found in [http://stackoverflow.com/questions/288861/eclipse-optimize-imports-to-include-static-imports this stackoverflow question].
+
+= Building Objectify From Source =
+
+If you would like to build Objectify from source, see ContributingToObjectify.
