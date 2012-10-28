@@ -17,7 +17,7 @@ Objectify developers use Eclipse and Gradle.  Install Gradle IDE into Eclipse an
 {{{
 git clone git://github.com/stickfigure/objectify.git
 cd objectify
-gradle build
+gradle jar
 }}}
 
 = Code Standards =
