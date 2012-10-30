@@ -85,7 +85,7 @@ GAE does offer the ability to perform cross-group (XG) transactions, and Objecti
 
 Why not store all your data with a common parent, putting it all in a single entity group?  You can, but it's a bad idea.  Google limits the number of requests per second that can be served by a particular entity group.
 
-It should be worth mentioning that the term _parent_ is somewhat misleading.  There is no "cascading delete" in the datastore; if you delete the parent entity it will NOT delete the child entities.  For that matter, you can create child entites with a parent {{{Key}}} (or any other key as a member field) that points to a nonexistant entity!  Parent is only important in that it defines entity groups; if you do not need transactions across several entities, you may wish to use a normal nonparent key relationship - even if the entities have a conceptual parent-child relationship.
+It is worth mentioning that the term _parent_ is somewhat misleading.  There is no "cascading delete" in the datastore; if you delete the parent entity it will NOT delete the child entities.  For that matter, you can create child entites with a parent {{{Key}}} (or any other key as a member field) that points to a nonexistant entity!  Parent is only important in that it defines entity groups; if you do not need transactions across several entities, you may wish to use a normal nonparent key relationship - even if the entities have a conceptual parent-child relationship.
 
 == Optimistic Concurrency ==
 
