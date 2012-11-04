@@ -385,32 +385,9 @@ This will produce one round of batch fetching for the cars, plus one round of ba
 
 Often you will not wish to {{{@Load}}} every entity relationship every time.  {{{@Load}}} provides the ability to specify conditional _load groups_.  See <insert reference to load group section> for more.
 
-=== Concrete Entity References ===
+==== Hiding Ref<?> ====
 
-{{{Ref<?>s}}} let you define a flexible object graph that Objectify will load for you.  Sometimes you would like to simplify your object graph and eliminate the extra {{{Ref<?>}}}; perhaps you wish to serialize it to a client without the extra Objectify-specific class.  With some limitations, you can do this:
-
-{{{
-@Entity
-class Car {
-    @Id Long id;
-    @Load Person driver;    // Person is an @Entity
-}
-
-Car car = new Car();
-car.driver = someDriver
-ofy().save().entity(car).now();
-
-Car fetched = ofy().load().entity(car).get();
-Person driver = fetched.driver;
-}}}
-
-There are significant limitations to this facility:
-
-  * {{{@Load}}} is required.  You cannot use conditional {{{@Load}}} groups; the entity is always loaded.
-  * *There is no cascading save or delete.*  If you wish to save the driver in the example above, it must be saved explicitly.
-  * If the referenced driver does not exist (say, he/she was deleted), the driver field will still contain a Person - but only the key fields will be initialized.  Unlike with {{{Ref<?>s}}}, there is no built-in way to determine that there is no foreign entity for the foreign key reference.
-
-Generally, it is safer and more flexible to use a {{{Ref<?>}}} and hide it behind getter and setter methods:
+You will generally find it convenient to encapsulate {{{Ref<?>}}} behind getter and setter methods:
 
 {{{
 @Entity
@@ -419,11 +396,9 @@ class Car {
     @Load Ref<Person> driver;    // Person is an @Entity
 
     public Person getDriver() { return driver.get(); }
-    public void setDriver(Person value) { driver = Ref.create(value.getKey(), value); }
+    public void setDriver(Person value) { driver = Ref.create(value); }
 }
 }}}
-
-Like {{{Key<?>}}}s and {{{Ref<?>}}}s, concrete entity references are stored as native datastore {{{Key}}} in the datastore.  You can freely switch between all four forms of keys in your Java domain model without altering stored data.
 
 === @Parent Relationships ===
 
