@@ -1,10 +1,8 @@
 #summary How to integrate Objectify into a Maven project
 
-Objectify artifacts compatible with Maven 2 are available from the [http://maven.objectify-appengine.googlecode.com/git/ Objectify Maven repository].
+= Version 4+ =
 
-*Note:  The old svn-based repository has been retired.  The repository has a new git-based URL.*
-
-= Repository =
+Version 4 and later of Objectify are published in Maven Central.
 
 To add Objectify to your Maven project, add this to your `pom.xml`:
 {{{
@@ -12,7 +10,24 @@ To add Objectify to your Maven project, add this to your `pom.xml`:
     <dependency>
       <groupId>com.googlecode.objectify</groupId>
       <artifactId>objectify</artifactId>
-      <version>3.0</version>
+      <version>4.0b1</version>
+    </dependency>
+  </dependencies>
+}}}
+
+= Version 3 =
+
+Historic versions of Objectify are available in a special [http://maven.objectify-appengine.googlecode.com/git/ Objectify Maven repository].
+
+*Note:  This repository will not be updated.  You should use v4 and Maven Central.*
+
+To add Objectify to your Maven project, add this to your `pom.xml`:
+{{{
+  <dependencies>
+    <dependency>
+      <groupId>com.googlecode.objectify</groupId>
+      <artifactId>objectify</artifactId>
+      <version>3.1</version>
     </dependency>
   </dependencies>
 
