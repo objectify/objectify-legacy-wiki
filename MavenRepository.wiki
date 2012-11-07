@@ -21,7 +21,7 @@ Historic versions of Objectify are available in a special [http://maven.objectif
 
 *Note:  This repository will not be updated.  You should use v4 and Maven Central.*
 
-To add Objectify to your Maven project, add this to your `pom.xml`:
+To add Objectify v3.1 to your Maven project, add this to your `pom.xml`:
 {{{
   <dependencies>
     <dependency>
