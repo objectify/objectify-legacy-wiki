@@ -2,7 +2,7 @@
 
 = Version 4+ =
 
-Version 4 and later of Objectify are published in Maven Central.  If you wish to download a jar, you can examine the [http://repo1.maven.org/maven2/com/googlecode/objectify/ repository directly].
+Version 4 and later of Objectify are published in Maven Central.  If you wish to download a jar, you can examine the [http://repo1.maven.org/maven2/com/googlecode/objectify/objectify/ repository directly].
 
 To add Objectify to your Maven project, add this to your `pom.xml`:
 {{{
