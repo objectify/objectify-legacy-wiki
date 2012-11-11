@@ -21,7 +21,14 @@ The session cache, as it sounds, is associated with a specific request session. 
   * The session cache appears to be very similar to a JPA, JDO, or Hibernate session cache with one exception - there is no dirty change detection.  As per standard Objectify behavior, if you wish to change an entity in the datastore, you must explicitly {{{save()}}} your entity.
   * If you iterate through very large quantities of entities, you should periodically call {{{Objectify.clear()}}} to empty the cache.  This will prevent memory issues as the session grows without bounds.
 
-*NOTE*: In Objectify 4.0 alpha versions, the session caches the entity _data_ rather than the entity _instance_.  Fetches for cached entities will return new object instances, even though no request to the datastore or memcache will be made.  This behavior will be corrected in 4.0 release.
+=== Transactions and the Session Cache ===
+
+When you enter a transaction context, you receive a fresh, empty session cache.  There are two reasons for this:
+
+  # We must not allow arbitrary state to contaminate isolated transactions
+  # In order to enlist an entity in the transaction, a fetch must be made all the way through to the datastore.
+
+When the transaction commits, the contents of the transaction's session cache are written into the "parent" session cache (the context before the transaction).  This may replace instances that have been loaded before.
 
 == Global Cache ==
 
