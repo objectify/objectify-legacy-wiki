@@ -15,7 +15,7 @@ import com.googlecode.objectify.Work;
 // If you don't need to return a value, you can use VoidWork
 Thing th = ofy().transact(new Work<Thing>() {
     public Thing run() {
-        Thing thing = ofy().load().key(thingKey);
+        Thing thing = ofy().load().key(thingKey).get();
         thing.modify();
         ofy().save().entity(thing);
         return thing;
@@ -61,7 +61,7 @@ If you need to suspend a transaction and begin a new one, use the {{{transactNew
 {{{
 ofy().transactNew(new VoidWork() {
     public void vrun() {
-        Thing thing = ofy().load().key(thingKey);
+        Thing thing = ofy().load().key(thingKey).get();
         thing.modify();
         ofy().save().entity(thing);
     }
@@ -79,7 +79,7 @@ Objectify makes it easy to run operations outside of a transaction:
 {{{
 ofy().transact(new VoidWork() {
     public void vrun() {
-        Thing thing = ofy().load().key(thingKey);
+        Thing thing = ofy().load().key(thingKey).get();
         Other other = ofy().transactionless().load().key(thing.otherKey).get();
         if (other.specialState) {
             thing.modify();
@@ -106,7 +106,7 @@ Objectify provides a method designed to facilitate EJB-like behavior:
 {{{
 ofy().execute(TxnType.REQUIRED, new VoidWork() {
     public void vrun() {
-        Thing thing = ofy().load().key(thingKey);
+        Thing thing = ofy().load().key(thingKey).get();
         thing.modify();
         ofy().save().entity(thing);
     }
