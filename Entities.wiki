@@ -429,7 +429,7 @@ Each Car entity is part of the parent owner's entity group.  Important things to
   * Along with the {{{@Id}}} and kind, the {{{@Parent}}} field defines the key (identity) of the entity.
     * Construct a key to the car like this:  {{{Key.create(ownerKey, Car.class, carId)}}}
   * The name of the field is irrelevant and can be changed at any time without modifying stored data.
-  * The {{{@Parent}}} field can be {{{Key}}}, {{{Key<?>}}}, {{{Ref<?>}}}, or concrete entity reference.
+  * The {{{@Parent}}} field can be {{{Key}}}, {{{Key<?>}}}, or {{{Ref<?>}}}.
   * @Load annotations work with {{{Ref<?>}}}s.  As a bonus, the parent will be loaded in the same batch as the initial load.
 
 Note that this example is an inappropriate use of the @Parent entity; if a car were to be sold to a new owner, you would need to delete the Car and create a new one.  It is often better to use simple nonparent key references even when there is a conceptual parent-child or owner-object relationship; in that case you could simply change the owner.
@@ -448,7 +448,7 @@ public class Employee {
 }
 }}}
 
-This works with {{{Key}}}s, {{{Key<?>}}}s, {{{Ref<?>}}}s, and concrete entity references.  You can use {{{@Load}}} annotations.
+This works with {{{Key}}}s, {{{Key<?>}}}s, and {{{Ref<?>}}}s.  You can use {{{@Load}}} annotations with {{{Ref<?>}}}s.
 
 There are some considerations:
 
