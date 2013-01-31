@@ -168,7 +168,7 @@ List<Car> range = ofy().load().filterKey(">=", startKey).filterKey("<", endKey).
 Iterable<Key<Car>> allKeys = ofy().load().type(Car.class).keys();
 
 // Useful for deleting items
-ofy().delete(allKeys);
+ofy().delete().keys(allKeys);
 }}}
 
 {{{Query}}} objects are immutable.  You can build them up:
@@ -326,4 +326,3 @@ Filtering works for embedded collections just as it does for normal collections:
 {{{
 ofy().load().type(EntityWithEmbeddedCollection.class).filter("ones.two.bar =", "findthis");
 }}}
-
