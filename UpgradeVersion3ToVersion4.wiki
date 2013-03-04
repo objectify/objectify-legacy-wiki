@@ -32,6 +32,10 @@ v4 requires the {{{@Entity}}} annotation on all classes which will be registered
 
 Eclipse should now highlight all the problem annotations in your project.  See DesignObjectify4 for a mapping of old-to-new annotations.
 
+=== Add indexes ===
+
+Objectify3 indexed all properties by default. Objectify4 inverts this; all properties are *NOT* indexed by default. You must specify {{{@Index}}} on all fields you want indexed. You can place this annotation on the class to index all properties by default; use {{{@Unindex}}} on fields to stop indexing them.
+
 == Add {{{ObjectifyFilter}}} ==
 
 v4 requires a servlet filter on requests that use Objectify.  See [Setup].
