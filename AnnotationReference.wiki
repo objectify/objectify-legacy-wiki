@@ -137,10 +137,9 @@ class Employee {
   * See LifecycleCallbacks
 
 == @com.googlecode.objectify.annotation.Load ==
-  * Placed on entity fields of type {{{Ref<?>}}} or concrete entity reference
+  * Placed on entity fields of type {{{Ref<?>}}}
   * Causes the referenced entity to be loaded automatically
-  * When placed on a {{{Ref<?>}}} field, allows load groups to be specified
-  * Load groups cannot be specified on concrete entity references
+  * Load groups can be specified to limit when loading occurs
   * See [http://code.google.com/p/objectify-appengine/wiki/Entities#Relationships Relationships]
 
 == @com.googlecode.objectify.annotation.Mapify ==
