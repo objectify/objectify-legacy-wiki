@@ -109,7 +109,7 @@ Thing th =      ofy().load().type(Thing.class).id(123L).get();
 Ref<Thing> th = ofy().load().type(Thing.class).parent(par).id(123L);
 
 // Batch get, asynchrony is hidden behind Map
-Map<Key<Thing>, Thing> ths = ofy().load().type(Thing.class).ids(123L, 456L, 789L);
+Map<Long, Thing> ths = ofy().load().type(Thing.class).ids(123L, 456L, 789L);
 }}}
 
 == Load Groups ==
@@ -193,7 +193,7 @@ public class Thing {
 
 Thing th = new Thing();
 
-Result<Thing> result = ofy().save().entity(th);
+Result<Key<Thing>> result = ofy().save().entity(th);
 assert th.id == null;    // It has not been generated yet!
 result.now();
 assert th.id != null;    // Now the id is available
