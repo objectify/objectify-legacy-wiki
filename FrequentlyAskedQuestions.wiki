@@ -5,6 +5,36 @@
 
 = Frequently Asked Questions =
 
+== Why aren't my queries working properly? ==
+
+All of Objectify's intermediate command objects are immutable. This will not work:
+{{{
+Query<Foo> q = ofy().load().type(Foo.class);
+q.filter("bar", bar);
+List<Foo> foos = q.list();
+}}}
+
+The filter command did nothing because you did not reassign {{{q}}}. You need this:
+
+{{{
+q = q.filter("bar", bar);
+}}}
+
+Alternatively, chain the whole sequence in a single statement.  [https://code.google.com/p/objectify-appengine/wiki/Queries#Executing_Queries Read more here.]
+
+== Strange things are showing up in my session cache! ==
+This is almost always caused by one of two problems:
+
+ * You did not enable the {{{ObjectifyFilter}}} in your web.xml. You must install this filter.
+ * You are sharing an {{{Objectify}}} instance across threads. {{{Objectify}}} instances represent a single session of work and are not thread-safe.
+
+Make sure the {{{ObjectifyFilter}}} is installed, and always use the static {{{ofy()}}} method whenever you perform Objectify operations. If you never hold on to an {{{Objectify}}} reference, you will not get into trouble.
+
+== Will GAE complete my asynchronous operations if I don't call now()? ==
+Yes. GAE completes all asynchronous operations at the end of the request. This means your request will block until they finish; async operations are not a way of getting around the 60s request deadline.
+
+Also, asynchronous operations are completed at the time of transaction commit.
+
 == Why am I getting NoSuchMethodError exceptions on GAE classes? ==
 You probably are running an old version of the Google App Engine SDK; check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
 
