@@ -150,7 +150,7 @@ List<Car> cars = ofy().load().type(Car.class).filter("year !=", 1999).list();
 List<Car> cars = ofy().load().type(Car.class).filter("year in", yearList).list();
 
 // No operator means ==
-Car car = ofy().load().type(Car.class).filter("vin", "123456789").first().get();
+Car car = ofy().load().type(Car.class).filter("vin", "123456789").first().now();
 
 // The Query itself is Iterable
 Query<Car> q = ofy().load().type(Car.class).filter("vin >", "123456789");
@@ -171,7 +171,7 @@ Iterable<Key<Car>> allKeys = ofy().load().type(Car.class).keys();
 ofy().delete().keys(allKeys);
 }}}
 
-{{{Query}}} objects are immutable.  You can build them up:
+*{{{Query}}} objects are immutable*.  You can build them up by reassigning the variable:
 
 {{{
 Query<Car> q = ofy().load().type(Car.class);
