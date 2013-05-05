@@ -18,7 +18,7 @@
     * Fine tuning with easy-to-use fetch groups (not JDO fetch groups!)
   * Use interfaces to hide asynchrony from client
     * *Everything* should be asynchronous!
-  * Use Ref<?> when asynchrony cannot be hidden (ie, returning concrete classes)
+  * Use Result<?> when asynchrony cannot be hidden (ie, returning concrete classes)
   * Consistent interface for batch get vs filtering
   * All core config/command objects are immutable
   * Fix poor initial design decisions
@@ -68,6 +68,8 @@ interface SaveLifecycle<T> {
 
 Since all such objects are created with the overridable method ObjectFactory.create(), it's easy to pull these from Guice.
 
+Note: lifecycle delegates have not been implemented yet.
+
 = Example of class with fetching =
 {{{
 class Beastie {
@@ -76,12 +78,14 @@ class Beastie {
 
    @Parent
    @Load
-   ParentThing parent;
+   Ref<ParentThing> parent;
 
    @Id Long id;
 
+   // Note these direct entity references are not implemented yet
+   @Reference
    SomeThing some;    // implies @Load
-
+   @Reference
    List<OtherThing> others;    // implies @Load
 
    @Load({BigGroup.class, SmallGroup.class})
@@ -103,29 +107,28 @@ class Ref<T> {
 
 = API examples =
 {{{
-// Simple fetch of refs
-ofy.load().refs(ref1, ref2);	// void
+// Note LoadResult<T> extends Result<T>, adds safe() and other methods
 
 // Simple key fetch, always async
-Ref<Thing> th = ofy.load().key(thingKey);
-Thing th =      ofy.load().key(thingKey).get();
-Thing th =      ofy.load().key(thingKey).safeGet();	// throws NotFoundException
+LoadResult<Thing> th = ofy.load().key(thingKey);
+Thing th =      ofy.load().key(thingKey).now();
+Thing th =      ofy.load().key(thingKey).safe();	// throws NotFoundException
 
-Ref<Thing> th = ofy.load().entity(entity);	// Fetching "unfetched" entities
-Ref<Thing> th = ofy.load().value(rawKey);	// "anything" including raw datastore keys, Key<?>s, Ref<?>s, entities, etc
+LoadResult<Thing> th = ofy.load().entity(entity);	// Fetching "unfetched" entities
+LoadResult<Thing> th = ofy.load().value(rawKey);	// "anything" including raw datastore keys, Key<?>s, Ref<?>s, entities, etc
 
 // With a fetch group - fetch groups are arbitrary marker classes
-Thing th = ofy.load().group(SomeGroup.class).key(thingKey).get();
+Thing th = ofy.load().group(SomeGroup.class).key(thingKey).now();
 
 // Multi get is async, hides asynchrony behind Map interface
 Map<Key<Thing>, Thing> ths = ofy.load().keys(thingKey1, thingKey2, thingKey3);	
 
 // Fetching by id
-Ref<Thing> th = ofy.load().type(Thing.class).id(123L);
-Thing th =      ofy.load().type(Thing.class).id(123L).get();
+Result<Thing> th = ofy.load().type(Thing.class).id(123L);
+Thing th =      ofy.load().type(Thing.class).id(123L).now();
 
 // With a parent
-Ref<Thing> th = ofy.load().type(Thing.class).parent(par).id(123L);
+Result<Thing> th = ofy.load().type(Thing.class).parent(par).id(123L);
 
 // Batch get, asynchrony is hidden behind Map
 Map<Key<Thing>, Thing> ths = ofy.load().type(Thing.class).ids(123L, 456L);
@@ -133,26 +136,20 @@ Map<Key<Thing>, Thing> ths = ofy.load().type(Thing.class).ids(123L, 456L);
 // Queries (asynchrony hidden of course)
 QueryResultIterable<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys().iterable();
 QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).iterable();
-QueryResultIterable<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().asEntities().iterable();  // unfetched entities
 
 // Getting query results as a List
 List<Key<Thing>> ths =  ofy.load().type(Thing.class).filter("foo", foo).keys().list();
 List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).list();
-List<Thing> ths =       ofy.load().type(Thing.class).filter("foo", foo).keys().asEntities().list();  // unfetched entities
 
 // Get first item whole
-Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
-Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().key();
-Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first().safeKey();	// throws NotFoundException
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().get();
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).first().safeGet();	// throws NotFoundException
+LoadResult<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).first();
+Thing th =       ofy.load().type(Thing.class).filter("foo", foo).first().now();
+Thing th =       ofy.load().type(Thing.class).filter("foo", foo).first().safe();	// throws NotFoundException
 
 // Get first item but only the key; the entity will have id/parent but otherwise be unintialized
-Ref<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first();
-Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().key();
-Key<Thing> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().safeKey();	// throws NotFoundException
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().get();
-Thing th =      ofy.load().type(Thing.class).filter("foo", foo).keys().first().safeGet();	// throws NotFoundException
+LoadResult<Key<Thing>> th = ofy.load().type(Thing.class).filter("foo", foo).keys().first();
+Key<Thing>       th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().now();
+Key<Thing>       th = ofy.load().type(Thing.class).filter("foo", foo).keys().first().safe();	// throws NotFoundException
 
 // Query with fetch group
 QueryResultIterable<Thing> ths = ofy.load().group(SomeGroup.class).type(Thing.class).filter("foo", foo).iterable();
@@ -165,17 +162,3 @@ ofy.save().entities(e1, e2, e3).now();	// synchronous
 ofy.delete().keys(e1, e2, e3);		// asynchronous
 ofy.delete().keys(e1, e2, e3).now();	// synchronous
 }}}
-
-== Convenience Aliases ==
-
-Is it worth adding convenience aliases for commonly-used methods?
-
-{{{
-Thing th = ofy.load(thingKey);	// same as ofy.load().key(thingKey).get();
-ofy.save(thing1, thing2);	// same as ofy.save().entities(thing1, thing2).now();
-ofy.delete(thingKey1, thingKey2);	// same as ofy.delete().keys(thing1, thing2).now();
-}}}
-
-If so, which aliases?
-
-Maybe not... instead, Best Practices will have a section explaining how you can add these methods to your own Objectify interface by subclassing ObjectifyWrapper.
