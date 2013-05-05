@@ -109,7 +109,7 @@ nyan.hypoallergenic = true;
 ofy().save().entity(nyan).now();
 
 // This will return the Cat
-Animal fetched = ofy().load().type(Animal.class).id(nyan.id).get();
+Animal fetched = ofy().load().type(Animal.class).id(nyan.id).now();
 
 // This query will produce three objects, the Animal, Mammal, and Cat
 Query<Animal> all = ofy().load().type(Animal.class);
@@ -332,7 +332,7 @@ You can change the type of the {{{other}}} field at any time, even after data is
 
 === {{{Ref<?>}}}s ===
 
-Even {{{Key<?>}}}s are not very convenient when you are working with graphs of entities.  Objectify provides {{{Ref<?>}}}, which works just like a {{{Key<?>}}} but can hold a reference to the actual entity object as well:
+Even {{{Key<?>}}}s are not very convenient when you are working with graphs of entities.  Objectify provides {{{Ref<?>}}}, which works just like a {{{Key<?>}}} but allows you to directly access the actual entity object as well:
 
 {{{
 import com.googlecode.objectify.Ref;
@@ -347,8 +347,7 @@ Car car = new Car();
 car.driver = Ref.create(driverKey);
 ofy().save().entity(car).now();
 
-Car fetched = ofy().load().entity(car).get();
-ofy().load().ref(fetched.driver);
+Car fetched = ofy().load().entity(car).now();
 Person driver = fetched.driver.get();
 }}}
 
@@ -357,6 +356,8 @@ Person driver = fetched.driver.get();
 This provides a nice consistent structure for your object graph, but it's still clunky.  {{{Ref<?>}}} works best in concert with the {{{@Load}}} annotation.
 
 ==== {{{@Load}}} ====
+
+In the above example, the {{{fetched.driver.get()}}} caused an immediate fetch from the datastore. This could be a performance problem if you are iterating through lots of Cars loading their drivers; each driver fetch would be a separate request. By using the {{{@Load}}} annotation, you can load drivers into the session efficiently:
 
 {{{
 import com.googlecode.objectify.annotation.Load;
