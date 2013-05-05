@@ -17,7 +17,7 @@ All datastore operations begin with an instance of {{{Objectify}}} ([http://obje
 The preferred way to obtain an {{{Objectify}}} instance is to call a static method:
 
 {{{
-Thing th = ObjectifyService.ofy().load().key(thingKey).get();
+Thing th = ObjectifyService.ofy().load().key(thingKey).now();
 }}}
 
 To keep the typing to a minimum, we recommend a [http://code.google.com/p/objectify-appengine/wiki/Setup#Enable_static_imports_in_Eclipse static import]:
@@ -25,7 +25,7 @@ To keep the typing to a minimum, we recommend a [http://code.google.com/p/object
 {{{
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-Thing th = ofy().load().key(thingKey).get();
+Thing th = ofy().load().key(thingKey).now();
 }}}
 
 {{{ObjectifyService.ofy()}}} will always return the correct instance for your thread and transaction context and provides you with an "always available" persistence context without having to pass extra parameters to your business methods.  The instance returned by {{{ofy()}}} will change when you enter and exit transactions.  Be sure to install the {{{ObjectifyFilter}}} so that the last instance is cleaned up at the end of a request.
@@ -56,15 +56,15 @@ Consistently using {{{ofy()}}} eliminates potential confusion when working with 
 Any given {{{Objectify}}} instance has immutable state, but methods can be called to create new {{{Objectify}}} instances with different parameters:
 
 {{{
-th = ofy().deadline(2).load().key(thingKey);
-th = ofy().cache(false).load().key(thingKey);
-th = ofy().deadline(2).cache(false).load().key(thingKey);
-th = ofy().load().key(thingKey);    // still has default deadline and cache policy
+th = ofy().deadline(2).load().key(thingKey).now();
+th = ofy().cache(false).load().key(thingKey).now();
+th = ofy().deadline(2).cache(false).load().key(thingKey).now();
+th = ofy().load().key(thingKey).now();    // still has default deadline and cache policy
 
 // You can hold on to these immutable objects
 Objectify shortDeadline = ofy().deadline(2);
-th = shortDeadline.consistency(Consistency.EVENTUAL).load().key(thingKey);
-th = shortDeadline.load().key(thingKey);    // still has default of STRONG
+th = shortDeadline.consistency(Consistency.EVENTUAL).load().key(thingKey).now();
+th = shortDeadline.load().key(thingKey).now();    // still has default of STRONG
 }}} 
 
 == The Session Cache ==
@@ -81,20 +81,20 @@ ofy().clear();
 
 = Loading =
 
-{{{Objectify}}} provides a variety of ways to load entities from the datastore.  They all begin with a command chain started by {{{load()}}}.  Note that all operations are asynchronous until you manifest an actual entity POJO; all the {{{Map}}}, {{{List}}}, and {{{Ref}}} interfaces hide the asynchrony.
+{{{Objectify}}} provides a variety of ways to load entities from the datastore.  They all begin with a command chain started by {{{load()}}}.  Note that all operations are asynchronous until you manifest an actual entity POJO; all the {{{Map}}}, {{{List}}}, and {{{Result}}} interfaces hide the asynchrony.
 
 This covers the type of requests that all translate into a get-by-key in the datastore.  For another way to load data, see [Queries].
 
 {{{
 // Simple key fetch, always asynchronous
-Ref<Thing> th = ofy().load().key(thingKey);
+Result<Thing> th = ofy().load().key(thingKey);
 
 // Usually you don't need async, so call through the Ref<?>
-Thing th =      ofy().load().key(thingKey).get();         // return null if not found
-Thing th =      ofy().load().key(thingKey).safeGet();     // throws NotFoundException
+Thing th =      ofy().load().key(thingKey).now();         // return null if not found
+Thing th =      ofy().load().key(thingKey).safe();        // throws NotFoundException
 
-Ref<Thing> th = ofy().load().entity(entity);  // Equivalent to ofy().load().key(get_key_of(entity));
-Ref<Thing> th = ofy().load().value(rawKey);   // Accepts anything key-like; Key, Key<?>, Ref<?>, etc.
+Result<Thing> th = ofy().load().entity(entity);  // Equivalent to ofy().load().key(get_key_of(entity));
+Result<Thing> th = ofy().load().value(rawKey);   // Accepts anything key-like; Key, Key<?>, Ref<?>, etc.
 
 // Multi get is async, hides asynchrony behind Map interface
 Map<Key<Thing>, Thing> ths = ofy().load().keys(thingKey1, thingKey2, thingKey3);	
@@ -102,11 +102,11 @@ Map<Key<Thing>, Thing> ths = ofy().load().keys(iterableOfKeys);
 // There are also entities() and values() methods
 
 // Fetching by id - this is really just syntactic sugar for get-by-key
-Ref<Thing> th = ofy().load().type(Thing.class).id(123L);
-Thing th =      ofy().load().type(Thing.class).id(123L).get();
+Result<Thing> th = ofy().load().type(Thing.class).id(123L);
+Thing th =      ofy().load().type(Thing.class).id(123L).now();
 
 // With a parent
-Ref<Thing> th = ofy().load().type(Thing.class).parent(par).id(123L);
+Result<Thing> th = ofy().load().type(Thing.class).parent(par).id(123L);
 
 // Batch get, asynchrony is hidden behind Map
 Map<Long, Thing> ths = ofy().load().type(Thing.class).ids(123L, 456L, 789L);
@@ -128,10 +128,10 @@ public class Thing {
 }
 
 // Doesn't load other
-Thing th = ofy().load().key(thingKey).get();
+Thing th = ofy().load().key(thingKey).now();
 
 // Does load other
-Thing th = ofy().load().group(Everything.class).key(thingKey).get();
+Thing th = ofy().load().group(Everything.class).key(thingKey).now();
 }}}
 
 Here is a more complicated example:
@@ -150,16 +150,16 @@ public class Thing {
 }
 
 // Loads 'unlessStopper' but not 'withPartial' or 'withEveryhthing'
-Thing th = ofy().load().key(thingKey).get();
+Thing th = ofy().load().key(thingKey).now();
 
 // Loads 'withPartial' and 'unlessStopper' but not 'withEveryhthing'
-Thing th = ofy().load().group(Partial.class).key(thingKey).get();
+Thing th = ofy().load().group(Partial.class).key(thingKey).now();
 
 // Loads all three because Everything extends Partial
-Thing th = ofy().load().group(Everything.class).key(thingKey).get();
+Thing th = ofy().load().group(Everything.class).key(thingKey).now();
 
 // Loads 'withPartial' and 'withEveryhthing' but not 'unlessStopper'
-Thing th = ofy().load().group(Everything.class, Stopper.class).key(thingKey).get();
+Thing th = ofy().load().group(Everything.class, Stopper.class).key(thingKey).now();
 }}}
 
 You can combine required and 'unless', and also specify multiple groups:
