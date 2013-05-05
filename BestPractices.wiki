@@ -66,7 +66,7 @@ When Objectify tries to reconstitute an object of type ThingA, it won't be able 
 
 Most J2EE-style frameworks, including Appengine's JDO/JPA system, do classpath scanning and can automatically register classes that have @Entity or other relevant annotations.  This is convenient and could easily be added to Objectify without changing a single source file.  There are, however, several reasons why this isn't part of the core:
 
-  # This feature requires either [http://scannotation.sourceforge.net/ Scannotations] or [http://code.google.com/p/reflections/ Reflections], bringing in 5-6 dependency jars.  Objectify requires zero dependency jars, and we are loathe to change that.
+  # This feature requires either [http://scannotation.sourceforge.net/ Scannotations] or [http://code.google.com/p/reflections/ Reflections], bringing in 5-6 dependency jars.
   # Developers would need to add a startup hook to your web.xml (a ServletContextListener) in order to trigger this scanning.
   # Classpath scanning is *slow* because it opens each .class and .jar file in your project and processes every single class file with a bytecode manipulator.  For a moderately sized project this easily adds 3-5 seconds to your application initialization time.  That's 3-5 additional seconds that real-world users must sit waiting while your application cold-starts.
 
