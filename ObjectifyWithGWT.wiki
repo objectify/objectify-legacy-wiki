@@ -42,7 +42,7 @@ See [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d
 
 {{{Ref<?>}}} objects are special. When they are serialized from the server to the client, they are disconnected from the "live" database and converted to a simple key, value pair. The value will be present only if the Ref<?> was loaded (see {{{Ref.isLoaded()}}}), otherwise it will be null. This allows you to send object graphs from server to client.
 
-However, because of limitations in GWT (please star [https://code.google.com/p/google-web-toolkit/issues/detail?id=3303 this issue], Ref<?> value pairs cannot survive the roundtrip *back* to the server. Passing an object graph from server to client, letting the client modify the graph, and posting it back to the server will not work.
+However, because of limitations in GWT (please star [https://code.google.com/p/google-web-toolkit/issues/detail?id=3303 this issue]), Ref<?> value pairs cannot survive the roundtrip *back* to the server. Passing an object graph from server to client, letting the client modify the graph, and posting it back to the server will not work.
 
 == Example ==
 
