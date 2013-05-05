@@ -4,7 +4,7 @@
 
 = Add {{{objectify.jar}}} and {{{guava.jar}}} to your project =
 
-Add {{{objectify-N.N.N.jar}}} and {{{guava-N.N.N.jar}}} to your project's WEB-INF/lib directory. [Google Guava https://code.google.com/p/guava-libraries/] provides a number of incredibly useful classes that you should be using in your project anyways.
+Add {{{objectify-N.N.N.jar}}} and {{{guava-N.N.N.jar}}} to your project's WEB-INF/lib directory. [https://code.google.com/p/guava-libraries/ Google Guava] provides a number of incredibly useful classes that you should be using in your project anyways.
 
 If you use Maven, see the MavenRepository.
 
