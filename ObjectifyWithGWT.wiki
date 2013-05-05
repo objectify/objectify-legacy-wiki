@@ -32,11 +32,17 @@ In general GWT will ignore annotation on your classes. It is not necessary to in
  
 Annotations like {{{@Entity}}}, {{{@AlsoLoad}}}, and the like will be ignored during GWT serialization. 
 
-== Client-Side Access ==
+== Limitations ==
 
-None of the Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, etc) can be used from GWT client code. Basically only entities and their associated data (types) are allowed to cross the GWT service boundaries.
+The Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, etc) cannot be used from GWT client code. Only POJOs (eg, entities and their associated data) are allowed to cross the GWT service boundaries.
 
-Note:  Creating {{{Key<?>}}} objects client-side is difficult.  You can only use one constructor, the one which takes a native datastore {{{Key}}}.  The other constructors do not exist in the {{{Key<?>}}} super-source.  See [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d6171c6a4956719/2d5004df1d7e20ee?hl=en_US&lnk=gst&q=polymorphism+gwt&pli=1#2d5004df1d7e20ee this discussion].
+Creating {{{Key<?>}}} objects client-side is difficult.  You can only use one constructor, the one which takes a native datastore {{{Key}}}.  The other constructors do not exist in the {{{Key<?>}}} super-source.  The problem is that key-related metadata is stored in annotations, but annotations are transparent to GWT. If you absolutely need to construct {{{Key<?>}}} objects client-side, you can construct a native datastore {{{Key}}} from the {{{KeyFactory}}} and use that to construct {{{Key<?>}}}.
+
+See [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d6171c6a4956719/2d5004df1d7e20ee?hl=en_US&lnk=gst&q=polymorphism+gwt&pli=1#2d5004df1d7e20ee this discussion].
+
+{{{Ref<?>}}} objects are special. When they are serialized from the server to the client, they are disconnected from the "live" database and converted to a simple key, value pair. The value will be present only if the Ref<?> was loaded (see {{{Ref.isLoaded()}}}), otherwise it will be null. This allows you to send object graphs from server to client.
+
+However, because of limitations in GWT (please star [https://code.google.com/p/google-web-toolkit/issues/detail?id=3303 this issue], Ref<?> value pairs cannot survive the roundtrip *back* to the server. Passing an object graph from server to client, letting the client modify the graph, and posting it back to the server will not work.
 
 == Example ==
 
