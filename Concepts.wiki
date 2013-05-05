@@ -54,7 +54,7 @@ Map<Key<Object>, Object> lotsOfThings = ofy().load().keys(carKey, airplaneKey, c
 Actually, I lied again.  We don't force you to create keys by hand all the time.  There is a convenient shorthand for the very common case of loading a single type of object, but don't forget that this is really just creating an {{{Key}}} and get()ing it under the covers!
 
 {{{
-Car c = ofy().load().type(Car.class).id(959).get();
+Car c = ofy().load().type(Car.class).id(959).now();
 Map<Long, Car> cars = ofy().load().type(Car.class).ids(959, 911, 944, 924);
 }}}
 
