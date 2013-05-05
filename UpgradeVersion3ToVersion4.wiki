@@ -101,7 +101,7 @@ UGLY!  Objectify v4 has a much more concise syntax for [Transactions]:
 {{{
 ofy().transact(new VoidWork() {
     public void vrun() {
-        ClubMembers cm = ofy().load().type(ClubMembers.class).id("k123").get()
+        ClubMembers cm = ofy().load().type(ClubMembers.class).id("k123").now()
         cm.incrementByOne();
         ofy().save().entity(cm);
     }
