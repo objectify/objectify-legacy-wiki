@@ -384,7 +384,7 @@ ofy().load().keys(car1, car2, car3);
 
 This will produce one round of batch fetching for the cars, plus one round of batch fetching for all the drivers, plus one round of fetching for any {{{@Load}}} fields in all the drivers... and on.  Objectify is also smart about not re-fetching anything that has already been fetched in an earlier cycle.  This optimized behavior is very hard to write by hand.
 
-Often you will not wish to {{{@Load}}} every entity relationship every time.  {{{@Load}}} provides the ability to specify conditional _load groups_.  See <insert reference to load group section> for more.
+Often you will not wish to {{{@Load}}} every entity relationship every time.  {{{@Load}}} provides the ability to specify conditional _load groups_.  See [https://code.google.com/p/objectify-appengine/wiki/BasicOperations#Load_Groups Load Groups] for more.
 
 ==== Hiding Ref<?> ====
 
