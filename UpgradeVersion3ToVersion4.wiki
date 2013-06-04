@@ -10,7 +10,7 @@ The steps:
 
 == Replace the Objectify3 jar with the Objectify4 jar ==
 
-Be absolutely certain that the Objectify3 jar is no longer on your classpath.
+Be absolutely certain that the Objectify3 jar is no longer on your classpath. Also make sure the Google guava jar is available.
 
 == Completely remove JDO & JPA ==
 
