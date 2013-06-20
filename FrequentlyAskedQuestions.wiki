@@ -5,7 +5,7 @@
 
 = Frequently Asked Questions =
 
-== NoSuchMethodError?!? ==
+== {{{NoSuchMethodError}}}?!? ==
 
 This is almost always a result of having the wrong (or a duplicate) jar in your classpath. Ensure that you have one and only one {{{objectify.jar}}} on your classpath, that it is the correct version, and that you are running against the correct minimum version of the Google App Engine SDK.  Check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
 
