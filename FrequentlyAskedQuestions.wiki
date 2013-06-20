@@ -5,6 +5,12 @@
 
 = Frequently Asked Questions =
 
+== NoSuchMethodError?!? ==
+
+This is almost always a result of having the wrong (or a duplicate) jar in your classpath. Ensure that you have one and only one {{{objectify.jar}}} on your classpath, that it is the correct version, and that you are running against the correct minimum version of the Google App Engine SDK.  Check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
+
+Also be sure that you have the {{{guava.jar}}} dependency on your classpath.
+
 == Why aren't my queries working properly? ==
 
 All of Objectify's intermediate command objects are immutable. This will not work:
@@ -34,9 +40,6 @@ Make sure the {{{ObjectifyFilter}}} is installed, and always use the static {{{o
 Yes. GAE completes all asynchronous operations at the end of the request. This means your request will block until they finish; async operations are not a way of getting around the 60s request deadline.
 
 Also, asynchronous operations are completed at the time of transaction commit.
-
-== Why am I getting NoSuchMethodError exceptions on GAE classes? ==
-You probably are running an old version of the Google App Engine SDK; check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
 
 == Can I use Dependency Injection (Spring, Guice, Weld) with Objectify? ==
 Yes!  Objectify is designed to integrate with DI systems and can even use injectors to create entities and internal classes.  See ObjectifyWithGuice for an overview, even if you aren't using Guice.
