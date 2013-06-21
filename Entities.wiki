@@ -401,6 +401,12 @@ class Car {
 }
 }}}
 
+==== Additional Ref<?> Considerations ====
+
+{{{Ref<?>}}} is a reference to a key, but does not itself hold an instance to an entity. {{{Ref<?>}}}s link to the current session; calling {{{get()}}} loads the referenced entity out of the session (loading from the datastore if necessary). Think of them as "live" connections to the datastore; if you load a {{{Ref<?>}}}, then {{{ofy().delete()}}} the referenced entity, the next call to {{{Ref<?>.get()}}} will return null.
+
+There is an exception to this: If you serialize a {{{Ref<?>}}} (either with Java serialization or GWT-RPC), it becomes a "dead" holder of the referenced entity.
+
 === @Parent Relationships ===
 
 Parent relationships are described in [Concepts].  Objectify models them with the {{{@Parent}}} annotation:
