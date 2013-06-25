@@ -118,7 +118,7 @@ Query<Animal> all = ofy().load().type(Animal.class);
 Query<Mammal> mammals = ofy().load().type(Mammal.class);
 }}}
 
-=== Native Representation ===
+=== Polymorphism Native Representation ===
 
 When you store a polymorphic entity subclass your entity is stored with two additional, hidden synthetic properties:
 
@@ -183,7 +183,7 @@ Some things to keep in mind:
   * You can, however, nest {{{@Embed}}} arrays/collections inside any number of {{{@Embed}}} classes.
   * You should initialize collections.  Null or empty collections are not written to the datastore and therefore get ignored during load.  Furthermore, the concrete instance will be used as-is, allowing you to initialize collections with Comparators or other state.
  
-=== Native Representation ===
+=== Embedding Native Representation ===
 
 You may wish to know how {{{@Embed}}} classes are persisted so that you an access them through the Low-Level API.  Here is an example, given the example data structures specified above.
 
