@@ -72,7 +72,7 @@ q = q.filter("foo", foo);
 q = q.limit(10);
 
 // More likely, you will do this:
-Query<Thing> q = ofy().type(Thing.class).filter("foo", foo).limit(10);
+Query<Thing> q = ofy().load().type(Thing.class).filter("foo", foo).limit(10);
 }}}
 
 == New transaction syntax ==
