@@ -19,7 +19,7 @@
     * [DesignObjectify4 Design of Objectify 4]
     * [UpgradeVersion3ToVersion4]
   * [Examples]
-  * [http://objectify-appengine.googlecode.com/git/javadoc/index.html API Javadoc]
+  * [http://docs.objectify-appengine.googlecode.com/git/apidocs/index.html API Javadoc]
   * [ReleaseNotes Release Notes]
   * [BestPractices Best Practices]
   * [FrequentlyAskedQuestions Frequently Asked Questions]
