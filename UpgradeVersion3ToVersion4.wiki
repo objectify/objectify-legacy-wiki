@@ -6,6 +6,8 @@ Objectify v4 is a major departure from v3 with very significant, non-backwards-c
 
 *Note:* If you have any problems upgrading, post to the [http://groups.google.com/group/objectify-appengine Objectify Google Group].  We will update this document.
 
+See [https://github.com/stickfigure/motomapia Motomapia] for a real-world example.
+
 The steps:
 
 == Replace the Objectify3 jar with the Objectify4 jar ==
@@ -113,3 +115,7 @@ Note that Ofy4 transactions are retried on optimistic concurrency failure ({{{Co
 Also note that the {{{Objectify}}} returned by {{{ofy()}}} will be a different instance inside and outside the transaction.
 
 Please read [Transactions] carefully, especially the section WRT transaction inheritance.  This is one of the most powerful features of Objectify4, and provides almost EJB-like transaction semantics.
+
+== Wrappers ==
+
+Objectify used to provide Wrapper classes (ObjectifyWrapper, LoaderWrapper, etc) which provided a very complicated mechanism for adding your own behavior. These have been removed; instead simply extend ObjectifyImpl, LoaderImpl, etc directly and add/override the behavior you want. This is much simpler.
