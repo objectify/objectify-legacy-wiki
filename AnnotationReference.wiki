@@ -2,7 +2,7 @@
 
 = Example =
 {{{
-@Cach(expirationSeconds=600)
+@Cache(expirationSeconds=600)
 @Entity(name="Emp")
 @Index // or @Unindex sets default for fields in class; if neither specified, default is @Unindex
 class Employee {
