@@ -249,19 +249,19 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
 
     String cursorStr = request.getParameter("cursor");
     if (cursorStr != null)
-        query = query.startCursor(Cursor.fromWebSafeString(cursorStr));
+        query = query.startAt(Cursor.fromWebSafeString(cursorStr));
 
-    boolean continue = false;
+    boolean continu = false;
     QueryResultIterator<Car> iterator = query.iterator();
     while (iterator.hasNext()) {
         Car car = iterator.next();
 
         ... // process car
 
-        continue = true;
+        continu = true;
     }
 
-    if (continue) {
+    if (continu) {
         Cursor cursor = iterator.getStartCursor();
         Queue queue = QueueFactory.getDefaultQueue();
         queue.add(url("/pathToThisServlet").param("cursor", cursor.toWebSafeString()));
