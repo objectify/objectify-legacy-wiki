@@ -218,4 +218,6 @@ You can find a working example of this in the [http://www.motomapia.com/ Motomap
 
 = Transactions with Spring =
 
-TODO:  How to integrate Spring's transaction system, or link to a project that does.
+Here is an example of how to create a transactional aspect using Spring AOP:
+
+https://github.com/dajudge/appengine-objectify-spring-transactions-example
