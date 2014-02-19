@@ -286,17 +286,17 @@ public class AppEngineTransactionManager {
 Secondly, one has to declare the _aspect_ with the _around advice_ in the Spring configuration:
 
 {{{
-    <!-- The bean that will be used for AOP advice -->
-    <bean id="appEngineTransactionManager" class="com.example.AppEngineTransactionManager"/>
+<!-- The bean that will be used for AOP advice -->
+<bean id="appEngineTransactionManager" class="com.example.AppEngineTransactionManager"/>
 
-    <aop:config>
-        <aop:aspect ref="appEngineTransactionManager">
-            <!-- Match all methods of all classes ending with Worker -->
-            <aop:pointcut id="workMethod" expression="execution(* *..*Worker.*(..))"/>
-            <!-- Invoke the around advice whenever the pointcut matches -->
-            <aop:around pointcut-ref="workMethod" method="transactNew"/>
-        </aop:aspect>
-    </aop:config>
+<aop:config>
+    <aop:aspect ref="appEngineTransactionManager">
+        <!-- Match all methods of all classes ending with Worker -->
+        <aop:pointcut id="workMethod" expression="execution(* *..*Worker.*(..))"/>
+        <!-- Invoke the around advice whenever the pointcut matches -->
+        <aop:around pointcut-ref="workMethod" method="transactNew"/>
+    </aop:aspect>
+</aop:config>
 }}}
 
 A working prototype can be found here: 
