@@ -218,6 +218,86 @@ You can find a working example of this in the [http://www.motomapia.com/ Motomap
 
 = Transactions with Spring =
 
-Here is an example of how to create a transactional aspect using Spring AOP:
+With Spring AOP transaction management can be implemented as a cross-cutting _aspect_ to be applied to  [http://docs.spring.io/spring/docs/2.0.x/reference/aop.html point-cuts] in the application. 
 
+Imagine you have the following test worker, for which you want all methods to run in a separate transaction:
+
+{{{
+@Component
+public class TestWorker {
+    public void doSomething() {
+    	ofy().save().entity(new TestEntity(id)).now();
+   }
+    public TestEntity doSomethingElse() {
+    	return ofy().load().key(testKey).now();
+   }
+   ...
+}
+}}}
+
+When injecting the bean:
+
+{{{
+@Resource
+private TestWorker testWorker;
+}}}
+
+For every method call, a new transaction should be opened:
+
+{{{
+testWorker.doSomething();
+
+testWorker.doSomethingElse();
+}}}
+
+To achieve this, two things need to be done: firstly, one has to implement an _around advice_ in order to wrap every method invocation in a {{{Work}}} instance and execute it with {{{ofy().transactNew()}}}:
+
+{{{
+public class AppEngineTransactionManager {
+
+    public Object transactNew(final ProceedingJoinPoint joinpoint) throws Throwable {
+        try {
+            return ofy().transactNew(new Work<Object>() {
+		             
+                public Object run() {
+                    try {
+                        /** The methods will be executed in the transactNew() method*/
+                        return joinpoint.proceed();
+                    } catch (Throwable t) {
+                        /** Don't forget to wrap checked exceptions that go through the Work interface */
+                        throw new ExceptionWrapper(t);
+                    }
+                }
+            });
+        } catch (ExceptionWrapper e) {
+            /** Don't forget to unwrap checked exceptions that went through the Work interface */
+            throw e.getCause();
+        } catch (Throwable t) {
+            throw new RuntimeException("Unexpected exception during transaction management", t);
+        }
+    }
+
+    private static class ExceptionWrapper extends RuntimeException {
+        ...
+    }
+}
+}}}
+
+Secondly, one has to declare the _aspect_ with the _around advice_ in the Spring configuration:
+
+{{{
+    <!-- The bean that will be used for AOP advice -->
+    <bean id="appEngineTransactionManager" class="com.example.AppEngineTransactionManager"/>
+
+    <aop:config>
+        <aop:aspect ref="appEngineTransactionManager">
+            <!-- Match all methods of all classes ending with Worker -->
+            <aop:pointcut id="workMethod" expression="execution(* *..*Worker.*(..))"/>
+            <!-- Invoke the around advice whenever the pointcut matches -->
+            <aop:around pointcut-ref="workMethod" method="transactNew"/>
+        </aop:aspect>
+    </aop:config>
+}}}
+
+A working prototype can be found here: 
 https://github.com/dajudge/appengine-objectify-spring-transactions-example
