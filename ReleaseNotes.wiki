@@ -1,9 +1,17 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 4.0.1 =
+2014-03-19
+  * Requires Appengine SDK 1.8.3 or newer
+
+  * Map and List objects returned from Objectify can now be serialized.
+  * Added ability to set explicit memcache error handler.
+  * Pom now builds with JDK1.7
+
 = 4.0 =
 2014-02-07
-  * Requires Appengine SDK 1.8.9 or newer
+  * Requires Appengine SDK 1.8.3 or newer
 
 Since the first versions of Objectify, GAE's datastore API has expanded significantly with features (such as XG transactions and asynchrony) that fundamentally change how an API should work. Version 4 is a re-imagining of Objectify based on years of experience building GAE applications. The API and implementation have completely changed from Objectify v3; there's no way to produce a concise set of release notes. Please read all documentation from the beginning.
 
