@@ -7,7 +7,10 @@
 
   * Map and List objects returned from Objectify can now be serialized.
   * Added ability to set explicit memcache error handler.
-  * Pom now builds with JDK1.7
+  * Added Query.reverse() method.
+  * @EmbedMap now allows keys to be of type Key<?> in addition to String.
+  * Anything can convert to Text, just like anything can convert to String.
+  * Builds with JDK1.7.
 
 = 4.0 =
 2014-02-07
