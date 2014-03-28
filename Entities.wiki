@@ -136,6 +136,8 @@ There are two ways you can affect this:
 
 Objectify supports embedded classes and collections of embedded classes.  This allows you to store structured data within a single POJO entity in a way that remains queryable.  With a few limitations, this can be an excellent replacement for storing JSON data.
 
+*IMPORTANT!* Read the note about changes in the [Entities#Embedding_Native_Representation native storage representation].
+
 === Embedded Classes ===
 
 You can nest objects to any arbitrary level.
@@ -182,10 +184,36 @@ Some things to keep in mind:
     * You cannot put arrays/collections of native types inside {{{@Embed}}} arrays/collections.
   * You can, however, nest {{{@Embed}}} arrays/collections inside any number of {{{@Embed}}} classes.
   * You should initialize collections.  Null or empty collections are not written to the datastore and therefore get ignored during load.  Furthermore, the concrete instance will be used as-is, allowing you to initialize collections with Comparators or other state.
- 
+
 === Embedding Native Representation ===
 
-You may wish to know how {{{@Embed}}} classes are persisted so that you an access them through the Low-Level API.  Here is an example, given the example data structures specified above.
+*VERY IMPORTANT!*
+
+The native storage format for @Embed structures is changing between Objectify 4.X and 5.X. Objectify 4.1 is a transitional version which can read and write both formats. To avoid surprises, it defaults to writing the old format.
+
+You are _strongly_ encouraged to migrate to the new format now. Objectify 4.1 will automatically detect the correct format when loading entities. To migrate your data, call `ObjectifyFactory.setSaveWithNewEmbedFormat(true)` and load+save every entity which has an @Embed structure. 
+
+Migration to the new storage format _cannot be reverted_. If you migrate and then revert to a previous version of Objectify which does not recognize the new format, *you will lose data*.
+
+Starting with Objectify 5.0, the legacy storage format will be dropped; it is incompatible with many new features (such as embedded object polymorphism). Start this migration now!
+
+Here's the nitty gritty detail of how {{{@Embed}}} objects are persisted so that you an access them through the Low-Level API.
+
+==== New Format For 4.1+ ====
+
+For Objectify 4.1 you must explicitly enable save in the new format by calling `ObjectifyFactory.setSaveWithNewEmbedFormat(true)`. Objectify 5.0 will only support this format.
+
+The new format is very simple. Objects are stored as `EmbeddedEntity`, a new map-like container that was recently added to the Low-Level API. Collections of objects are simply collections of `EmbeddedEntity` objects.
+
+However, GAE does not natively support indexing of `EmbeddedEntity` fields. To allow you to query on embedded data, Objectify creates synthetic index properties in the top-level Entity objects. These are dot-separated property names that have the exact same structure as the old legacy format, so your query code need not change when upgrading to the new format. However, these indexes are only used for queries and are not used to load your POJO objects.
+
+The appearance of your entities in the GAE console Datastore Viewer will change. Unfortunately, the Datastore Viewer currently shows `EmbeddedEntity` objects and collections of `EmbeddedEntity` objects as opaque blobs. Please [https://code.google.com/p/googleappengine/issues/detail?id=10737 star this issue].
+ 
+==== Legacy Format For 4.0 And Previous ====
+
+This is the default format for Objectify 4.X. You are _strongly_ encouraged to migrate to the new format by upgrading to Objectify 4.1, calling `ObjectifyFactory.setSaveWithNewEmbedFormat(true)` and load+saving every entity which has an @Embed structure.
+
+Here is an example of the native storage format, given the example data structures we have discussed already:
 
 {{{
 EntityWithEmbedded ent = new EntityWithEmbedded();
