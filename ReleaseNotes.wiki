@@ -1,6 +1,23 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 4.1 =
+2014-03-28
+  * Requires Appengine SDK 1.8.3 or newer
+
+  * GWT source removed from jar and moved to separate project.
+  * Changes the storage format of @Embed objects
+
+IMPORTANT! READ THIS!
+
+Objectify is changing the native format in which @Embed objects are stored. Instead of creating dot-separated property names, Objectify 4.1 can store objects using the new EmbeddedEntity native storage type. You are *very* strongly encouraged to migrate to this new storage type ASAP, because Objectify 5.0 will drop support for the old format entirely.
+
+When loading entities Objectify 4.1 will automatically detect the format and read correctly. It defaults to writing the legacy format. If you call `ObjectifyFactory.setSaveWithNewEmbedFormat(true)`, Objectify will writ to the new format. To convert your entire database, set this flag and load+save every entity which has an @Embed structure.
+
+If you use the new storage format, you MUST NOT revert to a previous version of Objectify or you will *LOSE DATA*. However, you must migrate all data to the new format before Objectify 5.0.
+
+If you have any questions, post them to the [http://groups.google.com/group/objectify-appengine Objectify Google Group].
+
 = 4.0.1 =
 2014-03-19
   * Requires Appengine SDK 1.8.3 or newer
