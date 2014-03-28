@@ -16,7 +16,7 @@ When loading entities Objectify 4.1 will automatically detect the format and rea
 
 If you use the new storage format, you MUST NOT revert to a previous version of Objectify or you will *LOSE DATA*. However, you must migrate all data to the new format before Objectify 5.0.
 
-If you have any questions, post them to the [http://groups.google.com/group/objectify-appengine Objectify Google Group].
+This does not affect you if you do not use @Embed. If you have any questions, post them to the [http://groups.google.com/group/objectify-appengine Objectify Google Group].
 
 = 4.0.1 =
 2014-03-19
