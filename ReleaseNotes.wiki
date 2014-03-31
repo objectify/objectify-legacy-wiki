@@ -1,6 +1,12 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 4.1.1 =
+  * Requires Appengine SDK 1.8.3 or newer
+
+  * Fix bug loading new format when you have an @EmbedMap which contains EmbeddedEntity.
+  * Fix bug loading new format when you have an array which contains EmbeddedEntity.
+
 = 4.1 =
 2014-03-28
   * Requires Appengine SDK 1.8.3 or newer
