@@ -7,7 +7,7 @@
 
   * Fix bug loading old embed format when an embedded list contains null nested embedded objects.
 
- *IMPORTANT! Read the 4.1 release notes below*
+*IMPORTANT! Read the 4.1 release notes below*
 
 = 4.1.1 =
 2014-03-31
@@ -16,7 +16,7 @@
   * Fix bug loading new format when you have an @EmbedMap which contains EmbeddedEntity.
   * Fix bug loading new format when you have an array which contains EmbeddedEntity.
 
- *IMPORTANT! Read the 4.1 release notes below*
+*IMPORTANT! Read the 4.1 release notes below*
 
 = 4.1 =
 2014-03-28
