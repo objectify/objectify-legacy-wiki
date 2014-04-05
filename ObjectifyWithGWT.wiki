@@ -1,53 +1,7 @@
 #summary Using Objectify with Google Web Toolkit
 
-== Got CRUD? ==
+Starting with version 4.1, GWT integration has been separated from the core objectify.jar and moved into a separate project. Please visit:
 
-This must be _the_ most common "design pattern" when developing web applications:
+https://code.google.com/p/objectify-gwt/
 
-  # Load some data from the datastore
-  # Pass this data to the presentation tier via RPC
-  # Render the data to the user
-
-However, there is often an impedance mismatch between the data tier and the presentation tier in web development tools.  Because, for example, Hibernate or JDO proxies cannot be passed through GWT RPC, developers are often forced to construct Data Transfer Objects to shuffle data back and forth.  Sometimes this is a good idea (say, when you have sophisticated program logic in your entities) but sometimes this is a laborious pain in the arse.
-
-== No More DTOs ==
-
-With a tiny amount of care, your *entity objects* can be passed through GWT serialization and used as-is in the presentation layer.  Simply write your entity as if it is a GWT client class!
-
-  * Make sure your entity classes are part of your GWT module (typically in a .client package).
-  * Don't call methods which are not part of the JRE emulation.
-  * All referenced classes must themselves be GWT-safe.
-
-Simply add this to your module.gwt.xml:
-
-{{{
-    <inherits name="com.googlecode.objectify.Objectify" />
-}}}
-
-You can now manipulate your entity objects in GWT and seamlessly pass them back and forth to the server through GWT-RPC.  Objectify enables you to use Key<?>, Key (the datastore version), and all the datastore basic types (Link, Email, GeoPt, etc) in your client code.
-
-== Annotations ==
-
-In general GWT will ignore annotation on your classes. It is not necessary to include them in your gwt include modules.
- 
-Annotations like {{{@Entity}}}, {{{@AlsoLoad}}}, and the like will be ignored during GWT serialization. 
-
-== Limitations ==
-
-The Objectify action objects (Objectify, ObjectifyService, ObjectifyFactory, etc) cannot be used from GWT client code. Only POJOs (eg, entities and their associated data) are allowed to cross the GWT service boundaries.
-
-Creating {{{Key<?>}}} objects client-side is difficult.  You can only use one constructor, the one which takes a native datastore {{{Key}}}.  The other constructors do not exist in the {{{Key<?>}}} super-source.  The problem is that key-related metadata is stored in annotations, but annotations are transparent to GWT. If you absolutely need to construct {{{Key<?>}}} objects client-side, you can construct a native datastore {{{Key}}} from the {{{KeyFactory}}} and use that to construct {{{Key<?>}}}.
-
-See [https://groups.google.com/group/objectify-appengine/browse_thread/thread/5d6171c6a4956719/2d5004df1d7e20ee?hl=en_US&lnk=gst&q=polymorphism+gwt&pli=1#2d5004df1d7e20ee this discussion].
-
-{{{Ref<?>}}} objects are special. When they are serialized from the server to the client, they are disconnected from the "live" database and converted to a simple key, value pair. The value will be present only if the Ref<?> was loaded (see {{{Ref.isLoaded()}}}), otherwise it will be null. This allows you to send object graphs from server to client.
-
-However, because of limitations in GWT (please star [https://code.google.com/p/google-web-toolkit/issues/detail?id=3303 this issue]), Ref<?> value pairs cannot survive the roundtrip *back* to the server. Passing an object graph from server to client, letting the client modify the graph, and posting it back to the server will not work.
-
-== Example ==
-
-A *very* simple example can be found [http://code.google.com/p/scratchmonkey/source/browse/#svn/appengine/objectify-gwt here].
-
-== Request Factory==
-
-David Chandler wrote an article on [http://turbomanage.wordpress.com/2011/03/25/using-gwt-requestfactory-with-objectify/ Using Objectify with RequestFactory].
+Note that these projects are versioned separately and released on a separate schedule.
