@@ -1,0 +1,16 @@
+#summary How To Upgrade Objectify v4 To v5
+
+= Upgrading =
+
+Objectify v5 brings two major changes:
+
+ * The native storage format for embedded objects has changed from dot-separated property names to the new {{{EmbeddedEntity}}} native structure.
+ * The code that translates back and forth between POJOs and native data structures has been rewritten from scratch.
+
+This allows Objectify to offer great new features like polymorphism and lifecycle methods in embedded objects. However, it may require to migrate the structure of existing data.
+
+= Incredibly Important Migration Instructions =
+
+*IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT!*
+
+If you have used {{{@Embed}}} to store data with previous versions of Objectify, and you do not follow these instructions, *you will lose data*. Furthermore, once you have followed these instructions, *you cannot rollback to a previous version of Objectify* or your data will be lost. If you have not used {{{@Embed}}}, the migration is unnecessary.
