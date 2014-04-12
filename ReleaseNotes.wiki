@@ -1,6 +1,12 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 4.1.3 =
+2014-04-12
+  * Requires Appengine SDK 1.8.3 or newer
+
+  * Fix index contamination when batch saving multiple entities with nested indexes in the new format.
+
 = 4.1.2 =
 2014-04-05
   * Requires Appengine SDK 1.8.3 or newer
