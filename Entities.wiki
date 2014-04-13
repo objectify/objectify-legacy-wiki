@@ -122,7 +122,7 @@ In deeply nested structures, {{{@Container}}} fields will be populated with the 
 
 {{{@Container}}} fields are not persisted in the native datastore. They are populated only when the entity is loaded.
 
-=== Embedded Object Native Storage Format ===
+=== Embedded Object Native Representation ===
 
 All embedded objects (both @Entity classes and vanilla classes) are stored as {{{EmbeddedEntity}}}. 
 
