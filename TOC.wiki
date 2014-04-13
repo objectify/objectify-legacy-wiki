@@ -1,8 +1,10 @@
 #summary Sidebar page - Table of Contents
 #sidebar TOC
 
+_These documents are being upgraded for Objectify v5. Until this message is removed, they may be innaccurate._
+
   * [Concepts Concepts]
-  * User's Guide (Objectify v4)
+  * User's Guide (Objectify v5) - work in progress
     * [Introduction]
     * [Setup]
     * [Entities]
@@ -12,12 +14,10 @@
     * [LifecycleCallbacks Lifecycle Callbacks]
     * [SchemaMigration Schema Migration]
     * [Caching]
-    * [Wrappers Using Wrappers]
     * [ObjectifyWithGWT Objectify With GWT]
     * [MemcacheStandalone Caching Without Objectify]
     * [AnnotationReference Annotation Reference]
-    * [DesignObjectify4 Design of Objectify 4]
-    * [UpgradeVersion3ToVersion4]
+    * [UpgradeVersion4ToVersion5]
   * [Examples]
   * [http://docs.objectify-appengine.googlecode.com/git/apidocs/index.html API Javadoc]
   * [ReleaseNotes Release Notes]
@@ -26,5 +26,21 @@
   * [MavenRepository Maven Repository]
   * [Extensions Extensions]
   * [ContributingToObjectify Contributing To Objectify]
+  * Objectify v4
+    * Links are to raw wiki content in v4 branch, best Google Code can do
+    * [https://code.google.com/p/objectify-appengine/source/browse/Introduction.wiki?repo=wiki&name=v4 Introduction]
+    * [https://code.google.com/p/objectify-appengine/source/browse/Setup.wiki?repo=wiki&name=v4 Setup]
+    * [https://code.google.com/p/objectify-appengine/source/browse/Entities.wiki?repo=wiki&name=v4 Entities]
+    * [https://code.google.com/p/objectify-appengine/source/browse/BasicOperations.wiki?repo=wiki&name=v4 Basic Operations]
+    * [https://code.google.com/p/objectify-appengine/source/browse/Queries.wiki?repo=wiki&name=v4 Queries And Indexes]
+    * [https://code.google.com/p/objectify-appengine/source/browse/Transactions.wiki?repo=wiki&name=v4 Transactions]
+    * [https://code.google.com/p/objectify-appengine/source/browse/LifecycleCallbacks.wiki?repo=wiki&name=v4 Lifecycle Callbacks]
+    * [https://code.google.com/p/objectify-appengine/source/browse/SchemaMigration.wiki?repo=wiki&name=v4 Schema Migration]
+    * [https://code.google.com/p/objectify-appengine/source/browse/Caching.wiki?repo=wiki&name=v4 Caching]
+    * [https://code.google.com/p/objectify-appengine/source/browse/ObjectifyWithGWT.wiki?repo=wiki&name=v4 Objectify With GWT]
+    * [https://code.google.com/p/objectify-appengine/source/browse/MemcacheStandalone.wiki?repo=wiki&name=v4 Caching Without Objectify]
+    * [https://code.google.com/p/objectify-appengine/source/browse/AnnotationReference.wiki?repo=wiki&name=v4 Annotation Reference]
+    * [DesignObjectify4 Design of Objectify 4]
+    * [UpgradeVersion3ToVersion4]
   * Objectify v3 (obsolete)
     * [IntroductionToObjectify Introduction To Objectify]
