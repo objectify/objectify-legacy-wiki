@@ -36,7 +36,7 @@ class Employee {
    }
 
    // Allows you to query for employess in a building by filtering on "offices.building"
-   @Embed Office[] offices;
+   Office[] offices;
 
    // Whatever gets put here will be serialized out and back (and cannot be filtered)
    @Seralize Object misc;
@@ -61,10 +61,9 @@ class Employee {
   * Placed on at most one field of type {{{Key}}}
   * Defines the entity group parent for an entity
 
-== @com.googlecode.objectify.annotation.EntitySubclass ==
-  * Placed on subclasses of polymorphic types
+== @com.googlecode.objectify.annotation.Subclass ==
+  * Placed on subclasses of polymorphic types, both {{{@Entity}}} and embedded
   * Exclusive with {{{@Entity}}}
-  * One parent class must have {{{@Entity}}}
   * See [http://code.google.com/p/objectify-appengine/wiki/Entities#Polymorphism Polymorphism].
 
 == @com.googlecode.objectify.annotation.Index ==
@@ -110,27 +109,21 @@ class Employee {
   * Stores entity data in a write-through cache for faster read performance
   * Allows you to specify the expiration of entities in the cache
 
-== @com.googlecode.objectify.annotation.Embed ==
-  * Placed on an entity field, or the field of any class embedded in an entity.
-  * Field can be any custom type or a collection or array of your custom type.
-  * See the [http://code.google.com/p/objectify-appengine/wiki/Entities#Embedding embedding] documentation.
-
 == @com.googlecode.objectify.annotation.Serialize ==
   * Placed on any entity field of Serializable type
   * Causes the object graph at that point to be stored as a serialized Blob.
-  * Can be used on fields inside @Embed classes.
   * You can optionally configure zipping and compression level.
   * See the [http://code.google.com/p/objectify-appengine/wiki/Entities#Serializing serializing] documentation.
 
 == @com.googlecode.objectify.annotation.OnLoad ==
-  * Placed on any method that takes no parameters or a single parameter of type {{{Objectify}}}.
+  * Placed on any method that takes no parameters.
   * Called after the POJO is populated with data.
   * Can be specified on multiple methods in this class or any base class.
   * Methods are called in declared order, with superclass methods first.
   * See LifecycleCallbacks
 
 == @com.googlecode.objectify.annotation.OnSave ==
-  * Placed on any method that takes no parameters or a single parameter of type {{{Objectify}}}.
+  * Placed on any method that takes no parameters.
   * Called before the POJO is written to the datastore Entity.
   * Can be specified on multiple methods in this class or any base class.
   * Methods are called in declared order, with superclass methods first.
@@ -143,6 +136,14 @@ class Employee {
   * See [http://code.google.com/p/objectify-appengine/wiki/Entities#Relationships Relationships]
 
 == @com.googlecode.objectify.annotation.Mapify ==
+  * TODO: This needs some explanation.
+  * See the javadocs for details.
+
+== @com.googlecode.objectify.annotation.Stringify ==
+  * TODO: This needs some explanation.
+  * See the javadocs for details.
+
+== @com.googlecode.objectify.annotation.Container ==
   * TODO: This needs some explanation.
   * See the javadocs for details.
 
