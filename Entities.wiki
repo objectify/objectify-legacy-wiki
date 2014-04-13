@@ -95,7 +95,7 @@ class Car {
 }
 }}}
 
-This will *not* create a foreign key reference! This will _embed_ the {{{Person}}} entity in the {{{Car}}} entity. The key of the {{{Person}}} will be used as the native {{{Key}}} stored in the {{{EmbeddedEntity}}}. To create relationships between entities, see the later section on [#Relationships]
+This will *not* create a foreign key reference! This will _embed_ the {{{Person}}} entity in the {{{Car}}} entity. The key of the {{{Person}}} will be used as the native {{{Key}}} stored in the {{{EmbeddedEntity}}}. To create relationships between entities, see the later section on [#Relationships Relationships]
 
 === {{{@Container}}} fields ===
 
@@ -303,7 +303,7 @@ Polymorphism applies to embedded objects exactly as it does to top level {{{@Ent
 
  * You do not need {{{@Entity}}} at the root of your polymorphic hierarchy (unless you actually want to embed an entity with a real key). Objectify discovers the root of your polymorphic hierarchy when the field is declared.
  * You must register all {{{@Subclass}}} classes which will be used.
- * The {{{index}}} element of {{{@Subclass}} is ignored.
+ * The {{{index}}} element of {{{@Subclass}}} is ignored.
 
 === Polymorphism Native Representation ===
 
