@@ -200,12 +200,12 @@ public class Animal {
     String name;
 }
 	
-@EntitySubclass(index=true)
+@Subclass(index=true)
 public class Mammal extends Animal {
     boolean longHair;
 }
 	
-@EntitySubclass(index=true)
+@Subclass(index=true)
 public class Cat extends Mammal {
     boolean hypoallergenic;
 }
@@ -271,6 +271,8 @@ protected void service(HttpServletRequest request, HttpServletResponse response)
 
 = Embedded Classes =
 
+The datastore does not natively index properties of {{{EmbeddedEntity}}}, the native representation for embedded objects. Objectify works around this by creating synthetic, indexed dot-separated fields in the top-level {{{Entity}}}. These fields are only used for queries; they are not used to load your POJO objects.
+
 == Indexing Embedded Classes ==
 
 As with normal entities, all fields within embedded classes are unindexed by default.  You can control this:
@@ -279,17 +281,15 @@ As with normal entities, all fields within embedded classes are unindexed by def
   * Putting {{{@Index}}} or {{{@Unindex}}} on a field will make it indexed or unindexed, respectively.
   * {{{@Index}}} or {{{@Unindex}}} status for nested classes and fields are generally inherited from containing fields and classes, except that:
     * {{{@Index}}} or {{{@Unindex}}} on a field overrides the default of the class containing the field.
-    * {{{@Index}}} or {{{@Unindex}}} on a field of type {{{@Embed}}} class will override the default on the class inside the field (be it a single class or a collection).
+    * {{{@Index}}} or {{{@Unindex}}} on a field which holds an embedded class will override the default on the class inside the field (be it a single class or a collection).
 
 {{{
-@Embed
 @Index
 class LevelTwo {
     @Index String gamma;
     String delta;
 }
 
-@Embed
 @Index
 class LevelOne {
     String beta;
@@ -299,7 +299,7 @@ class LevelOne {
 @Entity
 class EntityWithComplicatedIndexing {
     @Id Long id;
-    @Embed LevelOne one;
+    LevelOne one;
     String alpha;
 }
 }}}
