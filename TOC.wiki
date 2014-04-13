@@ -4,7 +4,7 @@
 _These documents are being upgraded for Objectify v5. Until this message is removed, they may be innaccurate._
 
   * [Concepts Concepts]
-  * User's Guide (Objectify v5) - work in progress
+  * User's Guide (Objectify v5)
     * [Introduction]
     * [Setup]
     * [Entities]
