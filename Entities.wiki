@@ -264,10 +264,9 @@ public class Cat extends Mammal {
 
 Things to note:
 
-  * The root of your polymorphic hierarchy *must* be annotated with {{{@Entity}}}.
   * All polymorphic subclasses must be annotated with {{{@Subclass}}} and registered explicitly.
   * You can skip {{{@Subclass}}} on intermediate classes which will never be materialized or queried for.
-  * If you save an object which is not a registered {{{@Subclass}}}, it will be saved as the base type - any additional fields will be ignored!
+  * If you save an object of a type which is not a registered {{{@Subclass}}}, you will get an exception!
 
 In a polymorphic hierarchy, you can {{{load()}}} without knowing the actual type:
 
