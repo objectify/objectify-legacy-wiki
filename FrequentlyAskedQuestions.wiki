@@ -28,7 +28,7 @@ q = q.filter("bar", bar);
 
 Alternatively, chain the whole sequence in a single statement.  [https://code.google.com/p/objectify-appengine/wiki/Queries#Executing_Queries Read more here.]
 
-== Strange things are showing up in my session cache! ==
+== Strange things are showing up in my session cache! (or missing from it!) ==
 This is almost always caused by one of two problems:
 
  * You did not enable the {{{ObjectifyFilter}}} in your web.xml. You must install this filter.
@@ -90,8 +90,3 @@ Yes you can! With a few caveats...
   * The global cache will remain consistent as long as you obtain the DatastoreService from ofy().getDatastore(); if you get it directly from DatastoreServiceFactory it will bypass Objectify's global (memcache) cache.
 
 You're free to interleave Objectify and Low-Level API calls.
-
-== Why can't I use @Embed on {{{List<String>}}}? ==
-@Embed tells Objectify to break classes down to their component parts based on their fields and store each field separately.  Therefore, this annotation must not be used on primitive types or types that are stored natively by the datastore (eg {{{String}}}, {{{Integer}}}, {{{GeoPt}}}, {{{User}}}, {{{Email}}}, etc).
-
-The datastore knows how to persist these native types as-is.  You do not need the @Embed annotation to persist a {{{List<String>}}} - just declare the field normally.
