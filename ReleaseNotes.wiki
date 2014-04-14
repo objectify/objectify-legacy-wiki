@@ -1,6 +1,21 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.0 =
+2014-04-13
+  * Requires Appengine SDK 1.8.3 or newer
+
+*IMPORTANT! Objectify v5 drops support for the old embedded object format.* If you use embedded objects, you must follow the UpgradeVersion4ToVersion5 instructions or you may lose data.
+
+  * Translation engine has been completely rewritten.
+  * @Embed annotation has been dropped; any nested classes are embedded.
+  * Collections of embedded objects can be nested without restriction.
+  * Embedded objects support polymorphism and lifecycle methods.
+  * Method handles are used to populate properties (better performance).
+  * Query supports composite filters.
+
+Some annotations have changed; read UpgradeVersion4ToVersion5.
+
 = 4.1.3 =
 2014-04-12
   * Requires Appengine SDK 1.8.3 or newer
