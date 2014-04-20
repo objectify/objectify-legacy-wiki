@@ -1,6 +1,16 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.0.1 =
+2014-04-20
+  * Requires Appengine SDK 1.8.3 or newer
+
+*IMPORTANT! Read the release notes for 5.0.*
+
+  * Fix bug causing "no registered subclass found" when embedded class field has an annotation.
+  * Added Query.orderKey()
+  * ofy().delete().entities() now accepts anything keylike, not just entity objects
+
 = 5.0 =
 2014-04-13
   * Requires Appengine SDK 1.8.3 or newer
