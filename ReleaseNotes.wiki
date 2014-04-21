@@ -1,6 +1,14 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.0.2 =
+2014-04-20
+  * Requires Appengine SDK 1.8.3 or newer
+
+*IMPORTANT! Read the release notes for 5.0.*
+
+  * Fix bug preventing @Id/@Parent fields from being defined in non-@Entity base classes.
+
 = 5.0.1 =
 2014-04-20
   * Requires Appengine SDK 1.8.3 or newer
