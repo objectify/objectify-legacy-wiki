@@ -5,12 +5,6 @@
 
 = Frequently Asked Questions =
 
-== {{{NoSuchMethodError}}}?!? ==
-
-This is almost always a result of having the wrong (or a duplicate) jar in your classpath. Ensure that you have one and only one {{{objectify.jar}}} on your classpath, that it is the correct version, and that you are running against the correct minimum version of the Google App Engine SDK.  Check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
-
-Also be sure that you have the {{{guava.jar}}} dependency on your classpath.
-
 == Why aren't my queries working properly? ==
 
 All of Objectify's intermediate command objects are immutable. This will not work:
@@ -27,6 +21,12 @@ q = q.filter("bar", bar);
 }}}
 
 Alternatively, chain the whole sequence in a single statement.  [https://code.google.com/p/objectify-appengine/wiki/Queries#Executing_Queries Read more here.]
+
+== {{{NoSuchMethodError}}}?!? ==
+
+This is almost always a result of having the wrong (or a duplicate) jar in your classpath. Ensure that you have one and only one {{{objectify.jar}}} on your classpath, that it is the correct version, and that you are running against the correct minimum version of the Google App Engine SDK.  Check the Objectify ReleaseNotes to see what minimum version is required.  Google is rapidly developing Appengine; as they add new features, we add support to Objectify.  This tends to require up-to-date versions of the SDK.
+
+Also be sure that you have the {{{guava.jar}}} dependency on your classpath. If you are using Maven, the dependency will be included automatically.
 
 == Strange things are showing up in my session cache! (or missing from it!) ==
 This is almost always caused by one of two problems:
