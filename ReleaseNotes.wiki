@@ -3,6 +3,7 @@
 
 = 5.0.3 =
 2014-06-08
+
 *IMPORTANT! Read the release notes for 5.0.*
 
   * Implemented projection queries.
@@ -11,12 +12,14 @@
 
 = 5.0.2 =
 2014-04-20
+
 *IMPORTANT! Read the release notes for 5.0.*
 
   * Fix bug preventing @Id/@Parent fields from being defined in non-@Entity base classes.
 
 = 5.0.1 =
 2014-04-20
+
 *IMPORTANT! Read the release notes for 5.0.*
 
   * Fix bug causing "no registered subclass found" when embedded class field has an annotation.
