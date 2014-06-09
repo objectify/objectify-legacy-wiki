@@ -1,18 +1,22 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.0.3 =
+2014-06-08
+*IMPORTANT! Read the release notes for 5.0.*
+
+  * Implemented projection queries.
+  * Fixed issue with collections as the value of an embedded map.
+  * Bumped versions of GAE SDK and Guava.
+
 = 5.0.2 =
 2014-04-20
-  * Requires Appengine SDK 1.8.3 or newer
-
 *IMPORTANT! Read the release notes for 5.0.*
 
   * Fix bug preventing @Id/@Parent fields from being defined in non-@Entity base classes.
 
 = 5.0.1 =
 2014-04-20
-  * Requires Appengine SDK 1.8.3 or newer
-
 *IMPORTANT! Read the release notes for 5.0.*
 
   * Fix bug causing "no registered subclass found" when embedded class field has an annotation.
@@ -21,8 +25,6 @@
 
 = 5.0 =
 2014-04-13
-  * Requires Appengine SDK 1.8.3 or newer
-
 *IMPORTANT! Objectify v5 drops support for the old embedded object format.* If you use embedded objects, you must follow the UpgradeVersion4ToVersion5 instructions or you may lose data.
 
   * Translation engine has been completely rewritten.
