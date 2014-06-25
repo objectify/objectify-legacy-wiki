@@ -36,6 +36,13 @@ This is almost always caused by one of two problems:
 
 Make sure the {{{ObjectifyFilter}}} is installed, and always use the static {{{ofy()}}} method whenever you perform Objectify operations. If you never hold on to an {{{Objectify}}} reference, you will not get into trouble.
 
+== !ClassCastException: com.google.appengine.api.datastore.Entity cannot be cast to XXX ==
+If you load an entity kind that has not been registered, Objectify leaves it untranslated as the raw datastore Entity. This is a convenience feature.
+
+This means that if you have any kind of race condition that allows load() operations to proceed before registration, you may receive !ClassCastExceptions when you try to cast the value returned by ofy().load() to your expected entity type.
+
+See BestPractices for more about how to register entities.
+
 == Will GAE complete my asynchronous operations if I don't call now()? ==
 Yes. GAE completes all asynchronous operations at the end of the request. This means your request will block until they finish; async operations are not a way of getting around the 60s request deadline.
 
