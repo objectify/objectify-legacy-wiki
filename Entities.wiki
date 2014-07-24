@@ -40,7 +40,7 @@ Observe:
 
   * Entity classes must be annotated with {{{@Entity}}}.
 
-  * Objectify persists fields and only fields.  It does not arbitrarily map fields to the datastore; if you want to change the way a field is stored, rename the field.  Getters and setters are ignored so you can isolate the public interface of your class (eg, {{{public String getVehicleIdentificationNumber() { return vin; }}}}).
+  * Objectify persists fields and only fields.  It does not arbitrarily map fields to the datastore; if you want to change the name of a property in the datastore, rename the field.  Getters and setters are ignored so you can isolate the public interface of your class (eg, {{{public String getVehicleIdentificationNumber() { return vin; }}}}).
 
  * Objectify will not persist {{{static}}} fields, {{{final}}} fields, or fields annotated with {{{@Ignore}}}.  It *will* persist fields with the {{{transient}}} keyword, which only affects serialization.
 
