@@ -1,6 +1,15 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.0.4 =
+2014-09-23
+
+*IMPORTANT! Read the release notes for 5.0.*
+
+ * Fixed a problem with projection of numeric types
+ * Added method `Key.toWebSafeString()`
+ * Trim the condition in `Query.filterKey()`
+
 = 5.0.3 =
 2014-06-08
 
