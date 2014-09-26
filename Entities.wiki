@@ -460,7 +460,7 @@ Car car = new Car();
 car.driver = Ref.create(driverKey);
 ofy().save().entity(car).now();
 
-Car fetched = ofy().load().entity(car).get();
+Car fetched = ofy().load().entity(car).now();
 Person driver = fetched.driver.get();
 }}}
 
