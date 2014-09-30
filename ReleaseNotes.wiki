@@ -1,6 +1,13 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.0.5 =
+2014-09-29
+
+*IMPORTANT! Read the release notes for 5.0.*
+
+ * Fixed distinct() projection queries
+
 = 5.0.4 =
 2014-09-23
 
