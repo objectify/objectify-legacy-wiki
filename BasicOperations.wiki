@@ -224,3 +224,44 @@ ofy().delete().type(Thing.class).ids(123L, 456L, 789L).now();  // synchronous
 ofy().delete().type(Thing.class).parent(par).ids(123L, 456L, 789L);        // asynchronous
 ofy().delete().type(Thing.class).parent(par).ids(123L, 456L, 789L).now();  // synchronous
 }}}
+
+= Deferring Operations =
+
+All of the previously mentioned operations invoke datastore operations immediately - including (especially!) the asynchronous ones. This is inconvenient when you may end up conditionally making several changes to an entity. For example, when synchronizing multiple fields of an entity, you typically have to track a 'changed' state:
+
+{{{
+public void synchronize(Thing other) {
+    if (fieldA != other.fieldA) {
+        fieldA = other.fieldA;
+        changed = true;
+    }
+
+    if (fieldB != other.fieldB) {
+        fieldB = other.fieldB;
+        changed = true;
+    }
+
+    if (changed)
+        ofy().save(this);
+}
+}}}
+
+Deferred operations are delayed until the end of a unit-of-work. That is, a transaction commit or the end of a request. Here is the above using deferred operations:
+
+{{{
+public void synchronize(Thing other) {
+    if (fieldA != other.fieldA) {
+        fieldA = other.fieldA;
+        ofy().defer().save().entity(this);
+    }
+
+    if (fieldB != other.fieldB) {
+        fieldB = other.fieldB;
+        ofy().defer().save().entity(this);
+    }
+}
+}}}
+
+This will produce one datastore save at the end of the unit-of-work.
+
+In the case of both `save()` and `delete()` operations deferred for the same entity, the last operation wins. 
