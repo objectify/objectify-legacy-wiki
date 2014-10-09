@@ -112,6 +112,7 @@ When you execute a datastore operation, you will either be in a [http://code.goo
     * You can enlist up to 5 EGs, but single-EG transactions are fastest
   * Queries must include an ancestor which defines the EG in which to search.  You cannot query _across_ EGs at all, not even in XG transactions.
   * There are some quirks at the low-level API:  For example, get()s and query()s will see the datastore "frozen in time" and will not reflect updates even _within the transaction_.  Objectify hides this behavior from you; subsequent fetches will see the same data seen (or updated) previously.
+    * Note that since queries are always run inside of GAE, indexes (ie, filtering operations) always appear to be frozen in time - Objectify can't hide this.
 
 == Transactionless ==
 
