@@ -1,6 +1,15 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.1 =
+2014-10-09
+
+  * Added `ofy().defer()` and `ofy().flush()`
+  * An exception will be thrown if you try to use Objectify without the ObjectifyFilter
+  * A new method for using Objectify outside of normal request handling (unit tests, remote api, etc)
+
+If you are using Objectify outside of a normal GAE http request (eg, unit tests or the the remote api), there is a new method you must invoke. See javadocs for `ObjectifyService.run()`. The old ObjectifyFilter.complete() method has been removed.
+
 = 5.0.5 =
 2014-09-29
 
