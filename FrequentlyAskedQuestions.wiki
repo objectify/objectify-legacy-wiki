@@ -49,7 +49,7 @@ Yes. GAE completes all asynchronous operations at the end of the request. This m
 Also, asynchronous operations are completed at the time of transaction commit.
 
 == Can I use Dependency Injection (Spring, Guice, Weld) with Objectify? ==
-Yes!  Objectify is designed to integrate with DI systems and can even use injectors to create entities and internal classes.  See ObjectifyWithGuice for an overview, even if you aren't using Guice.
+Yes!  Objectify is designed to integrate with DI systems and can even use injectors to create entities and internal classes.  See the Motomapia [Example].
 
 However, we do *not* recommend using DI to inject {{{Objectify}}} instances.  As you enter and exit transaction contexts, your code will use different {{{Objectify}}} instances; a single injected instance creates a significant risk that you will mix up transaction contexts.  Always use the static {{{ofy()}}} method.
 
