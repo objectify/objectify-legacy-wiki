@@ -1,6 +1,12 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.1.1 =
+2014-10-13
+
+  * Fixed a problem with ObjectifyFilter re-entrancy that manifested when using `dispatch.forward()`.
+    * Note that this means you will not be warned if you leak Objectify contexts via `ObjectifyService.begin()`
+
 = 5.1 =
 2014-10-09
 
