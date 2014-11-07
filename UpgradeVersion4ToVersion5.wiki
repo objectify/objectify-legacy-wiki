@@ -13,7 +13,7 @@ This allows Objectify to offer great new features like polymorphism and lifecycl
 
 *IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT! IMPORTANT!*
 
-If you have used {{{@Embed}}} to store data with previous versions of Objectify, and you do not follow these instructions, *you will lose data*. Furthermore, once you have followed these instructions, *you cannot rollback to a previous version of Objectify* or your data will be lost. If you have not used {{{@Embed}}}, the migration is unnecessary.
+If you have used {{{@Embed}}} or {{{@EmbedMap}}} to store data with previous versions of Objectify, and you do not follow these instructions, *you will lose data*. Furthermore, once you have followed these instructions, *you cannot rollback to a previous version of Objectify* or your data will be lost. If you have not used {{{@Embed}}} or {{{@EmbedMap}}}, the migration is unnecessary.
 
   # Upgrade to v4.1.x
   # Set {{{ObjectifyFactory.setSaveWithNewEmbedFormat(true)}}}
