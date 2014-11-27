@@ -76,7 +76,7 @@ public class Person {
 
 These {{{If}}} conditions work with both {{{@Index}}} and {{{@Unindex}}} on fields.  You cannot specify {{{If}}} conditions on class-level annotations.
 
-Check the [http://objectify-appengine.googlecode.com/git/javadoc/com/googlecode/objectify/condition/package-summary.html javadocs] for available classes.  Here are some basics to start:  {{{IfNull.class, IfFalse.class, IfTrue.class, IfZero.class, IfEmpty.class, IfDefault.class}}}
+Check the [http://www.javadochub.com/doc/com.googlecode.objectify/objectify javadocs] for available classes.  Here are some basics to start:  {{{IfNull.class, IfFalse.class, IfTrue.class, IfZero.class, IfEmpty.class, IfDefault.class}}}
 
 === {{{IfDefault.class}}} ===
 
