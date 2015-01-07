@@ -1,6 +1,15 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.1.4 =
+2015-01-06
+
+ * When an entity is explicitly saved or deleted, clear any pending deferred operations on that entity
+ * Fix NPE when projecting properties with null values
+ * Allow deleting of native Entity objects
+ * Added ofy().load().kind(...) method
+ * No longer need to de-hybridize IN and NOT queries
+
 = 5.1.3 =
 2014-12-01
 
