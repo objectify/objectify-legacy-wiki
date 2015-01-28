@@ -173,7 +173,7 @@ class Car {
 }
 }}}
 
-The value can be any type that can be persisted as a field, including basic types, embedded objects, and collections.
+The value can be any type that can be persisted as a field, including basic types, embedded objects, and collections. Note that because this is stored as `EmbeddedEntity`, which is based on a `HashMap`, ordering of map values is unpredictable - even if your field is of type `LinkedHashMap`.
 
 ==== {{{@Stringify}}} ====
 
