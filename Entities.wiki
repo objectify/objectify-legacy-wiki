@@ -277,7 +277,7 @@ ofy().save().entity(annie).now();
 
 Mammal mam = new Mammal();
 mam.name = "Mam";
-m.longHair = true;
+mam.longHair = true;
 ofy().save().entity(mam).now();
 
 Cat nyan = new Cat();
