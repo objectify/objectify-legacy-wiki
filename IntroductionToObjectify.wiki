@@ -1,4 +1,4 @@
-#summary Guide to Objectify-Appengine v3
+#summary Guide to (obsolete) Objectify-Appengine v3
 
 *NOTE:  This is the documentation for (now obsolete) Objectify v3.*
 
