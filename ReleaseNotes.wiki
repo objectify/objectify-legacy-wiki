@@ -1,6 +1,12 @@
 #summary Objectify-Appengine Release Notes
 #labels Featured
 
+= 5.1.5 =
+2015-02-04
+
+ * Fix NPE when doing kind() queries.
+ * Fix NPE when a null value is projected.
+
 = 5.1.4 =
 2015-01-06
 
