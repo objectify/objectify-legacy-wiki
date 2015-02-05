@@ -161,8 +161,8 @@ for (Car car: q) {
 // Queries within transactions require ancestor()
 List<Car> cars = ofy().load().type(Car.class).ancestor(parent).list();
 
-// You can filter keys as well
-List<Car> range = ofy().load().filterKey(">=", startKey).filterKey("<", endKey).list();
+// You can filter keys as well, but if we don't specify a type, we get List<Object>
+List<Car> range = (List<Car>)ofy().load().filterKey(">=", startKey).filterKey("<", endKey).list();
 
 // You can query for just keys, which will return Key objects much more efficiently than fetching whole objects
 Iterable<Key<Car>> allKeys = ofy().load().type(Car.class).keys();
